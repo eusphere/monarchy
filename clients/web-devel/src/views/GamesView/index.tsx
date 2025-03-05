@@ -34,10 +34,13 @@ const GameRow = (props) => {
   // Property formatting
   const self: Types.Player = players.find(_ => _.user.id == viewerId);
   const opponent: Types.Player = players.filter(_ => _.user.id != viewerId)[0];
+  const opponentName = opponent ? opponent.user.username : '–';
+  const opponentRating = opponent ? opponent.rating : '–';
   return (
     <tr>
       <td className={styles.opponentCell}>
         <div className={styles.opponent}>
+          <Compact user={opponent.user} rating={opponentRating} />
           <Compact user={opponent.user} rating={opponent.rating} ratingDelta={opponent.ratingDelta} />
           <Button variant='outline-primary' size='sm' onClick={onViewClick}>View</Button>
         </div>
