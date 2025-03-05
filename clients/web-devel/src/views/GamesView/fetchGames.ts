@@ -15,12 +15,7 @@ const query = gql`
       id
       status
       players {
-        status
-        rating
-        ratingDelta
-        user {
-          ${frags.User}
-        }
+        ${frags.Player}
       }
     }
   }
