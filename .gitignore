@@ -7,3 +7,6 @@ bazel-*
 .env
 .env.local
 MODULE.bazel*
+*.bazelproject
+.bsp
+.bazelbsp
