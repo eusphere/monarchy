@@ -12,6 +12,9 @@
     "relay:watch": "relay-compiler --watch"
   },
   "dependencies": {
+    "@radix-ui/react-primitive": "^2.0.2",
+    "@radix-ui/themes": "^3.2.1",
+    "js-cookie": "^3.0.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-relay": "^18.2.0",
