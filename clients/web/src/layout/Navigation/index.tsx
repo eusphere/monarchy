@@ -20,10 +20,6 @@ const Navigation = () => {
           <PersonIcon width="16" height="16" />
           Profile
         </Button>
-        <Button variant="ghost" size="2">
-          <GearIcon width="16" height="16" />
-          Settings
-        </Button>
       </Flex>
     </Flex>
   );
