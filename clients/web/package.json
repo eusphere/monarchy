@@ -9,9 +9,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "relay": "relay-compiler",
-    "relay:watch": "relay-compiler --watch"
+    "relay:watch": "relay-compiler --watch",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/react-primitive": "^2.0.2",
     "@radix-ui/themes": "^3.2.1",
     "js-cookie": "^3.0.5",

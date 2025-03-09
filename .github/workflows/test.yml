@@ -17,7 +17,23 @@ jobs:
       - name: Running tests
         run: |
           bazel test //...
-  Client:
+  Client-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning source
+        uses: actions/checkout@v4
+      - name: Installing module cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: './clients/web/yarn.lock'
+      - name: Running tests
+        working-directory: ./clients/web
+        run: |
+          yarn
+          yarn tsc
+  Client-web-devel:
     runs-on: ubuntu-latest
     steps:
       - name: Cloning source
