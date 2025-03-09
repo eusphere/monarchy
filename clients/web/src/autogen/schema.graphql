@@ -1,0 +1,196 @@
+input AttackQuery {
+  gameId: String!
+  attack: [VecQuery!]!
+}
+
+type Challenge {
+  host: User!
+  expireAt: String
+}
+
+input DirectionQuery {
+  gameId: String!
+  direction: VecQuery!
+}
+
+type Effect {
+  point: Vec!
+}
+
+input EndTurnQuery {
+  gameId: String!
+}
+
+type Game {
+  id: String!
+  status: GameStatus!
+  players: [Player!]!
+  state: GameState
+}
+
+input GameQuery {
+  gameId: String!
+}
+
+input GamesQuery {
+  userId: String!
+}
+
+type GameState {
+  currentPlayerId: String!
+  currentSelection: Selection!
+  tiles: [Tile!]!
+}
+
+enum GameStatus {
+  INVALID
+  COMPLETE
+  STARTED
+}
+
+type Lobby {
+  usersOnline: [User!]!
+  challenges: [Challenge!]!
+}
+
+input MoveQuery {
+  gameId: String!
+  point: VecQuery!
+}
+
+type Mutation {
+  select(
+    """Select a tile"""
+    q: SelectQuery!
+  ): Selection!
+  deselect(
+    """Deselect all tiles"""
+    q: GameQuery!
+  ): Selection!
+  move(
+    """Move to tile"""
+    q: MoveQuery!
+  ): Selection!
+  attack(
+    """Attack a tile"""
+    q: AttackQuery!
+  ): Selection!
+  direct(
+    """Orient a piece on a tile"""
+    q: DirectionQuery!
+  ): Selection!
+  endTurn(
+    """End current turn"""
+    q: EndTurnQuery!
+  ): Selection!
+  challengeSeek: Challenge!
+}
+
+enum Phase {
+  MOVE
+  DIR
+  END
+  SELECT
+  ATTACK
+}
+
+type Piece {
+  id: String!
+  order: String!
+  name: String!
+  stats: PieceStats!
+  currentHealth: Int!
+  currentWait: Int!
+  currentDirection: Vec!
+  currentEffects: [String!]!
+  currentFocus: Boolean!
+  currentBlocking: Float!
+  playerId: String!
+}
+
+type PieceStats {
+  health: Int!
+  maxWait: Int!
+  power: Int!
+  armor: Float!
+  blocking: Float!
+}
+
+type Player {
+  id: String!
+  status: PlayerStatus!
+  rating: Int!
+  ratingDelta: Int
+  user: User
+}
+
+enum PlayerStatus {
+  LOST
+  WON
+  PLAYING
+  DRAWN
+  INVALID
+}
+
+type Profile {
+  avatar: String!
+  color: String!
+}
+
+type Query {
+  self: User!
+  user(
+    """ID of this entity."""
+    id: String!
+  ): User
+  game(
+    """ID of this entity."""
+    id: String!
+  ): Game
+  games(
+    """Query for games matching the criteria"""
+    q: GamesQuery!
+  ): [Game!]!
+  lobby: Lobby!
+  effects(
+    """Attack a tile"""
+    q: AttackQuery!
+  ): [Effect!]!
+}
+
+type Selection {
+  selection: Vec
+  piece: Piece
+  movements: [Vec!]!
+  directions: [Vec!]!
+  attacks: [[Vec!]!]!
+  phases: [Phase!]!
+}
+
+input SelectQuery {
+  gameId: String!
+  point: VecQuery!
+}
+
+type Tile {
+  point: Vec!
+  piece: Piece
+}
+
+type User {
+  id: String!
+  username: String!
+  rating: Int!
+  profile: Profile
+}
+
+type Vec {
+  i: Int!
+  j: Int!
+}
+
+input VecQuery {
+  i: Int!
+  j: Int!
+}
+

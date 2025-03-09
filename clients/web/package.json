@@ -8,8 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "relay": "relay-compiler",
-    "relay:watch": "relay-compiler --watch",
+    "relay": "mkdir -p src/autogen && relay-compiler",
+    "relay:sync": "mkdir -p src/autogen && get-graphql-schema http://localhost:8080/graphql > ./src/autogen/schema.graphql",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

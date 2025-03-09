@@ -1,9 +1,17 @@
 import { useState } from 'react';
 import { Flex, Button, Heading } from '@radix-ui/themes';
-import Navigation from './layout/Navigation';
+import Navigation from '../layout/Navigation';
+import { useLazyLoadQuery } from 'react-relay';
+import { SelfQuery } from '~/__generated__/SelfQuery.graphql';
 
 function App() {
   const [count, setCount] = useState(0);
+  
+  const data = useLazyLoadQuery<SelfQuery>(
+    SelfQuery,
+    {},
+    { fetchPolicy: 'network-only' }
+  );
 
   return (
     <>
