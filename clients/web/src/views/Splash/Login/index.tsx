@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Flex, Heading } from '@radix-ui/themes';
+import { Flex } from '@radix-ui/themes';
 import { host } from '~/network/host';
 import DiscordButton from './DiscordButton';
 

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styles from './index.module.css';
 
+const IMAGE_COUNT = 4;
 const IMAGE_HOST = 'https://monarchy1.com/static/concept';
 const IMAGES = [
   'arboreal-summoner-1.png',
@@ -17,16 +18,25 @@ const IMAGES = [
   'white-cloak-2.png',
   'white-cloak-3.png',
   'white-cloak-4.png',
-].sort(() => Math.random() - 0.5);
+];
+
+function shuffle<T>(array: T[]): T[] {
+  return array.slice().sort(() => Math.random() - 0.5);
+}
 
 const Carousel = (): React.ReactNode => {
+  const images = React.useMemo(() => shuffle(IMAGES).slice(0, IMAGE_COUNT), []);
   return (
     <div className={styles.root}>
-      <div className={styles.carousel}>
-        {IMAGES.map((image, idx) => (
-          <img key={idx} src={`${IMAGE_HOST}/${image}`} alt={`Concept ${idx + 1}`} />
-        ))}
-      </div>
+      {images.map((image, idx) => {
+        return (
+          <img
+            key={idx}
+            src={`${IMAGE_HOST}/${image}`}
+            alt={`Concept ${idx + 1}`}
+          />
+        );
+      })}
     </div>
   );
 };
