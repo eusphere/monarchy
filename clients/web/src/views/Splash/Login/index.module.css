@@ -1,19 +1,20 @@
-.discord {
+a.discord {
   background-color: #5865F2;
   color: white;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 4px;
+  gap: var(--grid-space);
+  padding: var(--grid-space-sm) var(--grid-space);
+  border-radius: var(--corner-radius);
   text-decoration: none;
   font-family: "gg sans", "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
+  font-size: var(--font-size);
   font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
 }
 
-.discord:hover {
-  background-color: #5865F2;
+a.discord:hover {
+  background-color: rgba(88, 101, 242, 0.8);
   color: white;
   text-decoration: none;
 }

@@ -2,6 +2,7 @@
   --grid-space: 8px;
   --grid-space-sm: 4px;
   --corner-radius: 4px;
+  --font-size: 14px;
 }
 
 html, body {

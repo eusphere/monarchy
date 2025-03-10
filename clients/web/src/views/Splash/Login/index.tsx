@@ -16,7 +16,7 @@ const Login = (): React.ReactNode => {
       <Flex direction="column" gap="6" align="center" style={{ width: '100%' }}>
         <Flex direction="column" gap="4" align="center">
           <DiscordButton href={authorizeUrl}>
-            Log in
+            Connect
           </DiscordButton>
         </Flex>
       </Flex>
