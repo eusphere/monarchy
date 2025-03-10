@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { fetchQuery, useRelayEnvironment } from 'react-relay';
+import Carousel from './Carousel';
 import Login from './Login';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 
@@ -18,7 +19,13 @@ const Splash = (_: Props): React.ReactNode => {
 
   if (loggedIn === null) return null; // Loading state
   if (loggedIn) return null; // Logged in user
-  return <Login />; // Not logged in
+  // Not logged in
+  return (
+    <>
+      <Carousel />
+      <Login />
+    </>
+  );
 };
 
 export default Splash;

@@ -1,0 +1,31 @@
+.root {
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  white-space: nowrap;
+}
+
+.carousel {
+  display: flex;
+  align-items: center;
+  animation: slideLeft 60s linear forwards;
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.carousel img {
+  height: 250px;
+  width: 250px;
+  margin: var(--grid-space);
+  border-radius: var(--corner-radius);
+}

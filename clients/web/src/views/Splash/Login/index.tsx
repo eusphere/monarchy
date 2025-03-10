@@ -14,9 +14,6 @@ const Login = (): React.ReactNode => {
   return (
     <Flex p="4" style={{ minHeight: 'calc(100vh - var(--header-height))' }}>
       <Flex direction="column" gap="6" align="center" style={{ width: '100%' }}>
-        <Heading size="6" weight="bold">
-          Welcome to Monarchy
-        </Heading>
         <Flex direction="column" gap="4" align="center">
           <DiscordButton href={authorizeUrl}>
             Log in
