@@ -42,5 +42,5 @@ object DiscordAuthorizeController {
   }
 
   private[controllers] def mkBaseUrl: String =
-    if (isLocal) "http://localhost:8081" else "https://monarchy1.com"
+    if (isLocal) "http://localhost:5173" else "https://monarchy1.com"
 }

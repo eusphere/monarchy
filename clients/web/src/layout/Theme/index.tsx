@@ -9,7 +9,7 @@ type Props = {
 const Theme = (props: Props) => {
   return (
     <ThemeComponent
-      appearance="dark"
+      appearance="light"
       accentColor="amber"
       className={styles.root}
     >

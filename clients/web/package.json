@@ -8,8 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "relay": "relay-compiler",
-    "relay:watch": "relay-compiler --watch",
+    "relay": "mkdir -p src/autogen/relay && relay-compiler",
+    "relay:sync": "mkdir -p src/autogen && get-graphql-schema http://localhost:8080/graphql > ./src/autogen/schema.graphql",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",

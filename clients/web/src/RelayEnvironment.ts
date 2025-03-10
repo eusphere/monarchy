@@ -12,8 +12,9 @@ const HTTP_ENDPOINT = `${host}/graphql`;
 const fetchFn: FetchFunction = async (params, variables) => {
   const response = await fetch(HTTP_ENDPOINT, {
     method: 'POST',
+    credentials: 'include',
     headers: {
-    'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       query: params.text,
