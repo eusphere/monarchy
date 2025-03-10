@@ -1,7 +1,7 @@
 .root {
   background: radial-gradient(
     circle at 50% 0%,
-    rgba(255, 191, 0, 0.20) 0%,
+    rgba(255, 191, 0, 0.50) 0%,
     rgba(255, 191, 0, 0.05) 60%,
     transparent 70%
   );

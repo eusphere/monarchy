@@ -103,7 +103,7 @@ object DiscordExchangeController {
       maxAge = Some(ttl.toInt),
       path = Some("/"),
       secure = !isLocal,
-      httpOnly = true
+      httpOnly = true,
     ))
   }
 }

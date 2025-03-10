@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RelayEnvironmentProvider } from 'react-relay';
-import App from '~/App';
+import App from '~/views/App';
 import environment from '~/RelayEnvironment';
 import Theme from '~/layout/Theme';
 
