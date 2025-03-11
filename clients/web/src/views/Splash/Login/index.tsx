@@ -19,7 +19,7 @@ const Login = (): React.ReactNode => {
         </Heading>
         <Text mt='2'>
           Join players from around the world in proving your abilities as
-          strategist and tactician. Garner loyalty from heroic spirits, borrow
+          strategist and tactician. Garner loyalty from heroic spirits, harness
           their powers in the arena, and cement your legacy as a master.
         </Text>
         <Text mt='8'>

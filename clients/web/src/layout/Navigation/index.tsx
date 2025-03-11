@@ -1,25 +1,22 @@
-import { Flex, Button, Heading } from '@radix-ui/themes';
-import { PersonIcon, GearIcon } from '@radix-ui/react-icons';
+import * as React from 'react';
 import styles from './index.module.css';
+import UserItem from './UserItem';
+import { Flex, Heading } from '@radix-ui/themes';
 
-const Navigation = () => {
+const Navigation = (): React.ReactNode => {
   return (
     <Flex 
-      justify="between" 
-      align="center" 
-      px="2" 
-      py="2" 
+      justify='between' 
+      align='center' 
+      px='2' 
+      py='2' 
       className={styles.root}
     >
-      <Heading size="4" weight="bold">
+      <Heading size='4' weight='bold'>
         Monarchy
       </Heading>
-
-      <Flex gap="4">
-        <Button variant="ghost" size="2">
-          <PersonIcon width="16" height="16" />
-          Profile
-        </Button>
+      <Flex gap='4'>
+        <UserItem />
       </Flex>
     </Flex>
   );
