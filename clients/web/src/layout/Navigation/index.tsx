@@ -7,7 +7,7 @@ const Navigation = () => {
     <Flex 
       justify="between" 
       align="center" 
-      px="4" 
+      px="2" 
       py="2" 
       className={styles.root}
     >

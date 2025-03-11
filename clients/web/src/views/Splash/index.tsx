@@ -2,6 +2,7 @@ import * as React from 'react';
 import { fetchQuery, useRelayEnvironment } from 'react-relay';
 import Carousel from './Carousel';
 import Login from './Login';
+import styles from './index.module.css';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 
 type Props = {};
@@ -21,10 +22,10 @@ const Splash = (_: Props): React.ReactNode => {
   if (loggedIn) return null; // Logged in user
   // Not logged in
   return (
-    <>
+    <div className={styles.root}>
       <Carousel />
       <Login />
-    </>
+    </div>
   );
 };
 

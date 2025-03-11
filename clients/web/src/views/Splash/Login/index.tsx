@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Flex } from '@radix-ui/themes';
+import { Flex, Heading, Text, Link } from '@radix-ui/themes';
 import { host } from '~/network/host';
 import DiscordButton from './DiscordButton';
 
@@ -12,13 +12,26 @@ const Login = (): React.ReactNode => {
   const authorizeUrl = mkAuthorizeUrl();
   
   return (
-    <Flex p="4" style={{ minHeight: 'calc(100vh - var(--header-height))' }}>
-      <Flex direction="column" gap="6" align="center" style={{ width: '100%' }}>
-        <Flex direction="column" gap="4" align="center">
+    <Flex p='4'>
+      <Flex direction='column'>
+        <Heading size='4' weight='bold'>
+          Welcome to Monarchy
+        </Heading>
+        <Text mt='2'>
+          Join players from around the world in proving your abilities as
+          strategist and tactician. Garner loyalty from heroic spirits, borrow
+          their powers in the arena, and cement your legacy as a master.
+        </Text>
+        <Text mt='8'>
           <DiscordButton href={authorizeUrl}>
             Connect
           </DiscordButton>
-        </Flex>
+        </Text>
+        <Text size='2' mt='4'>
+          Already have an account? The process is the same for new and
+          returning players. Use <Link href='https://discord.com'>Discord</Link> to
+          sign in and join the community.
+        </Text>
       </Flex>
     </Flex>
   );

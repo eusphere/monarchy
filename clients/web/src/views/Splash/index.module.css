@@ -1,0 +1,11 @@
+.root {
+  display: flex;
+  flex-direction: row;
+  background: rgba(255, 255, 255, 0.2);
+  margin: var(--grid-space);
+  border-radius: var(--corner-radius);
+}
+
+.root > div {
+  flex: 1;
+}
