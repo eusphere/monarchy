@@ -12,6 +12,16 @@ import scala.concurrent.ExecutionContext
 object QuerySchema {
   import CommonSchema._
 
+  // Some sub-types are keyed on the same UUID as the parent type. To placate
+  // the relay runtime, we send a hash of the UUID and the namespace to the
+  // client instead. These IDs are read-only.
+  def namespaceUUID(uuid: UUID, namespace: String): String = {
+    val bytes = uuid.toString.getBytes
+    val namespaceBytes = namespace.getBytes
+    val combinedBytes = (namespaceBytes ++ bytes).toArray
+    UUID.nameUUIDFromBytes(combinedBytes).toString
+  }
+
   lazy val Def = ObjectType(
     "Query",
     fields[GraphqlContext, Unit](

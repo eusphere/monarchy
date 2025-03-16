@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { Card, Flex, Text, Box } from '@radix-ui/themes';
+import { formatDateRelative, formatRatingDelta } from '~/util/format';
+import { Link } from 'react-router-dom';
 import { useFragment } from 'react-relay';
 import GameFragment from '~/autogen/relay/GameFragment.graphql';
 import styles from './index.module.css';
@@ -10,7 +12,6 @@ import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import type { GameFragment$key } from '~/autogen/relay/GameFragment.graphql';
 import type { PlayerFragment$key } from '~/autogen/relay/PlayerFragment.graphql';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
-import { formatDateRelative, formatRatingDelta } from '~/util/format';
 
 type PlayerProps = {
   player: PlayerFragment$key;
@@ -42,17 +43,19 @@ const Game = (props: Props): React.ReactNode => {
   const gameAtFormatted = formatDateRelative(createdAt);
 
   return (
-    <Card size='1'>
-      <Flex justify='between' align='center' gap='3'>
-        {game.selfStatus && <PlayerStatus status={game.selfStatus} size='3' />}
-        <Note text={gameAtFormatted} />
-      </Flex>
-      <Box className={styles.players}>
-        {game.players.map((player, index) => (
-          <Player key={index} player={player} selfId={props.selfId} />
-        ))}
-      </Box>
-		</Card>
+    <Card size='1' asChild>
+      <Link to={`/game/${game.id}`}>
+        <Flex justify='between' align='center' gap='3'>
+          {game.selfStatus && <PlayerStatus status={game.selfStatus} size='3' />}
+          <Note text={gameAtFormatted} />
+        </Flex>
+        <Box className={styles.players}>
+          {game.players.map((player, index) => (
+            <Player key={index} player={player} selfId={props.selfId} />
+          ))}
+        </Box>
+      </Link>
+    </Card>
   );
 };
 
