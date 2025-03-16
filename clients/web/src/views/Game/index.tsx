@@ -23,9 +23,9 @@ const Game = (): React.ReactNode => {
       >
         <OrbitControls />
         <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} />
+        <pointLight position={[10, 20, 10]} castShadow />
+        <directionalLight position={[5, 5, 5]} castShadow />
         {gameState && <Board state={gameState} />}
-        <gridHelper args={[10, 10]} />
       </Canvas>
     </Box>
   );

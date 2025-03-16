@@ -4,6 +4,8 @@ import styles from './index.module.css';
 import UserItem from './UserItem';
 import { Flex, Heading } from '@radix-ui/themes';
 import { Link } from 'react-router-dom';
+import logo from '~/assets/logo-black.svg';
+
 type Props = {
   useSpace?: boolean;
 };
@@ -19,6 +21,7 @@ const Navigation = ({ useSpace = true }: Props): React.ReactNode => {
       className={className}
     >
       <Link to="/" className={styles.logo}>
+        {/* <img width={32} height={32} src={logo} alt="logo" /> */}
         <Heading size='4' weight='bold'>
           Monarchy
         </Heading>
