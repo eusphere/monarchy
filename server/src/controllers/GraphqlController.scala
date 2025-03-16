@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import monarchy.graphql.{GraphqlContext, GraphqlSchema}
-import monarchy.util.Json
+import monarchy.util.{Json, JsonObjectMapper}
 import sangria.ast.Document
 import sangria.execution.{ErrorWithResolver, Executor, QueryAnalysisError}
 import sangria.marshalling.InputUnmarshaller
@@ -34,7 +34,7 @@ class GraphqlController(
     }
     execReq.map {
       case (status, r) =>
-        val entity = HttpEntity(ContentTypes.`application/json`, Json.stringify(r))
+        val entity = HttpEntity(ContentTypes.`application/json`, SangriaJson.stringify(r))
         HttpResponse(status, entity = entity)
     }
   }
@@ -89,4 +89,9 @@ object GraphqlController {
       message: String,
       locations: Seq[GraphqlLocation] = Nil
   )
+
+  // Graphql distinguishes between null and omitted fields. This is a custom
+  // Json instance that treats null and omitted fields the same.
+  private object SangriaJson
+    extends Json(new JsonObjectMapper(includeNulls = true))
 }

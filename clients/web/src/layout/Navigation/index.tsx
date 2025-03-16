@@ -15,7 +15,7 @@ const Navigation = (): React.ReactNode => {
       <Heading size='4' weight='bold'>
         Monarchy
       </Heading>
-      <Flex gap='4'>
+      <Flex gap='4' className={styles.settings}>
         <UserItem />
       </Flex>
     </Flex>

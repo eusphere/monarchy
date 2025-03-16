@@ -1,3 +1,7 @@
 .root {
   background: transparent;
 }
+
+.settings {
+  margin-right: var(--grid-space);
+}

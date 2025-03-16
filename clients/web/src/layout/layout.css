@@ -1,6 +1,7 @@
 :root {
-  --grid-space: 8px;
   --grid-space-sm: 4px;
+  --grid-space: 8px;
+  --grid-space-lg: 16px;
   --corner-radius: 4px;
   --font-size: 14px;
 }

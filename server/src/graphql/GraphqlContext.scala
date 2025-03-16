@@ -1,6 +1,7 @@
 package monarchy.graphql
 
-import monarchy.auth.{Auth, NullAuth}
+import java.util.UUID
+import monarchy.auth._
 import monarchy.dal.QueryClient
 import redis.RedisClient
 import scala.concurrent.ExecutionContext
@@ -15,4 +16,7 @@ class GraphqlContext(
 ) {
   def withAuth(_auth: Auth): GraphqlContext =
     new GraphqlContext(_auth)
+
+  def userId: Option[UUID] =
+    Option(auth).collect { case a: Authenticated => a.userId }
 }

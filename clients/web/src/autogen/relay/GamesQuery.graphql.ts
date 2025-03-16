@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<eab0397c3c90ec5b093998d3d743645e>>
+ * @generated SignedSource<<a84fd86e1cf8c39c8efc93bc874b1f6f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,6 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type GameStatus = "COMPLETE" | "INVALID" | "STARTED" | "%future added value";
 export type GamesQuery = {
   userId: string;
 };
@@ -19,11 +18,7 @@ export type GamesQuery$variables = {
 };
 export type GamesQuery$data = {
   readonly games: ReadonlyArray<{
-    readonly id: string;
-    readonly players: ReadonlyArray<{
-      readonly " $fragmentSpreads": FragmentRefs<"PlayerFragment">;
-    }>;
-    readonly status: GameStatus;
+    readonly " $fragmentSpreads": FragmentRefs<"GameFragment">;
   }>;
 };
 export type GamesQuery = {
@@ -82,23 +77,10 @@ return {
         "name": "games",
         "plural": true,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
           {
-            "alias": null,
             "args": null,
-            "concreteType": "Player",
-            "kind": "LinkedField",
-            "name": "players",
-            "plural": true,
-            "selections": [
-              {
-                "args": null,
-                "kind": "FragmentSpread",
-                "name": "PlayerFragment"
-              }
-            ],
-            "storageKey": null
+            "kind": "FragmentSpread",
+            "name": "GameFragment"
           }
         ],
         "storageKey": null
@@ -123,6 +105,20 @@ return {
         "selections": [
           (v2/*: any*/),
           (v3/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "selfStatus",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "createdAt",
+            "storageKey": null
+          },
           {
             "alias": null,
             "args": null,
@@ -195,16 +191,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "728fd8f3c99fa847834e6a99ba63daf2",
+    "cacheID": "81c16b9a88e4709591e626b80567ffdc",
     "id": null,
     "metadata": {},
     "name": "GamesQuery",
     "operationKind": "query",
-    "text": "query GamesQuery(\n  $q: GamesQuery!\n) {\n  games(q: $q) {\n    id\n    status\n    players {\n      ...PlayerFragment\n    }\n  }\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "query GamesQuery(\n  $q: GamesQuery!\n) {\n  games(q: $q) {\n    ...GameFragment\n  }\n}\n\nfragment GameFragment on Game {\n  id\n  status\n  selfStatus\n  createdAt\n  players {\n    ...PlayerFragment\n  }\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "5e6603ac3cc4bf368fb082df68047f5b";
+(node as any).hash = "69e5b9180c8ea0154fc476ad8a5c7d95";
 
 export default node;

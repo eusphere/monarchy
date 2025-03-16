@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.{DeserializationContext, DeserializationFe
 import scala.reflect.ClassTag
 import scala.util.Random
 
-object GameJsonObjectMapper extends JsonObjectMapper {
+object GameJsonObjectMapper extends JsonObjectMapper(includeNulls = false) {
   registerModule(GameModule)
 }
 

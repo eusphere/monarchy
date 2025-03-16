@@ -1,44 +1,35 @@
 import * as React from 'react';
+import { Section } from '@radix-ui/themes';
 import { useFragment, useLazyLoadQuery } from 'react-relay';
+import Game from '~/layout/Game';
 import GamesQuery from '~/autogen/relay/GamesQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import styles from './index.module.css';
-import type { GamesQuery as GamesQueryType } from '~/autogen/relay/GamesQuery.graphql';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
-import { Table } from '@radix-ui/themes';
+import type { OperationType } from 'relay-runtime';
+import type { GamesQuery$data, GamesQuery$variables } from '~/autogen/relay/GamesQuery.graphql';
 
+type GamesOperationType = OperationType & {
+  response: GamesQuery$data;
+  variables: GamesQuery$variables;
+};
 
 const Games = (): React.ReactNode => {
   const selfRef = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
   const user = useFragment<UserFragment$key>(UserFragment, selfRef.self);
-  const games = useLazyLoadQuery<GamesQueryType>(GamesQuery, {
+  const games = useLazyLoadQuery<GamesOperationType>(GamesQuery, {
     q: {
       userId: user.id,
     },
   });
-  console.log(games);
   return (
-    <div className={styles.root}>
-      <Table.Root>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeaderCell>Full name</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
-
-        <Table.Body>
-          <Table.Row>
-            <Table.RowHeaderCell>Danilo Sousa</Table.RowHeaderCell>
-            <Table.Cell>danilo@example.com</Table.Cell>
-            <Table.Cell>Developer</Table.Cell>
-          </Table.Row>
-        </Table.Body>
-      </Table.Root>
-    </div>
+    <Section size="1" className={styles.root}>
+      {games.games.map((game, index) => (
+        <Game key={index} game={game} selfId={user.id} />
+      ))}
+    </Section>
   );
 };
 

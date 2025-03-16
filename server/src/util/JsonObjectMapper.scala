@@ -10,9 +10,13 @@ import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
  * Convenience instance used across this packaged.
  * Defaults here are meant to be "sensible", for some defintion of sensible.
  */
-object JsonObjectMapper extends JsonObjectMapper
+object JsonObjectMapper extends JsonObjectMapper(
+    includeNulls = false,
+)
 
-class JsonObjectMapper extends ObjectMapper with ScalaObjectMapper {
+class JsonObjectMapper(
+    includeNulls: Boolean,
+) extends ObjectMapper with ScalaObjectMapper {
   // Load serialization bindings for Java8 Instant
   registerModule(new JavaTimeModule)
 
@@ -24,7 +28,8 @@ class JsonObjectMapper extends ObjectMapper with ScalaObjectMapper {
   configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, false)
 
   // Omit null values from serialization
-  setSerializationInclusion(Include.NON_NULL)
+  private val inclusion = if (includeNulls) Include.ALWAYS else Include.NON_NULL
+  setSerializationInclusion(inclusion)
   
   // Do not fail when serializing Scala.Unit to json
   configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
@@ -32,4 +37,3 @@ class JsonObjectMapper extends ObjectMapper with ScalaObjectMapper {
   // Write dates as milliseconds
   configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
 }
-

@@ -50,7 +50,7 @@ object QuerySchema {
             .filter(_.userId === userId)
             .join(dal.Game.query).on(_.gameId === _.id)
             .map(_._2)
-            .sortBy(_.id.desc)
+            .sortBy(_.createdAt.desc)
           node.ctx.queryCli.all(query)
         }
       ),
@@ -109,6 +109,18 @@ object QuerySchema {
     fields[GraphqlContext, dal.Game](
       Field("id", StringType, resolve = _.value.id.toString),
       Field("status", GameStatusType, resolve = _.value.status),
+      Field("selfStatus", OptionType(PlayerStatusType), resolve = { node =>
+        import dal.PostgresProfile.Implicits._
+        val gameId = node.value.id
+        val query = dal.Player.query
+          .filter(_.gameId === gameId)
+          .filter(_.userId === node.ctx.userId)
+          .map(_.status)
+          .result
+          .headOption
+        node.ctx.queryCli.read(query)
+      }),
+      Field("createdAt", StringType, resolve = _.value.createdAt.toString),
       Field("players", ListType(PlayerType), resolve = { node =>
         import dal.PostgresProfile.Implicits._
         val gameId = node.value.id

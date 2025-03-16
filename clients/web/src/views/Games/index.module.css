@@ -1,3 +1,5 @@
 .root {
   margin: var(--grid-space);
+  display: flex;
+  gap: var(--grid-space);
 }

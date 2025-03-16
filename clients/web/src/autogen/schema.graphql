@@ -24,6 +24,8 @@ input EndTurnQuery {
 type Game {
   id: String!
   status: GameStatus!
+  selfStatus: PlayerStatus
+  createdAt: String!
   players: [Player!]!
   state: GameState
 }
