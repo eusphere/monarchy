@@ -1,0 +1,5 @@
+.swatch {
+  width: var(--grid-space-lg);
+  height: var(--grid-space-lg);
+  border-radius: var(--grid-space-sm);
+}

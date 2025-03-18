@@ -4,6 +4,7 @@
   --grid-space-lg: 16px;
   --corner-radius: 4px;
   --font-size: 14px;
+  --overlay-blur: blur(12px);
 }
 
 html, body {

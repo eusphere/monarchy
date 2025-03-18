@@ -1,7 +1,11 @@
 import * as React from 'react';
 import * as Types from '~/types';
-import { Flex, Text } from '@radix-ui/themes';
-import { PersonIcon } from '@radix-ui/react-icons';
+import { Flex, Text, Box } from '@radix-ui/themes';
+import styles from './index.module.css';
+
+const Swatch = (props: { color: string }): React.ReactNode => (
+  <Box className={styles.swatch} style={{ backgroundColor: props.color }} />
+);
 
 type Props = {
   user: Types.User;
@@ -9,10 +13,12 @@ type Props = {
 }
 
 const Profile = (props: Props): React.ReactNode => {
+  const { user, icon } = props;
+  const color = icon && user.profile?.color;
   return (
-    <Flex gap='1'>
-      {props.icon && <PersonIcon width='16' height='16' />}
-      <Text>{props.user.username}</Text>
+    <Flex gap='2' align='center'>
+      {color && <Swatch color={color} />}
+      <Text>{user.username}</Text>
     </Flex>
   );
 };

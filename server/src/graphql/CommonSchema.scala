@@ -27,7 +27,7 @@ object CommonSchema {
     "PieceStats",
     fields[GraphqlContext, game.PieceConf](
       Field("health", IntType, resolve = _.value.maxHealth),
-      Field("maxWait", IntType, resolve = _.value.maxWait),
+      Field("wait", IntType, resolve = _.value.maxWait),
       Field("power", IntType, resolve = _.value.power),
       Field("armor", FloatType, resolve = _.value.armor),
       Field("blocking", FloatType, resolve = _.value.blocking),

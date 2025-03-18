@@ -116,7 +116,7 @@ type Piece {
 
 type PieceStats {
   health: Int!
-  maxWait: Int!
+  wait: Int!
   power: Int!
   armor: Float!
   blocking: Float!

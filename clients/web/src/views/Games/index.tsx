@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Section } from '@radix-ui/themes';
 import { useFragment, useLazyLoadQuery } from 'react-relay';
-import Game from '~/layout/Game';
+import Game from '~/layout/GameSummary';
 import GamesQuery from '~/autogen/relay/GamesQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';

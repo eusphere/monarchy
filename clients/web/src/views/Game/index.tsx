@@ -5,9 +5,13 @@ import { OrbitControls } from '@react-three/drei';
 import { useLazyLoadQuery } from 'react-relay';
 import { useParams } from 'react-router-dom';
 import GameQuery from '~/autogen/relay/GameQuery.graphql';
+import Board from './Board';
+import Panel from './Panel';
 import styles from './index.module.css';
 import type { GameQuery as GameQueryType } from '~/autogen/relay/GameQuery.graphql';
-import Board from './Board';
+
+const CAMERA_DIST = 9;
+const CAMERA_POS = [0, 1.4 * CAMERA_DIST, CAMERA_DIST] as const;
 
 const Game = (): React.ReactNode => {
   const { gameId: _gameId } = useParams();
@@ -17,8 +21,9 @@ const Game = (): React.ReactNode => {
 
   return (
     <Box className={styles.root}>
+      {data.game && <Panel game={data.game} />}
       <Canvas
-        camera={{ position: [0, 5, 5], fov: 75 }}
+        camera={{ position: CAMERA_POS, fov: 45 }}
         style={{ background: '#f0f0f0' }}
       >
         <OrbitControls />

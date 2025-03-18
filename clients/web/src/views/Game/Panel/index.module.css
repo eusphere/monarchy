@@ -1,0 +1,13 @@
+.root {
+  position: fixed;
+  top: 64px;
+  left: var(--grid-space);
+  z-index: 101;
+  backdrop-filter: var(--overlay-blur);
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: var(--grid-space);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: var(--grid-space);
+  box-sizing: border-box;
+  width: 20vw;
+}

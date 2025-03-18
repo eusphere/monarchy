@@ -2,7 +2,6 @@ import * as Constants from './constants';
 import * as React from 'react';
 import * as Types from '~/types';
 import type { Group } from 'three';
-import * as THREE from 'three';
 import Piece from './Piece';
 
 const TILE_DIM = [
@@ -41,6 +40,12 @@ const Tile = (props: Props): React.ReactNode => {
     e.stopPropagation();
     setHover(false);
   }, []);
+  
+  const color = React.useMemo(() => {
+    const isOdd = (tile.point.i + tile.point.j) % 2 === 0;
+    if (hover) return Constants.TILE_COLOR_HOVER;
+    return isOdd ? Constants.TILE_COLOR_ODD : Constants.TILE_COLOR_EVEN;
+  }, [hover, tile.point]);
 
   return (
     <group
@@ -51,7 +56,7 @@ const Tile = (props: Props): React.ReactNode => {
       <mesh receiveShadow>
         <boxGeometry args={TILE_DIM} />
         <meshStandardMaterial
-          color={hover ? '#DDDDDD' : '#EEEEEE'} 
+          color={color} 
           roughness={0.7}
           metalness={0.1}
         />
