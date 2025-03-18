@@ -12,6 +12,15 @@ object CommonSchema {
     )
   )
 
+  // This may come in handy later, but is also required for Relay to work.
+  // See also: https://github.com/facebook/relay/issues/3599
+  lazy val AttackType = ObjectType(
+    "Attack",
+    fields[GraphqlContext, Set[game.Vec]](
+      Field("tiles", ListType(VecType), resolve = _.value.toSeq)
+    )
+  )
+
   // TODO (adu): Share this with the currentX fields. Then the client has a
   // consistent way to format and diff stats, display state effects, etc.
   lazy val PieceStatsType = ObjectType(
@@ -58,7 +67,7 @@ object CommonSchema {
       Field("piece", OptionType(PieceType), resolve = _.value.game.currentPiece),
       Field("movements", ListType(VecType), resolve = _.value.movements.toSeq),
       Field("directions", ListType(VecType), resolve = _.value.directions.toSeq),
-      Field("attacks", ListType(ListType(VecType)), resolve = _.value.attacks.map(_.toSeq).toSeq),
+      Field("attacks", ListType(AttackType), resolve = _.value.attacks.toSeq),
       Field("phases", ListType(PhaseType), resolve = _.value.game.currentPhases),
     )
   )

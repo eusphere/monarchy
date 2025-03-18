@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e03a1f32203c8c114768af5bbaf91f7c>>
+ * @generated SignedSource<<d57813880234a96ab55f75a5765cfe72>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,10 +12,12 @@ import { ReaderFragment } from 'relay-runtime';
 export type Phase = "ATTACK" | "DIR" | "END" | "MOVE" | "SELECT" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type GameSelectionFragment$data = {
-  readonly attacks: ReadonlyArray<ReadonlyArray<{
-    readonly i: number;
-    readonly j: number;
-  }>>;
+  readonly attacks: ReadonlyArray<{
+    readonly tiles: ReadonlyArray<{
+      readonly i: number;
+      readonly j: number;
+    }>;
+  }>;
   readonly directions: ReadonlyArray<{
     readonly i: number;
     readonly j: number;
@@ -95,11 +97,22 @@ return {
     {
       "alias": null,
       "args": null,
-      "concreteType": "Vec",
+      "concreteType": "Attack",
       "kind": "LinkedField",
       "name": "attacks",
       "plural": true,
-      "selections": (v0/*: any*/),
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "concreteType": "Vec",
+          "kind": "LinkedField",
+          "name": "tiles",
+          "plural": true,
+          "selections": (v0/*: any*/),
+          "storageKey": null
+        }
+      ],
       "storageKey": null
     },
     {
@@ -131,6 +144,6 @@ return {
 };
 })();
 
-(node as any).hash = "68d6b4955b175ced8fd9e602a5a31789";
+(node as any).hash = "8ea60b0674180fed863385f8488297e2";
 
 export default node;

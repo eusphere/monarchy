@@ -49,7 +49,9 @@ export const Selection = `
     ${Vector}
   }
   attacks {
-    ${Vector}
+    tiles {
+      ${Vector}
+    }
   }
   piece {
     ${Piece}

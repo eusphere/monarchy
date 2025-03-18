@@ -27,8 +27,8 @@ const Tile = (props: TileProps) => {
 
   // For now use `filter` to find matching attacks and then use some dumb
   // mean-distance calculation to compute the "canonical" attack for that point
-  const attackOverlap = attacks.filter(_ => _.some(_ => vector.compare(point, _)));
-  const attackCanonical = attacks.sort((a, b) => vector.meanSquareDistance(point, a) - vector.meanSquareDistance(point, b))[0];
+  const attackOverlap = attacks.filter(_ => _.tiles.some(_ => vector.compare(point, _)));
+  const attackCanonical = attacks.sort((a, b) => vector.meanSquareDistance(point, a.tiles) - vector.meanSquareDistance(point, b.tiles))[0];
 
   // Figure out how what state this tile is in. Consider hoisting into the
   // `GameView` and just pass this context down (much cheaper, unless

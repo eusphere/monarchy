@@ -19,8 +19,8 @@ export const GameQuery = graphql`
         }
         tiles {
           point {
-            i @required(action: THROW)
-            j @required(action: THROW)
+            i
+            j
           }
           piece {
             ...PieceFragment

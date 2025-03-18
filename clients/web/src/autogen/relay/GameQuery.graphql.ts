@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c925a646deae169db8b53b25457335c7>>
+ * @generated SignedSource<<426633217ca43415ab6cc48702ddabb5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -84,25 +84,33 @@ v4 = {
   "name": "currentPlayerId",
   "storageKey": null
 },
-v5 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "i",
-  "storageKey": null
-},
+v5 = [
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "i",
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "j",
+    "storageKey": null
+  }
+],
 v6 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "j",
+  "concreteType": "Vec",
+  "kind": "LinkedField",
+  "name": "point",
+  "plural": false,
+  "selections": (v5/*: any*/),
   "storageKey": null
 },
-v7 = [
-  (v5/*: any*/),
-  (v6/*: any*/)
-],
-v8 = {
+v7 = {
   "alias": null,
   "args": null,
   "concreteType": "Piece",
@@ -160,7 +168,7 @@ v8 = {
       "kind": "LinkedField",
       "name": "currentDirection",
       "plural": false,
-      "selections": (v7/*: any*/),
+      "selections": (v5/*: any*/),
       "storageKey": null
     },
     {
@@ -259,27 +267,7 @@ return {
                 "name": "tiles",
                 "plural": true,
                 "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Vec",
-                    "kind": "LinkedField",
-                    "name": "point",
-                    "plural": false,
-                    "selections": [
-                      {
-                        "kind": "RequiredField",
-                        "field": (v5/*: any*/),
-                        "action": "THROW"
-                      },
-                      {
-                        "kind": "RequiredField",
-                        "field": (v6/*: any*/),
-                        "action": "THROW"
-                      }
-                    ],
-                    "storageKey": null
-                  },
+                  (v6/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -413,7 +401,7 @@ return {
                     "kind": "LinkedField",
                     "name": "selection",
                     "plural": false,
-                    "selections": (v7/*: any*/),
+                    "selections": (v5/*: any*/),
                     "storageKey": null
                   },
                   {
@@ -423,7 +411,7 @@ return {
                     "kind": "LinkedField",
                     "name": "movements",
                     "plural": true,
-                    "selections": (v7/*: any*/),
+                    "selections": (v5/*: any*/),
                     "storageKey": null
                   },
                   {
@@ -433,20 +421,31 @@ return {
                     "kind": "LinkedField",
                     "name": "directions",
                     "plural": true,
-                    "selections": (v7/*: any*/),
+                    "selections": (v5/*: any*/),
                     "storageKey": null
                   },
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "Vec",
+                    "concreteType": "Attack",
                     "kind": "LinkedField",
                     "name": "attacks",
                     "plural": true,
-                    "selections": (v7/*: any*/),
+                    "selections": [
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "Vec",
+                        "kind": "LinkedField",
+                        "name": "tiles",
+                        "plural": true,
+                        "selections": (v5/*: any*/),
+                        "storageKey": null
+                      }
+                    ],
                     "storageKey": null
                   },
-                  (v8/*: any*/),
+                  (v7/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -465,17 +464,8 @@ return {
                 "name": "tiles",
                 "plural": true,
                 "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Vec",
-                    "kind": "LinkedField",
-                    "name": "point",
-                    "plural": false,
-                    "selections": (v7/*: any*/),
-                    "storageKey": null
-                  },
-                  (v8/*: any*/)
+                  (v6/*: any*/),
+                  (v7/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -488,16 +478,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "be319cbef4051d4d479d6bc51c19638b",
+    "cacheID": "e340f228e571ac23246f844a5a8bc344",
     "id": null,
     "metadata": {},
     "name": "GameQuery",
     "operationKind": "query",
-    "text": "query GameQuery(\n  $id: String!\n) {\n  game(id: $id) {\n    id\n    status\n    players {\n      id\n      status\n      user {\n        ...UserFragment\n      }\n    }\n    state {\n      currentPlayerId\n      currentSelection {\n        ...GameSelectionFragment\n      }\n      tiles {\n        point {\n          i\n          j\n        }\n        piece {\n          ...PieceFragment\n        }\n      }\n    }\n  }\n}\n\nfragment GameSelectionFragment on Selection {\n  selection {\n    i\n    j\n  }\n  movements {\n    i\n    j\n  }\n  directions {\n    i\n    j\n  }\n  attacks {\n    i\n    j\n  }\n  piece {\n    ...PieceFragment\n  }\n  phases\n}\n\nfragment PieceFragment on Piece {\n  id\n  order\n  name\n  playerId\n  currentWait\n  currentHealth\n  currentBlocking\n  currentDirection {\n    i\n    j\n  }\n  currentFocus\n  currentEffects\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "query GameQuery(\n  $id: String!\n) {\n  game(id: $id) {\n    id\n    status\n    players {\n      id\n      status\n      user {\n        ...UserFragment\n      }\n    }\n    state {\n      currentPlayerId\n      currentSelection {\n        ...GameSelectionFragment\n      }\n      tiles {\n        point {\n          i\n          j\n        }\n        piece {\n          ...PieceFragment\n        }\n      }\n    }\n  }\n}\n\nfragment GameSelectionFragment on Selection {\n  selection {\n    i\n    j\n  }\n  movements {\n    i\n    j\n  }\n  directions {\n    i\n    j\n  }\n  attacks {\n    tiles {\n      i\n      j\n    }\n  }\n  piece {\n    ...PieceFragment\n  }\n  phases\n}\n\nfragment PieceFragment on Piece {\n  id\n  order\n  name\n  playerId\n  currentWait\n  currentHealth\n  currentBlocking\n  currentDirection {\n    i\n    j\n  }\n  currentFocus\n  currentEffects\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "685ea220c7423ee8c37fa0a837f3529b";
+(node as any).hash = "a0739c36c220bc334d0d2c0bcbff862b";
 
 export default node;

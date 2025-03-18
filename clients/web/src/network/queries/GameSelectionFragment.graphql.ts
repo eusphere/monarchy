@@ -15,8 +15,10 @@ export const GameSelectionFragment = graphql`
       j
     }
     attacks {
-      i
-      j
+      tiles {
+        i
+        j
+      }
     }
     piece {
       ...PieceFragment

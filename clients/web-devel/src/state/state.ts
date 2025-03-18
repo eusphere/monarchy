@@ -24,7 +24,7 @@ export type GameSelections = {
   piece: any | null;
   movements: Types.Vec[];
   directions: Types.Vec[];
-  attacks: Types.Vec[][];
+  attacks: {tiles: Types.Vec[]}[];
   effects: {point: Types.Vec}[];
 };
 
