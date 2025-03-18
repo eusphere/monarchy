@@ -1,16 +1,16 @@
 import * as Constants from './constants';
 import * as React from 'react';
-import Archer from './pieces/Archer';
-import Default from './pieces/Default';
-import Knight from './pieces/Knight';
+import * as Pieces from './pieces';
 import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import { useFragment } from 'react-relay';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 
 const OFFSET = [0, Constants.TILE_HEIGHT / 2, 0] as const;
 const MAPPING: Record<string, React.ComponentType<any>> = {
-  Scout: Archer,
-  Knight: Knight,
+  Scout: Pieces.Archer,
+  Knight: Pieces.Knight,
+  Cleric: Pieces.Priestess,
+  Pyromancer: Pieces.Pyromancer,
 };
 
 type Props = {
@@ -20,7 +20,7 @@ type Props = {
 const Piece = (props: Props): React.ReactNode => {
   const { piece } = props;
   const data = useFragment<PieceFragment$key>(PieceFragment, piece);
-  const Model = MAPPING[data.order] ?? Default;
+  const Model = MAPPING[data.order] ?? Pieces.Default;
 
   // Convert i,j direction vector to rotation angle in radians
   // Math.atan2 gives angle from positive x-axis

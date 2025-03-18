@@ -2,9 +2,14 @@ import * as Constants from './constants';
 import * as React from 'react';
 import * as Types from '~/types';
 import type { Group } from 'three';
+import * as THREE from 'three';
 import Piece from './Piece';
 
-const TILE_DIM = [Constants.TILE_SIZE, Constants.TILE_HEIGHT, Constants.TILE_SIZE] as const;
+const TILE_DIM = [
+  Constants.TILE_SIZE,
+  Constants.TILE_HEIGHT,
+  Constants.TILE_SIZE,
+] as const;
 
 type Props = {
   tile: Types.Tile;
