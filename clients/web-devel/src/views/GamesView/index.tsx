@@ -17,7 +17,7 @@ const GameStatus = (props: { status: string, playerStatus: null | string }) => {
   let colors = ['dark', 'light'];
   if (playerStatus === 'WON') colors = ['light', 'success', playerStatus];
   else if (playerStatus === 'LOST') colors = ['light', 'danger', playerStatus];
-  else if (playerStatus === 'DRAW') colors = ['light', 'secondary', playerStatus];
+  else if (playerStatus === 'DRAWN') colors = ['light', 'secondary', playerStatus];
   else if (status === 'STARTED') colors = ['light', 'primary', status];
   else if (status === 'COMPLETED') colors = ['light', 'success', status];
 
