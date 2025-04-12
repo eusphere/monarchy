@@ -152,7 +152,7 @@ case class Game(
                         val blocking = pieceN.currentBlocking
                         // Compute angle of vec from origin to target with way unit is facing.
                         val attackDir = pt - tile.point
-                        val snapped = directionSnap(piece.currentDirection, attackDir)
+                        val snapped = directionSnap(pieceN.currentDirection, attackDir)
                         val (anchor, blockingProb, blockingDir) = snapped match {
                           case Clockwise90(dir) =>        (2, blocking / 2, -dir)
                           case CounterClockwise90(dir) => (2, blocking / 2, -dir)
