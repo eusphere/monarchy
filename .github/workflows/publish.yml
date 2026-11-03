@@ -7,6 +7,33 @@ permissions:
   id-token: write
 
 jobs:
+  Web:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: './clients/web/yarn.lock'
+      - name: Build web client
+        working-directory: ./clients/web
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
+          aws-region: us-east-1
+      - name: Upload web client
+        run: |
+          aws s3 sync clients/web/dist/ s3://monarchy1-web-930597685973/ \
+            --exclude index.html --cache-control 'public,max-age=86400'
+          aws s3 cp clients/web/dist/index.html \
+            s3://monarchy1-web-930597685973/index.html \
+            --content-type text/html --cache-control 'no-cache,no-store,must-revalidate'
+          aws cloudfront create-invalidation --distribution-id E3JJVLS1E7JYV3 --paths '/*'
   Docker:
     runs-on: ubuntu-latest
     environment: prod

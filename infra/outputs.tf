@@ -4,3 +4,6 @@ output "elastic_ip" { value = aws_eip.api.public_ip }
 output "security_group_id" { value = aws_security_group.api.id }
 output "private_db_subnet_group" { value = aws_db_subnet_group.aurora_private.name }
 output "secrets_kms_key_arn" { value = aws_kms_key.secrets.arn }
+output "web_bucket" { value = aws_s3_bucket.web.id }
+output "web_distribution_id" { value = aws_cloudfront_distribution.web.id }
+output "web_url" { value = "https://web.monarchy1.com" }

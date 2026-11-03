@@ -1,6 +1,4 @@
-const env = process.env.NODE_ENV || 'local';
-
-export const host = env === 'prod'
+export const host = import.meta.env.PROD
   ? 'https://api.monarchy1.com'
   : 'http://localhost:8080';
 
