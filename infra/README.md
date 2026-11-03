@@ -38,16 +38,16 @@ AWS_DEFAULT_REGION=us-east-1 ./infra/ec2-run.sh \
   "bash /tmp/monarchy-bootstrap.sh"
 ```
 
-On pushes to master, tests gate the reusable `publish.yml` workflow with three
-parallel jobs: Schema, Secrets, and Docker. Restart waits for all three to
-succeed, synchronizes the runtime
-Compose/Caddy/update files, and then pulls the image and restarts the stack.
+On pushes to master, tests gate the reusable `publish.yml` workflow. Docker,
+Web, Secrets, and Schema run in parallel. Schema installs the encrypted file
+from its own checkout before running Flyway, so it does not depend on Secrets
+finishing first. Both jobs replace the same encrypted file atomically. Restart
+waits for publication to succeed, synchronizes the runtime Compose/Caddy/update
+files, and then pulls the image and restarts the stack.
 Schema installs its own migration runner; no separate Prepare job is needed.
-Schema uses `dorny/paths-filter` to run migrations only when `database/**`
-changes. Otherwise its AWS and migration steps are skipped and the job succeeds,
-so it does not block Restart. This compares source changes, not database state;
-initializing a new database or retrying a failed migration requires an explicit
-migration run (or rerunning the original failed workflow).
+Schema runs Flyway on every master deployment. Flyway applies only pending
+migrations, so a newly initialized database or a previously skipped migration
+does not depend on detecting a source-file change.
 
 After the instance is managed by SSM, deploy the current image with:
 
@@ -65,11 +65,9 @@ the dedicated KMS key and writes the plaintext file with mode `0600` before
 starting the Compose stack. Commit only the SOPS-encrypted file; never commit
 the decrypted `.env` file or pass plaintext values to Terraform.
 
-The encrypted file is intentionally not included yet because the application
-credentials will be added in a follow-up. The KMS key ARN is available as the
-`secrets_kms_key_arn` Terraform output. Use SOPS with the `alias/monarchy-secrets`
-KMS key to create the file, then place it at
-`/opt/monarchy/secrets/production.env.sops` through the deployment process.
+Flyway decrypts that same encrypted file into a temporary, mode-0600 dotenv
+file and removes it after the migration. The KMS key ARN is available as the
+`secrets_kms_key_arn` Terraform output.
 
 ## DNS
 
