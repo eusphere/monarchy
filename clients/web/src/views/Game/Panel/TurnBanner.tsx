@@ -5,6 +5,7 @@ import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import type { PlayerFragment$key } from '~/autogen/relay/PlayerFragment.graphql';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import styles from './index.module.css';
+import GamePhaseIcon, { type GamePhaseIconKind } from './GamePhaseIcon';
 
 const fallbackColors = ['#78a9dc', '#e8a27d'];
 
@@ -13,6 +14,16 @@ const phaseLabel = (phase: string | undefined): string => {
   return phase === '%future added value'
     ? 'Playing'
     : phase.charAt(0) + phase.slice(1).toLowerCase();
+};
+
+const phaseIcon = (phase: string | undefined): GamePhaseIconKind => {
+  switch (phase) {
+    case 'MOVE': return 'moving';
+    case 'ATTACK': return 'attacking';
+    case 'DIR':
+    case 'SELECT': return 'turning';
+    default: return 'turning';
+  }
 };
 
 type SideProps = {
@@ -28,6 +39,16 @@ const TurnSide = ({ player: playerRef, active, side, index, phase }: SideProps) 
   const user = useFragment<UserFragment$key>(UserFragment, player.user);
   const color = user?.profile?.color || fallbackColors[index] || '#9a9a9a';
   const name = user?.username || 'Waiting for player';
+  const statusKind: GamePhaseIconKind = player.status === 'WON'
+    ? 'victory'
+    : player.status === 'LOST'
+      ? 'forfeit'
+      : active ? phaseIcon(phase) : 'waiting';
+  const statusLabel = player.status === 'WON'
+    ? 'Victory'
+    : player.status === 'LOST'
+      ? 'Forfeit'
+      : active ? phaseLabel(phase) : 'Waiting';
 
   return (
     <div
@@ -38,7 +59,8 @@ const TurnSide = ({ player: playerRef, active, side, index, phase }: SideProps) 
       <div className={styles.playerDetails}>
         <Text size='4' weight='bold' truncate>{name}</Text>
         <Text as='div' size='1' color='gray' className={styles.phaseLabel}>
-          {active ? phaseLabel(phase) : 'Waiting'}
+          <GamePhaseIcon kind={statusKind} size={16} />
+          <span>{statusLabel}</span>
         </Text>
       </div>
     </div>

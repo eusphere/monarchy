@@ -67,7 +67,9 @@
 
 /* Status is intentionally quiet text for now; iconography will replace it later. */
 .phaseLabel {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   margin-top: 2px;
   padding: 0;
   border: 0;
