@@ -9,13 +9,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Installing bazel
         uses: bazelbuild/setup-bazelisk@v2
-      - name: Installing bazel cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/bazel
-          key: bazel-${{ runner.os }}-${{ hashFiles('MODULE.bazel.lock', 'MODULE.bazel', 'WORKSPACE', '.bazelrc') }}
-          restore-keys: |
-            bazel-${{ runner.os }}-
       - name: Running tests
         run: |
           bazel test //...
