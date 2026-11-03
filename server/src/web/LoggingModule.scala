@@ -1,6 +1,7 @@
 package monarchy.web
 
 import com.typesafe.scalalogging.StrictLogging
+import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.server.{Directives, RequestContext, Route, RouteResult}
 import monarchy.util.Timer
 import scala.concurrent.ExecutionContext
@@ -14,7 +15,9 @@ object LoggingModule extends StrictLogging {
       Timer.clock(r(ctx)) {
         case timing =>
           val method = ctx.request.method.name
-          val uri = ctx.request.uri
+          // OAuth callbacks carry authorization codes and state in the query
+          // string. Keep those credentials out of request logs.
+          val uri = ctx.request.uri.withQuery(Uri.Query.Empty)
           val addr = ip.toOption.map(_.getHostAddress).getOrElse("0.0.0.0")
           val status = extractStatus(timing)
           println(s"$method $uri from $addr took ${timing.duration}ms gave $status")
@@ -29,4 +32,3 @@ object LoggingModule extends StrictLogging {
     }
   }
 }
-

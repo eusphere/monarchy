@@ -1,11 +1,15 @@
 package monarchy.controllers
 
 import akka.http.scaladsl.model._
+import java.net.URI
 import monarchy.auth.oauth2.ExchangeClient
 import monarchy.util.Json
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
-class DiscordAuthorizeController(implicit
+class DiscordAuthorizeController(
+    allowedOrigins: Set[String]
+)(implicit
     ec: ExecutionContext,
     exchangeCli: ExchangeClient
 ) extends GetController {
@@ -13,7 +17,7 @@ class DiscordAuthorizeController(implicit
 
   def action(ctx: AuthContext): Future[HttpResponse] = {
     val query = Uri.Query(ctx.request.request.uri.rawQueryString)
-    val callerContext = mkCallerContext(query)
+    val callerContext = mkCallerContext(query, allowedOrigins)
     val contextJson = Json.stringify(callerContext)
     exchangeCli.fetchAuthorizeUrl(contextJson).map { url =>
       HttpResponse(StatusCodes.TemporaryRedirect, headers = List(headers.Location(url)))
@@ -35,10 +39,36 @@ object DiscordAuthorizeController {
    */
   case class CallerContext(referrerUrl: String, embedded: Boolean)
 
-  private def mkCallerContext(query: Uri.Query): CallerContext = {
-    val referrerUrl = query.getOrElse("referrer", mkBaseUrl)
+  private def mkCallerContext(
+      query: Uri.Query,
+      allowedOrigins: Set[String]
+  ): CallerContext = {
+    val referrerUrl = query
+      .get("referrer")
+      .flatMap(raw => safeReferrer(raw, allowedOrigins))
+      .getOrElse(mkBaseUrl)
     val embedded = query.get("embedded").nonEmpty
     CallerContext(referrerUrl = referrerUrl, embedded = embedded)
+  }
+
+  /**
+    * OAuth completion redirects must stay on an application origin. The
+    * original value is still preserved so the client can return to its page,
+    * but arbitrary origins are rejected to prevent phishing redirects.
+    */
+  private def safeReferrer(
+      raw: String,
+      allowedOrigins: Set[String]
+  ): Option[String] = {
+    Try(new URI(raw)).toOption.filter { uri =>
+      Option(uri.getUserInfo).isEmpty &&
+      allowedOrigins.contains(originOf(uri))
+    }.map(_ => raw)
+  }
+
+  private def originOf(uri: URI): String = {
+    val port = if (uri.getPort == -1) "" else s":${uri.getPort}"
+    s"${uri.getScheme}://${uri.getHost}$port"
   }
 
   private[controllers] def mkBaseUrl: String =
