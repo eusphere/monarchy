@@ -34,8 +34,8 @@ class Signup(implicit
             profileWr <- WriteQueryBuilder.put(mkProfile(userWr.id))
           } yield userWr
           queryCli.write(dbio).map { u =>
-            val bearer = Tooling.generateSignature(u.id, secret)
-            Result.Signup(Credentials(u, bearer))
+            val bearer = Tooling.issueToken(u.id)
+            Result.Signup(Credentials(u, bearer, Tooling.tokenTtl))
           }
       }
     }
