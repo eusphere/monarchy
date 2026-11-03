@@ -15,7 +15,7 @@ if [[ "$instance_id" == "None" || -z "$instance_id" ]]; then
   exit 1
 fi
 
-commands_json="$(jq -cn --args '$ARGS.positional | {commands: .}' -- "$@")"
+commands_json="$(jq -cn --args '$ARGS.positional | {commands: (["set -eu"] + .)}' -- "$@")"
 command_id="$(aws ssm send-command \
   --instance-ids "$instance_id" \
   --document-name AWS-RunShellScript \
@@ -23,7 +23,7 @@ command_id="$(aws ssm send-command \
   --comment "Monarchy deployment from ${GITHUB_SHA:-local}" \
   --query 'Command.CommandId' --output text)"
 
-aws ssm wait command-executed --command-id "$command_id" --instance-id "$instance_id"
+aws ssm wait command-executed --command-id "$command_id" --instance-id "$instance_id" || true
 status="$(aws ssm get-command-invocation --command-id "$command_id" \
   --instance-id "$instance_id" --query 'Status' --output text)"
 

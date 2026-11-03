@@ -68,7 +68,7 @@ source /etc/monarchy/app.env
 set +a
 : "$${JDBC_DATABASE_URL:?JDBC_DATABASE_URL is required for migrations}"
 docker run --rm --network host \
-  -e "FLYWAY_URL=$${FLYWAY_DATABASE_URL:-$$JDBC_DATABASE_URL}" \
+  -e "FLYWAY_URL=$${FLYWAY_DATABASE_URL:-$JDBC_DATABASE_URL}" \
   -v /opt/monarchy/migrations:/flyway/sql:ro \
   -v /opt/monarchy/flyway.conf:/flyway/conf/flyway.conf:ro \
   flyway/flyway:10.20-alpine \
