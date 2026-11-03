@@ -1,6 +1,7 @@
 package monarchy.auth
 
-import java.security.{KeyFactory, KeyPair, KeyPairGenerator, PrivateKey, PublicKey}
+import java.nio.charset.StandardCharsets
+import java.security.{KeyFactory, KeyPair, KeyPairGenerator, PrivateKey, PublicKey, SecureRandom}
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 import java.time.Instant
 import java.util.{Base64, Date, UUID}
@@ -15,10 +16,15 @@ object Tooling {
   val Audience = "monarchy-api"
   val TokenTtl: FiniteDuration = 365.days
 
+  // Temporary local-development seed. Never use this key material outside local development.
+  private val LocalSeed = "monarchy-local-dev-only"
+
   private lazy val SigningKeys: KeyPair = {
     if (Env.isLocal) {
+      val random = SecureRandom.getInstance("SHA1PRNG")
+      random.setSeed(LocalSeed.getBytes(StandardCharsets.UTF_8))
       val generator = KeyPairGenerator.getInstance("RSA")
-      generator.initialize(2048)
+      generator.initialize(2048, random)
       generator.generateKeyPair
     } else {
       new KeyPair(
