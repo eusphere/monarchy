@@ -40,6 +40,11 @@ volumes:
 COMPOSE
 cat > /opt/monarchy/Caddyfile <<'CADDY'
 api.monarchy1.com {
+  header {
+    -Server
+    -Via
+    Strict-Transport-Security "max-age=31536000"
+  }
   reverse_proxy api:8080
 }
 CADDY
@@ -58,6 +63,7 @@ fi
 aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin 930597685973.dkr.ecr.us-east-1.amazonaws.com
 docker compose pull api
 docker compose up -d --remove-orphans
+docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
 UPDATE
 chmod 700 /usr/local/bin/monarchy-update
 cat > /usr/local/bin/monarchy-migrate <<'MIGRATE'

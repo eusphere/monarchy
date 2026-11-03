@@ -59,20 +59,16 @@ object AuthRoute {
   val AuthorizationKey = "Authorization"
   val Reject = HttpResponse(StatusCodes.Unauthorized)
 
-  private def headers(hs: Seq[HttpHeader]): Option[(UUID, String)] =
-    extract(hs.map { h => h.name -> normalize(h.value) }.toMap)
+  private[controllers] def headers(hs: Seq[HttpHeader]): Option[(UUID, String)] =
+    hs.find(_.is("authorization")).flatMap(h => extract(h.value))
 
-  private def cookies(cs: Seq[HttpCookiePair]): Option[(UUID, String)] =
-    extract(cs.map { c => c.name -> normalize(c.value) }.toMap)
+  private[controllers] def cookies(cs: Seq[HttpCookiePair]): Option[(UUID, String)] =
+    cs.find(_.name == AuthorizationKey)
+      .flatMap(c => Try(URLDecoder.decode(c.value, "UTF-8")).toOption)
+      .flatMap(extract)
 
-  private def extract(props: Map[String, String]): Option[(UUID, String)] = {
-    for {
-      authorization <- props.get(AuthorizationKey)
-      bearer = authorization.stripPrefix("Bearer ")
-      userId <- Untrusted.extractUserId(bearer).toOption
-    } yield (userId, bearer)
+  private def extract(authorization: String): Option[(UUID, String)] = {
+    val bearer = authorization.stripPrefix("Bearer ")
+    Untrusted.extractUserId(bearer).toOption.map(userId => (userId, bearer))
   }
-
-  private def normalize(raw: String): String =
-    URLDecoder.decode(raw, "UTF-8")
 }
