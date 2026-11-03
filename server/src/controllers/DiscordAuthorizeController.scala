@@ -4,6 +4,7 @@ import akka.http.scaladsl.model._
 import monarchy.auth.oauth2.ExchangeClient
 import monarchy.util.Json
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class DiscordAuthorizeController(implicit
     ec: ExecutionContext,
@@ -36,9 +37,32 @@ object DiscordAuthorizeController {
   case class CallerContext(referrerUrl: String, embedded: Boolean)
 
   private def mkCallerContext(query: Uri.Query): CallerContext = {
-    val referrerUrl = query.getOrElse("referrer", mkBaseUrl)
+    val referrerUrl = query.get("referrer").flatMap(safeReferrer).getOrElse(mkBaseUrl)
     val embedded = query.get("embedded").nonEmpty
     CallerContext(referrerUrl = referrerUrl, embedded = embedded)
+  }
+
+  /**
+    * OAuth completion redirects must stay on an application origin. The
+    * original value is still preserved so the client can return to its page,
+    * but arbitrary origins are rejected to prevent phishing redirects.
+    */
+  private def safeReferrer(raw: String): Option[String] = {
+    Try(new java.net.URI(raw)).toOption.filter { uri =>
+      uri.getUserInfo == null &&
+      allowedOrigins.contains((uri.getScheme, uri.getHost, uri.getPort))
+    }.map(_ => raw)
+  }
+
+  private def allowedOrigins: Set[(String, String, Int)] = {
+    if (isLocal) {
+      Set(
+        ("http", "localhost", 5173),
+        ("http", "localhost", 8081),
+      )
+    } else {
+      Set(("https", "monarchy1.com", -1))
+    }
   }
 
   private[controllers] def mkBaseUrl: String =
