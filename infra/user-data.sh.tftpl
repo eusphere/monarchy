@@ -4,6 +4,7 @@ dnf install -y docker
 systemctl enable --now docker
 usermod -aG docker ec2-user
 mkdir -p /opt/monarchy
+mkdir -p /opt/monarchy/secrets
 cat > /opt/monarchy/docker-compose.yml <<'COMPOSE'
 services:
   caddy:
@@ -46,6 +47,13 @@ cat > /usr/local/bin/monarchy-update <<'UPDATE'
 #!/bin/bash
 set -euo pipefail
 cd /opt/monarchy
+if [ -f /opt/monarchy/secrets/production.env.sops ]; then
+  sops --decrypt --input-type dotenv --output-type dotenv \
+    /opt/monarchy/secrets/production.env.sops > /etc/monarchy/app.env.tmp
+  chown root:root /etc/monarchy/app.env.tmp
+  chmod 600 /etc/monarchy/app.env.tmp
+  mv /etc/monarchy/app.env.tmp /etc/monarchy/app.env
+fi
 aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin 930597685973.dkr.ecr.us-east-1.amazonaws.com
 docker compose pull api
 docker compose up -d --remove-orphans
@@ -53,4 +61,10 @@ UPDATE
 chmod 700 /usr/local/bin/monarchy-update
 install -o root -g root -m 600 /dev/null /etc/monarchy/app.env
 dnf install -y awscli2 || true
-if docker compose version >/dev/null 2>&1 && [ -s /etc/monarchy/app.env ]; then /usr/local/bin/monarchy-update; fi
+if ! command -v sops >/dev/null 2>&1; then
+  curl --fail --silent --show-error --location \
+    https://github.com/getsops/sops/releases/download/v3.9.4/sops-v3.9.4.linux.amd64 \
+    --output /usr/local/bin/sops
+  chmod 755 /usr/local/bin/sops
+fi
+if docker compose version >/dev/null 2>&1; then /usr/local/bin/monarchy-update; fi

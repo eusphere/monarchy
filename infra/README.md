@@ -22,9 +22,16 @@ aws ssm send-command \
 ```
 
 The API container expects runtime configuration in `/etc/monarchy/app.env`.
-That file is intentionally left empty by this initial module; a follow-up will
-populate it from Secrets Manager. No application credentials are Terraform
-inputs or user-data values.
+The EC2 instance can decrypt `/opt/monarchy/secrets/production.env.sops` with
+the dedicated KMS key and writes the plaintext file with mode `0600` before
+starting the Compose stack. Commit only the SOPS-encrypted file; never commit
+the decrypted `.env` file or pass plaintext values to Terraform.
+
+The encrypted file is intentionally not included yet because the application
+credentials will be added in a follow-up. The KMS key ARN is available as the
+`secrets_kms_key_arn` Terraform output. Use SOPS with the `alias/monarchy-secrets`
+KMS key to create the file, then place it at
+`/opt/monarchy/secrets/production.env.sops` through the deployment process.
 
 ## DNS
 

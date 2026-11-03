@@ -174,6 +174,31 @@ resource "aws_iam_role_policy" "ecr_read" {
   role   = aws_iam_role.ec2.id
   policy = jsonencode({ Version = "2012-10-17", Statement = [{ Effect = "Allow", Action = ["ecr:GetAuthorizationToken", "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage"], Resource = "*" }] })
 }
+resource "aws_kms_key" "secrets" {
+  description             = "Monarchy runtime secrets"
+  enable_key_rotation     = true
+  deletion_window_in_days = 30
+  tags = {
+    Name    = "monarchy-secrets"
+    Project = "monarchy1"
+  }
+}
+resource "aws_kms_alias" "secrets" {
+  name          = "alias/monarchy-secrets"
+  target_key_id = aws_kms_key.secrets.key_id
+}
+resource "aws_iam_role_policy" "secrets_decrypt" {
+  name = "secrets-decrypt"
+  role = aws_iam_role.ec2.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["kms:Decrypt"]
+      Resource = aws_kms_key.secrets.arn
+    }]
+  })
+}
 resource "aws_iam_instance_profile" "ec2" {
   name = "monarchy-api-ec2"
   role = aws_iam_role.ec2.name
@@ -187,8 +212,9 @@ resource "aws_instance" "api" {
   associate_public_ip_address = true
   key_name                    = var.ssh_key_name != "" ? var.ssh_key_name : null
   user_data = templatefile("${path.module}/user-data.sh.tftpl", {
-    aws_region = var.aws_region
-    image      = "930597685973.dkr.ecr.us-east-1.amazonaws.com/monarchy-api:latest"
+    aws_region  = var.aws_region
+    image       = "930597685973.dkr.ecr.us-east-1.amazonaws.com/monarchy-api:latest"
+    kms_key_arn = aws_kms_key.secrets.arn
   })
   metadata_options {
     http_tokens = "required"
