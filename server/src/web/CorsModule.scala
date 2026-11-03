@@ -20,7 +20,10 @@ object CorsModule {
       .get("MONARCHY_ALLOWED_ORIGINS")
       .map(_.split(",").map(_.trim).filter(_.nonEmpty).toSet)
       .filter(_.nonEmpty)
-      .getOrElse(Set("https://monarchy1.com"))
+      .getOrElse(Set(
+        "http://localhost:5173",
+        "http://localhost:8081",
+      ))
 
   private val BaseHeaders = List(
     `Access-Control-Allow-Credentials`(true),

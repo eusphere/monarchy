@@ -1,6 +1,7 @@
 package monarchy.controllers
 
 import akka.http.scaladsl.model._
+import java.net.URI
 import monarchy.auth.oauth2.ExchangeClient
 import monarchy.util.Json
 import scala.concurrent.{ExecutionContext, Future}
@@ -59,13 +60,13 @@ object DiscordAuthorizeController {
       raw: String,
       allowedOrigins: Set[String]
   ): Option[String] = {
-    Try(new java.net.URI(raw)).toOption.filter { uri =>
+    Try(new URI(raw)).toOption.filter { uri =>
       Option(uri.getUserInfo).isEmpty &&
       allowedOrigins.contains(originOf(uri))
     }.map(_ => raw)
   }
 
-  private def originOf(uri: java.net.URI): String = {
+  private def originOf(uri: URI): String = {
     val port = if (uri.getPort == -1) "" else s":${uri.getPort}"
     s"${uri.getScheme}://${uri.getHost}$port"
   }
