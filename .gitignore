@@ -14,4 +14,6 @@ MODULE.bazel*
 *.tfstate
 *.tfstate.*
 *.tfvars
+infra/secrets/*.env
+infra/secrets/*.env.dec
 *.tfvars.json
