@@ -15,10 +15,11 @@ const MAPPING: Record<string, React.ComponentType<any>> = {
 
 type Props = {
   piece: PieceFragment$key;
+  color?: string;
 };
 
 const Piece = (props: Props): React.ReactNode => {
-  const { piece } = props;
+  const { piece, color } = props;
   const data = useFragment<PieceFragment$key>(PieceFragment, piece);
   const Model = MAPPING[data.order] ?? Pieces.Default;
 
@@ -32,7 +33,7 @@ const Piece = (props: Props): React.ReactNode => {
 
   return (
     <group position={OFFSET} rotation={rotation}>
-      <Model />
+      <Model color={color} />
     </group>
   );
 };

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<92469bb11f53ee7789086d5e5330ec5e>>
+ * @generated SignedSource<<57dd26a10851eb1a7eb7eaa2bfa9cc11>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,6 +18,12 @@ export type GameQuery$data = {
   readonly game: {
     readonly id: string;
     readonly players: ReadonlyArray<{
+      readonly id: string;
+      readonly user: {
+        readonly profile: {
+          readonly color: string;
+        } | null | undefined;
+      } | null | undefined;
       readonly " $fragmentSpreads": FragmentRefs<"PlayerFragment">;
     }>;
     readonly state: {
@@ -76,10 +82,17 @@ v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
+  "name": "color",
+  "storageKey": null
+},
+v5 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "currentPlayerId",
   "storageKey": null
 },
-v5 = [
+v6 = [
   {
     "alias": null,
     "args": null,
@@ -95,24 +108,24 @@ v5 = [
     "storageKey": null
   }
 ],
-v6 = {
+v7 = {
   "alias": null,
   "args": null,
   "concreteType": "Vec",
   "kind": "LinkedField",
   "name": "point",
   "plural": false,
-  "selections": (v5/*: any*/),
+  "selections": (v6/*: any*/),
   "storageKey": null
 },
-v7 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "rating",
   "storageKey": null
 },
-v8 = {
+v9 = {
   "alias": null,
   "args": null,
   "concreteType": "Piece",
@@ -170,7 +183,7 @@ v8 = {
       "kind": "LinkedField",
       "name": "currentDirection",
       "plural": false,
-      "selections": (v5/*: any*/),
+      "selections": (v6/*: any*/),
       "storageKey": null
     },
     {
@@ -215,6 +228,30 @@ return {
             "name": "players",
             "plural": true,
             "selections": [
+              (v2/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "User",
+                "kind": "LinkedField",
+                "name": "user",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "Profile",
+                    "kind": "LinkedField",
+                    "name": "profile",
+                    "plural": false,
+                    "selections": [
+                      (v4/*: any*/)
+                    ],
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              },
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -231,7 +268,7 @@ return {
             "name": "state",
             "plural": false,
             "selections": [
-              (v4/*: any*/),
+              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -256,7 +293,7 @@ return {
                 "name": "tiles",
                 "plural": true,
                 "selections": [
-                  (v6/*: any*/),
+                  (v7/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -311,15 +348,6 @@ return {
             "plural": true,
             "selections": [
               (v2/*: any*/),
-              (v3/*: any*/),
-              (v7/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "ratingDelta",
-                "storageKey": null
-              },
               {
                 "alias": null,
                 "args": null,
@@ -328,15 +356,6 @@ return {
                 "name": "user",
                 "plural": false,
                 "selections": [
-                  (v2/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "username",
-                    "storageKey": null
-                  },
-                  (v7/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -345,24 +364,36 @@ return {
                     "name": "profile",
                     "plural": false,
                     "selections": [
+                      (v4/*: any*/),
                       {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
                         "name": "avatar",
                         "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "color",
-                        "storageKey": null
                       }
                     ],
                     "storageKey": null
-                  }
+                  },
+                  (v2/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "username",
+                    "storageKey": null
+                  },
+                  (v8/*: any*/)
                 ],
+                "storageKey": null
+              },
+              (v3/*: any*/),
+              (v8/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "ratingDelta",
                 "storageKey": null
               }
             ],
@@ -376,7 +407,7 @@ return {
             "name": "state",
             "plural": false,
             "selections": [
-              (v4/*: any*/),
+              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -392,7 +423,7 @@ return {
                     "kind": "LinkedField",
                     "name": "selection",
                     "plural": false,
-                    "selections": (v5/*: any*/),
+                    "selections": (v6/*: any*/),
                     "storageKey": null
                   },
                   {
@@ -402,7 +433,7 @@ return {
                     "kind": "LinkedField",
                     "name": "movements",
                     "plural": true,
-                    "selections": (v5/*: any*/),
+                    "selections": (v6/*: any*/),
                     "storageKey": null
                   },
                   {
@@ -412,7 +443,7 @@ return {
                     "kind": "LinkedField",
                     "name": "directions",
                     "plural": true,
-                    "selections": (v5/*: any*/),
+                    "selections": (v6/*: any*/),
                     "storageKey": null
                   },
                   {
@@ -430,13 +461,13 @@ return {
                         "kind": "LinkedField",
                         "name": "tiles",
                         "plural": true,
-                        "selections": (v5/*: any*/),
+                        "selections": (v6/*: any*/),
                         "storageKey": null
                       }
                     ],
                     "storageKey": null
                   },
-                  (v8/*: any*/),
+                  (v9/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -455,8 +486,8 @@ return {
                 "name": "tiles",
                 "plural": true,
                 "selections": [
-                  (v6/*: any*/),
-                  (v8/*: any*/)
+                  (v7/*: any*/),
+                  (v9/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -469,16 +500,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "0dfb83bfe49d8854b1e083c49880c3b9",
+    "cacheID": "e0751ef0d71324c0ee6e007f3dd8fcf9",
     "id": null,
     "metadata": {},
     "name": "GameQuery",
     "operationKind": "query",
-    "text": "query GameQuery(\n  $id: String!\n) {\n  game(id: $id) {\n    id\n    status\n    players {\n      ...PlayerFragment\n    }\n    state {\n      currentPlayerId\n      currentSelection {\n        ...GameSelectionFragment\n      }\n      tiles {\n        point {\n          i\n          j\n        }\n        piece {\n          ...PieceFragment\n        }\n      }\n    }\n  }\n}\n\nfragment GameSelectionFragment on Selection {\n  selection {\n    i\n    j\n  }\n  movements {\n    i\n    j\n  }\n  directions {\n    i\n    j\n  }\n  attacks {\n    tiles {\n      i\n      j\n    }\n  }\n  piece {\n    ...PieceFragment\n  }\n  phases\n}\n\nfragment PieceFragment on Piece {\n  id\n  order\n  name\n  playerId\n  currentWait\n  currentHealth\n  currentBlocking\n  currentDirection {\n    i\n    j\n  }\n  currentFocus\n  currentEffects\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "query GameQuery(\n  $id: String!\n) {\n  game(id: $id) {\n    id\n    status\n    players {\n      id\n      user {\n        profile {\n          color\n        }\n      }\n      ...PlayerFragment\n    }\n    state {\n      currentPlayerId\n      currentSelection {\n        ...GameSelectionFragment\n      }\n      tiles {\n        point {\n          i\n          j\n        }\n        piece {\n          ...PieceFragment\n        }\n      }\n    }\n  }\n}\n\nfragment GameSelectionFragment on Selection {\n  selection {\n    i\n    j\n  }\n  movements {\n    i\n    j\n  }\n  directions {\n    i\n    j\n  }\n  attacks {\n    tiles {\n      i\n      j\n    }\n  }\n  piece {\n    ...PieceFragment\n  }\n  phases\n}\n\nfragment PieceFragment on Piece {\n  id\n  order\n  name\n  playerId\n  currentWait\n  currentHealth\n  currentBlocking\n  currentDirection {\n    i\n    j\n  }\n  currentFocus\n  currentEffects\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "14a74660b8d145de8af844d79ba85489";
+(node as any).hash = "ba1ba5c15ff3be184bb3044669305f1f";
 
 export default node;

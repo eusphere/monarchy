@@ -18,6 +18,14 @@ const Game = (): React.ReactNode => {
   const gameId = _gameId as string;
   const data = useLazyLoadQuery<GameQueryType>(GameQuery, { id: gameId });
   const gameState = data.game?.state;
+  const pieceColors = React.useMemo(() => {
+    const colors: Record<string, string> = {};
+    const fallbackColors = ['#4f46e5', '#d97706'];
+    data.game?.players.forEach((player, index) => {
+      colors[player.id] = player.user?.profile?.color ?? fallbackColors[index % fallbackColors.length];
+    });
+    return colors;
+  }, [data.game?.players]);
 
   return (
     <Box className={styles.root}>
@@ -30,7 +38,7 @@ const Game = (): React.ReactNode => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} castShadow />
         <directionalLight position={[5, 5, 5]} castShadow />
-        {gameState && <Board state={gameState} />}
+        {gameState && <Board state={gameState} pieceColors={pieceColors} />}
       </Canvas>
     </Box>
   );

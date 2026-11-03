@@ -6,6 +6,12 @@ export const GameQuery = graphql`
       id
       status
       players {
+        id
+        user {
+          profile {
+            color
+          }
+        }
         ...PlayerFragment
       }
       state {

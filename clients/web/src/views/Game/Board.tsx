@@ -5,6 +5,7 @@ import Tile from './Tile';
 
 type Props = {
   state: Types.GameState;
+  pieceColors: Record<string, string>;
 };
 
 // Basic board component
@@ -25,7 +26,7 @@ const Board = (props: Props): React.ReactNode => {
       {tiles.map((tile) => {
         const { point } = tile;
         const key = `${point.i}-${point.j}`;
-        return <Tile key={key} tile={tile} />;
+        return <Tile key={key} tile={tile} pieceColors={props.pieceColors} />;
       })}
     </group>
   );
