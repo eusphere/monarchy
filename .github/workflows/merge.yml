@@ -11,6 +11,7 @@ jobs:
 
   Publish:
     needs: [Test]
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -44,6 +45,7 @@ jobs:
           bazel run //server/src/web:web-image-push
   ReplaceSecrets:
     needs: [Test]
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -71,6 +73,7 @@ jobs:
             "chmod 600 /opt/monarchy/secrets/production.env.sops"
   Migrate:
     needs: [Test]
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -90,7 +93,7 @@ jobs:
             "/usr/local/bin/monarchy-migrate"
   Restart:
     needs: [Publish, ReplaceSecrets, Migrate]
-    if: always() && needs.Publish.result == 'success' && needs.ReplaceSecrets.result == 'success' && needs.Migrate.result == 'success'
+    if: github.ref == 'refs/heads/master' && always() && needs.Publish.result == 'success' && needs.ReplaceSecrets.result == 'success' && needs.Migrate.result == 'success'
     runs-on: ubuntu-latest
     environment: prod
     steps:
