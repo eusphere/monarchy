@@ -21,10 +21,6 @@ data "aws_subnets" "public" {
 
 data "aws_caller_identity" "current" {}
 
-data "aws_iam_user" "github_ci" {
-  user_name = "github-ci"
-}
-
 locals {
   private_subnets = {
     a = { cidr = "172.31.96.0/20", az = "us-east-1a" }
@@ -205,9 +201,35 @@ resource "aws_iam_role_policy" "secrets_decrypt" {
     }]
   })
 }
-resource "aws_iam_user_policy" "github_ci_ssm" {
-  name = "monarchy-deploy-ssm"
-  user = data.aws_iam_user.github_ci.user_name
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+}
+resource "aws_iam_role" "github_actions" {
+  name = "monarchy-github-actions"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.github.arn
+      }
+      Action = "sts:AssumeRoleWithWebIdentity"
+      Condition = {
+        StringEquals = {
+          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+        }
+        StringLike = {
+          "token.actions.githubusercontent.com:sub" = "repo:eusphere/monarchy:environment:prod"
+        }
+      }
+    }]
+  })
+}
+resource "aws_iam_role_policy" "github_actions_deploy" {
+  name = "monarchy-deploy"
+  role = aws_iam_role.github_actions.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -215,6 +237,22 @@ resource "aws_iam_user_policy" "github_ci_ssm" {
         Effect   = "Allow"
         Action   = ["ec2:DescribeInstances"]
         Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["ecr:GetAuthorizationToken"]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:CompleteLayerUpload",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+        ]
+        Resource = aws_ecr_repository.api.arn
       },
       {
         Effect = "Allow"
