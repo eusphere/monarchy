@@ -19,6 +19,12 @@ data "aws_subnets" "public" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_user" "github_ci" {
+  user_name = "github-ci"
+}
+
 locals {
   private_subnets = {
     a = { cidr = "172.31.96.0/20", az = "us-east-1a" }
@@ -197,6 +203,33 @@ resource "aws_iam_role_policy" "secrets_decrypt" {
       Action   = ["kms:Decrypt"]
       Resource = aws_kms_key.secrets.arn
     }]
+  })
+}
+resource "aws_iam_user_policy" "github_ci_ssm" {
+  name = "monarchy-deploy-ssm"
+  user = data.aws_iam_user.github_ci.user_name
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["ec2:DescribeInstances"]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = ["ssm:SendCommand"]
+        Resource = [
+          "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.api.id}",
+          "arn:aws:ssm:${var.aws_region}:*:document/AWS-RunShellScript"
+        ]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["ssm:GetCommandInvocation"]
+        Resource = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:command/*"
+      }
+    ]
   })
 }
 resource "aws_iam_instance_profile" "ec2" {
