@@ -28,6 +28,15 @@ temporary plaintext file on exit. The encrypted file is:
 infra/secrets/production.env.sops
 ```
 
+Enter values as dotenv entries, for example:
+
+```dotenv
+JDBC_DATABASE_URL=jdbc:postgresql://root:URL_ENCODED_PASSWORD@db-host:5432/monarchy
+```
+
+Replace the placeholders with real values locally. URL-encode special
+characters in the database password.
+
 An empty placeholder file is treated as a new secret file; a non-empty file
 must already contain valid SOPS metadata.
 

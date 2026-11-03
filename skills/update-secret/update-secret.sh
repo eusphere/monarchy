@@ -18,7 +18,14 @@ chmod 600 "$tmp_file"
 if [[ -s "$secret_file" ]]; then
   sops --decrypt --input-type dotenv --output-type dotenv "$secret_file" > "$tmp_file"
 else
-  printf '# Monarchy production environment\n' > "$tmp_file"
+  cat > "$tmp_file" <<'EOF'
+# Monarchy production environment
+# Add one KEY=value entry per secret.
+#
+# JDBC_DATABASE_URL=jdbc:postgresql://root:URL_ENCODED_PASSWORD@db-host:5432/monarchy
+#
+# URL-encode special characters in the database password before putting it in the URL.
+EOF
 fi
 
 "${EDITOR:-vi}" "$tmp_file"
