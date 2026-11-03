@@ -75,12 +75,21 @@ jobs:
     steps:
       - name: Cloning source
         uses: actions/checkout@v4
-      - name: Applying database migrations
+      - name: Checking for changed paths
+        id: database_changed
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            database:
+              - 'database/**'
+      - name: Configuring AWS credentials
+        if: steps.database_changed.outputs.database == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
           aws-region: us-east-1
       - name: Running database migrations
+        if: steps.database_changed.outputs.database == 'true'
         run: |
           MIGRATIONS_B64="$(tar -czf - -C database migrations flyway.conf ec2-migrate.sh | base64 -w 0)"
           SECRET_B64="$(base64 -w 0 infra/secrets/production.env.sops)"

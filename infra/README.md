@@ -31,6 +31,11 @@ parallel jobs: Schema, Secrets, and Docker. Restart waits for all three to
 succeed, synchronizes the runtime
 Compose/Caddy/update files, and then pulls the image and restarts the stack.
 Schema installs its own migration runner; no separate Prepare job is needed.
+Schema uses `dorny/paths-filter` to run migrations only when `database/**`
+changes. Otherwise its AWS and migration steps are skipped and the job succeeds,
+so it does not block Restart. This compares source changes, not database state;
+initializing a new database or retrying a failed migration requires an explicit
+migration run (or rerunning the original failed workflow).
 
 After the instance is managed by SSM, deploy the current image with:
 
