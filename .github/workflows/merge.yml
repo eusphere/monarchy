@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Cloning source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - name: Installing bazel
         run: |
           curl --fail --silent --show-error --location \
@@ -24,10 +26,12 @@ jobs:
           chmod +x "$RUNNER_TEMP/bazel"
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - name: Installing bazel cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
-          path: "~/.cache/bazel"
-          key: bazel
+          path: ~/.cache/bazel
+          key: bazel-${{ runner.os }}-${{ hashFiles('MODULE.bazel.lock', 'MODULE.bazel', 'WORKSPACE', '.bazelrc') }}
+          restore-keys: |
+            bazel-${{ runner.os }}-
       - name: Pushing image
         if: github.event.ref == 'refs/heads/master'
         env:
@@ -39,6 +43,33 @@ jobs:
           REPO="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com"
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO
           bazel run //server/src/web:web-image-push
-      - name: Deploying
+      - name: Checking for secret changes
+        id: secrets_changed
         run: |
-          curl -i ${{ secrets.RENDER_DEPLOY_URL }}
+          if git diff --quiet HEAD^ HEAD -- infra/secrets/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Deploying encrypted secrets
+        if: steps.secrets_changed.outputs.changed == 'true'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+        run: |
+          SECRET_B64="$(base64 -w 0 infra/secrets/production.env.sops)"
+          COMMANDS="$(jq -cn --arg secret "$SECRET_B64" '{commands: [
+            "install -d -m 700 /opt/monarchy/secrets",
+            ("printf %s " + ($secret|@sh) + " | base64 -d > /opt/monarchy/secrets/production.env.sops"),
+            "chown root:root /opt/monarchy/secrets/production.env.sops",
+            "chmod 600 /opt/monarchy/secrets/production.env.sops",
+            "/usr/local/bin/monarchy-update"
+          ]}')"
+          aws ssm send-command \
+            --document-name AWS-RunShellScript \
+            --targets Key=tag:Name,Values=monarchy-api \
+            --parameters "$COMMANDS" \
+            --comment "Deploy encrypted Monarchy secrets from ${GITHUB_SHA}" \
+            --query 'Command.CommandId' \
+            --output text
