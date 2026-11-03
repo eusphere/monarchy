@@ -1,0 +1,12 @@
+.row {
+  min-width: 0;
+}
+
+.current {
+  min-width: 0;
+  padding: var(--grid-space-sm) var(--grid-space);
+  margin: 0 calc(-1 * var(--grid-space));
+  border-radius: var(--corner-radius);
+  background: color-mix(in srgb, var(--orange-3) 72%, transparent);
+  box-shadow: inset 3px 0 0 var(--orange-9);
+}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Color } from 'three';
+import { Color, Mesh } from 'three';
 import _Default from './Default';
 import { useGLTF } from '@react-three/drei';
 
@@ -17,16 +17,18 @@ const Base = (props: Props) => {
     const next = scene.clone();
     const tint = new Color(color ?? '#8f887d');
     next.traverse((object) => {
-      if (!object.isMesh || !object.material) return;
-      const materials = Array.isArray(object.material) ? object.material : [object.material];
+      const mesh = object as Mesh;
+      if (!mesh.isMesh || !mesh.material) return;
+      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       const tintedMaterials = materials.map((material) => {
         const nextMaterial = material.clone();
-        if ('color' in nextMaterial && nextMaterial.color) {
-          nextMaterial.color.set('#d8d2c8').lerp(tint, 0.68);
+        const materialWithColor = nextMaterial as typeof nextMaterial & { color?: Color };
+        if (materialWithColor.color) {
+          materialWithColor.color.set('#d8d2c8').lerp(tint, 0.68);
         }
         return nextMaterial;
       });
-      object.material = Array.isArray(object.material) ? tintedMaterials : tintedMaterials[0];
+      mesh.material = Array.isArray(mesh.material) ? tintedMaterials : tintedMaterials[0];
     });
     return next;
   }, [color, scene]);
