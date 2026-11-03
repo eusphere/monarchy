@@ -24,13 +24,25 @@ is used only during login: the server exchanges the authorization code,
 fetches the Discord profile, and then issues a Monarchy JWT. API requests use
 that internal JWT and never forward the Discord access token.
 
-JWTs use RS256. The private and public RSA keys are supplied as base64-encoded
-DER through `MONARCHY_JWT_PRIVATE_KEY` and `MONARCHY_JWT_PUBLIC_KEY`. Outside
-`ENV=local`, both values are required so a deployment cannot silently start
-with an ephemeral signing key. Local development generates an in-memory key
-pair, so local tokens are intentionally invalidated on restart.
+JWTs use RS256. Deployments should supply private and public RSA keys as
+base64-encoded DER through `MONARCHY_JWT_PRIVATE_KEY` and
+`MONARCHY_JWT_PUBLIC_KEY`. When both values are missing, the application uses
+the stable development fallback in `Tooling`; do not rely on that fallback in
+production. Generate deployment keys and encrypt them with SOPS, for example:
+
+```sh
+tmpdir=$(mktemp -d)
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 \
+  -out "$tmpdir/private.pem"
+openssl pkey -in "$tmpdir/private.pem" -pubout -out "$tmpdir/public.pem"
+printf 'MONARCHY_JWT_PRIVATE_KEY=%s\nMONARCHY_JWT_PUBLIC_KEY=%s\n' \
+  "$(openssl pkcs8 -topk8 -nocrypt -in "$tmpdir/private.pem" -outform DER | base64 | tr -d '\n')" \
+  "$(openssl pkey -pubin -in "$tmpdir/public.pem" -pubout -outform DER | base64 | tr -d '\n')" \
+  > "$tmpdir/jwt.env"
+sops --encrypt --input-type dotenv --output-type dotenv \
+  "$tmpdir/jwt.env" > infra/secrets/jwt.env.sops
+```
 
 Every JWT includes an issuer, audience, issued-at timestamp, and expiration.
-The lifetime defaults to 30 days and can be changed with
-`MONARCHY_JWT_TTL_SECONDS`; the cookie lifetime is kept in sync with that
-value.
+The lifetime is one year and the cookie lifetime is kept in sync with that
+constant.
