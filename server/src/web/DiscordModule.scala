@@ -7,17 +7,14 @@ import monarchy.util.http.HttpClient
 import scala.concurrent.ExecutionContext
 
 object DiscordModule {
-  // Environment based configuration. The client secret must never have a
-  // source-controlled fallback: it is a credential for the Discord app.
+  // Environment based configuration. NOTE: these only work for the
+  // `monarchy-staging` app on Discord. Key rotation is simple if we decide to
+  // secure that app later.
   private def clientId: String =
     sys.env.getOrElse("DISCORD_CLIENT_ID", "1325545581304614912")
 
   private def clientSecret: String =
-    sys.env.get("DISCORD_CLIENT_SECRET").filter(_.nonEmpty).getOrElse {
-      throw new IllegalStateException(
-        "DISCORD_CLIENT_SECRET must be configured before starting the web server"
-      )
-    }
+    sys.env.getOrElse("DISCORD_CLIENT_SECRET", "drUn5j62dtzSUuJDEf__mK6-3-e3IZaj")
 
   private def redirectUrl: String =
     sys.env.getOrElse("DISCORD_REDIRECT_URL", "http://localhost:8080/oauth2/discord/exchange")

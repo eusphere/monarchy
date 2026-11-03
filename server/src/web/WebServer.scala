@@ -56,7 +56,9 @@ object WebServer extends App {
       path("connect")(connectController) ~
       path("graphql")(graphqlController) ~
       path("healthz")(statusController) ~
-      path("oauth2" / "discord" / "authorize")(public(new DiscordAuthorizeController)) ~
+      path("oauth2" / "discord" / "authorize")(
+        public(new DiscordAuthorizeController(CorsModule.allowedOrigins))
+      ) ~
       path("oauth2" / "discord" / "exchange")(public(new DiscordExchangeController))
   }
   val routeLogged = LoggingModule.log(route)
