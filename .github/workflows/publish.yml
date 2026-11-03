@@ -39,7 +39,7 @@ jobs:
     environment: prod
     steps:
       - name: Cloning source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 2
       - name: Installing bazel
@@ -50,12 +50,12 @@ jobs:
           chmod +x "$RUNNER_TEMP/bazel"
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - name: Configuring AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
           aws-region: us-east-1
       - name: Installing bazel cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/bazel
           key: bazel-${{ runner.os }}-${{ hashFiles('MODULE.bazel.lock', 'MODULE.bazel', 'WORKSPACE', '.bazelrc') }}
@@ -73,16 +73,16 @@ jobs:
     environment: prod
     steps:
       - name: Cloning source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Checking for changed paths
         id: secrets_changed
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           filters: |
             secrets:
               - 'infra/secrets/**'
       - name: Configuring AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
           aws-region: us-east-1
@@ -101,17 +101,17 @@ jobs:
     environment: prod
     steps:
       - name: Cloning source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Checking for changed paths
         id: database_changed
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           filters: |
             database:
               - 'database/**'
       - name: Configuring AWS credentials
         if: steps.database_changed.outputs.database == 'true'
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
           aws-region: us-east-1
