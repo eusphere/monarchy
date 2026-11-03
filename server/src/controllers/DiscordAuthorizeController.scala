@@ -72,5 +72,5 @@ object DiscordAuthorizeController {
   }
 
   private[controllers] def mkBaseUrl: String =
-    sys.env.getOrElse("WEB_BASE_URL", "http://localhost:5173")
+    sys.env.getOrElse("CLIENT_WEB_URL", "http://localhost:5173")
 }

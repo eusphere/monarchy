@@ -32,7 +32,7 @@ services:
     environment:
       REDIS_URL: http://redis:6379
       ENV: prod
-      WEB_BASE_URL: https://web.monarchy1.com
+      CLIENT_WEB_URL: https://web.monarchy1.com
       DISCORD_REDIRECT_URL: https://api.monarchy1.com/oauth2/discord/exchange
     depends_on:
       - redis
