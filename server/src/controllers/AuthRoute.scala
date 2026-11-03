@@ -3,13 +3,12 @@ package monarchy.controllers
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.HttpCookiePair
 import akka.http.scaladsl.server._
-import io.jsonwebtoken.{Jwts, MalformedJwtException, SignatureException}
 import java.net.URLDecoder
 import java.util.UUID
-import monarchy.auth._
+import monarchy.auth.{Auth, AuthFilter, Authenticated, NullAuth, Tooling}
 import monarchy.dal.{QueryClient, PostgresProfile, User}
 import scala.concurrent.{Future, ExecutionContext}
-import scala.util.{Try, Success, Failure}
+import scala.util.{Failure, Success}
 
 case class AuthRoute[T](filter: AuthFilter, controller: AuthController)(implicit
   ec: ExecutionContext,
@@ -29,21 +28,14 @@ case class AuthRoute[T](filter: AuthFilter, controller: AuthController)(implicit
   def fetchAuth(ctx: RequestContext): Future[Auth] = {
     val authLookup = headers(ctx.request.headers).orElse(cookies(ctx.request.cookies))
     authLookup match {
-      case Some((userId, bearerToken)) => fetch(userId).map {
-        // Missing authentication information
-        case None => NullAuth
-        case Some(user) =>
-          val parser = Jwts.parser.setSigningKey(user.secret)
-          val subjectMaybe = Try(parser.parseClaimsJws(bearerToken).getBody.getSubject)
-          subjectMaybe match {
-            // Passed all challenges.
-            case Success(subject) if subject == userId.toString => Authenticated(user)
-            case Success(_) => NullAuth
-            case Failure(_: MalformedJwtException) => NullAuth
-            case Failure(_: SignatureException) => NullAuth
-            case Failure(e) => throw e
+      case Some(bearerToken) =>
+        Tooling.parseSubject(bearerToken) match {
+          case Failure(_) => Future.successful(NullAuth)
+          case Success(userId) => fetch(userId).map {
+            case None => NullAuth
+            case Some(user) => Authenticated(user)
           }
-      }
+        }
       // Missing authentication information
       case None => Future.successful(NullAuth)
     }
@@ -59,19 +51,14 @@ object AuthRoute {
   val AuthorizationKey = "Authorization"
   val Reject = HttpResponse(StatusCodes.Unauthorized)
 
-  private def headers(hs: Seq[HttpHeader]): Option[(UUID, String)] =
+  private def headers(hs: Seq[HttpHeader]): Option[String] =
     extract(hs.map { h => h.name -> normalize(h.value) }.toMap)
 
-  private def cookies(cs: Seq[HttpCookiePair]): Option[(UUID, String)] =
+  private def cookies(cs: Seq[HttpCookiePair]): Option[String] =
     extract(cs.map { c => c.name -> normalize(c.value) }.toMap)
 
-  private def extract(props: Map[String, String]): Option[(UUID, String)] = {
-    for {
-      authorization <- props.get(AuthorizationKey)
-      bearer = authorization.stripPrefix("Bearer ")
-      userId <- Untrusted.extractUserId(bearer).toOption
-    } yield (userId, bearer)
-  }
+  private def extract(props: Map[String, String]): Option[String] =
+    props.get(AuthorizationKey).map(_.stripPrefix("Bearer "))
 
   private def normalize(raw: String): String =
     URLDecoder.decode(raw, "UTF-8")
