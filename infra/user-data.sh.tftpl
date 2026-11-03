@@ -5,6 +5,7 @@ systemctl enable --now docker
 usermod -aG docker ec2-user
 mkdir -p /opt/monarchy
 mkdir -p /opt/monarchy/secrets
+mkdir -p /opt/monarchy/migrations
 cat > /opt/monarchy/docker-compose.yml <<'COMPOSE'
 services:
   caddy:
@@ -54,11 +55,33 @@ if [ -f /opt/monarchy/secrets/production.env.sops ]; then
   chmod 600 /etc/monarchy/app.env.tmp
   mv /etc/monarchy/app.env.tmp /etc/monarchy/app.env
 fi
+/usr/local/bin/monarchy-migrate
 aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin 930597685973.dkr.ecr.us-east-1.amazonaws.com
 docker compose pull api
 docker compose up -d --remove-orphans
 UPDATE
 chmod 700 /usr/local/bin/monarchy-update
+cat > /usr/local/bin/monarchy-migrate <<'MIGRATE'
+#!/bin/bash
+set -euo pipefail
+set -a
+source /etc/monarchy/app.env
+set +a
+: "${JDBC_DATABASE_URL:?JDBC_DATABASE_URL is required for migrations}"
+docker run --rm --network host \
+  -e "FLYWAY_URL=${FLYWAY_DATABASE_URL:-$JDBC_DATABASE_URL}" \
+  -v /opt/monarchy/migrations:/flyway/sql:ro \
+  -v /opt/monarchy/flyway.conf:/flyway/conf/flyway.conf:ro \
+  flyway/flyway:10.20-alpine \
+  -configFiles=/flyway/conf/flyway.conf migrate
+MIGRATE
+chmod 700 /usr/local/bin/monarchy-migrate
+cat > /opt/monarchy/flyway.conf <<'FLYWAY'
+flyway.locations=filesystem:/flyway/sql
+flyway.baselineOnMigrate=true
+flyway.baselineVersion=1
+flyway.connectRetries=10
+FLYWAY
 install -o root -g root -m 600 /dev/null /etc/monarchy/app.env
 dnf install -y awscli2 || true
 if ! command -v sops >/dev/null 2>&1; then
