@@ -94,6 +94,15 @@ resource "aws_rds_cluster" "prod" {
   }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "database_from_api" {
+  security_group_id            = one(aws_rds_cluster.prod.vpc_security_group_ids)
+  referenced_security_group_id = aws_security_group.api.id
+  description                  = "PostgreSQL from API and migration runner"
+  ip_protocol                  = "tcp"
+  from_port                    = 5432
+  to_port                      = 5432
+}
+
 resource "aws_rds_cluster_instance" "prod" {
   identifier          = "monarchy-prod-instance-1"
   cluster_identifier  = aws_rds_cluster.prod.id
