@@ -1,0 +1,56 @@
+#!/bin/bash
+set -euxo pipefail
+dnf install -y docker
+systemctl enable --now docker
+usermod -aG docker ec2-user
+mkdir -p /opt/monarchy
+cat > /opt/monarchy/docker-compose.yml <<'COMPOSE'
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - api
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+  api:
+    image: ${image}
+    restart: unless-stopped
+    env_file:
+      - /etc/monarchy/app.env
+    environment:
+      REDIS_URL: http://redis:6379
+    depends_on:
+      - redis
+volumes:
+  redis-data:
+  caddy-data:
+  caddy-config:
+COMPOSE
+cat > /opt/monarchy/Caddyfile <<'CADDY'
+api.monarchy1.com {
+  reverse_proxy api:8080
+}
+CADDY
+cat > /usr/local/bin/monarchy-update <<'UPDATE'
+#!/bin/bash
+set -euo pipefail
+cd /opt/monarchy
+aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin 930597685973.dkr.ecr.us-east-1.amazonaws.com
+docker compose pull api
+docker compose up -d --remove-orphans
+UPDATE
+chmod 700 /usr/local/bin/monarchy-update
+install -o root -g root -m 600 /dev/null /etc/monarchy/app.env
+dnf install -y awscli2 || true
+if docker compose version >/dev/null 2>&1 && [ -s /etc/monarchy/app.env ]; then /usr/local/bin/monarchy-update; fi

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Monarchy AWS network layout</title>
+  <desc id="desc">CloudFront and deployment services reach a public EC2 instance. Aurora PostgreSQL is planned for three private subnets across three availability zones. Redis runs locally in Docker on EC2.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 600 26px sans-serif; fill: #0f172a; }
+      .label { font: 600 16px sans-serif; fill: #0f172a; }
+      .body { font: 400 14px sans-serif; fill: #334155; }
+      .small { font: 400 12px sans-serif; fill: #475569; }
+      .boundary { fill: #eef2ff; stroke: #6366f1; stroke-width: 2; rx: 18; }
+      .public { fill: #fff7ed; stroke: #f97316; stroke-width: 2; rx: 14; }
+      .private { fill: #ecfdf5; stroke: #10b981; stroke-width: 2; rx: 14; }
+      .service { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; rx: 10; }
+      .managed { fill: #eff6ff; stroke: #3b82f6; stroke-width: 1.5; rx: 10; }
+      .line { stroke: #475569; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke: #64748b; stroke-width: 2; stroke-dasharray: 7 6; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1200" height="760"/>
+  <text class="title" x="48" y="52">Monarchy — initial low-cost AWS layout</text>
+  <text class="body" x="48" y="78">Public EC2 for now; Aurora placement is being moved toward private subnets.</text>
+
+  <rect class="service" x="55" y="130" width="180" height="80"/>
+  <text class="label" x="145" y="164" text-anchor="middle">Players</text>
+  <text class="body" x="145" y="188" text-anchor="middle">HTTP / HTTPS / WebSocket</text>
+
+  <rect class="managed" x="300" y="130" width="210" height="80"/>
+  <text class="label" x="405" y="164" text-anchor="middle">CloudFront</text>
+  <text class="body" x="405" y="188" text-anchor="middle">Existing distribution</text>
+  <path class="line" d="M235 170 H300"/>
+
+  <rect class="boundary" x="570" y="100" width="570" height="570"/>
+  <text class="label" x="595" y="137">Default VPC — 172.31.0.0/16</text>
+
+  <rect class="public" x="600" y="165" width="250" height="205"/>
+  <text class="label" x="625" y="198">Public subnet</text>
+  <text class="small" x="625" y="221">Existing default subnet</text>
+  <rect class="service" x="625" y="245" width="200" height="95"/>
+  <text class="label" x="725" y="278" text-anchor="middle">EC2 t3.micro</text>
+  <text class="body" x="725" y="301" text-anchor="middle">Docker Compose</text>
+  <text class="body" x="725" y="321" text-anchor="middle">API + local Redis</text>
+  <path class="line" d="M510 170 H625"/>
+  <text class="small" x="536" y="156">80 / 443 only</text>
+
+  <rect class="private" x="885" y="165" width="225" height="420"/>
+  <text class="label" x="910" y="198">Private DB subnets</text>
+  <text class="small" x="910" y="221">No Internet Gateway route</text>
+  <rect class="service" x="910" y="250" width="175" height="70"/>
+  <text class="label" x="997" y="280" text-anchor="middle">us-east-1a</text>
+  <text class="small" x="997" y="301" text-anchor="middle">172.31.96.0/20</text>
+  <rect class="service" x="910" y="345" width="175" height="70"/>
+  <text class="label" x="997" y="375" text-anchor="middle">us-east-1b</text>
+  <text class="small" x="997" y="396" text-anchor="middle">172.31.112.0/20</text>
+  <rect class="service" x="910" y="440" width="175" height="70"/>
+  <text class="label" x="997" y="470" text-anchor="middle">us-east-1c</text>
+  <text class="small" x="997" y="491" text-anchor="middle">172.31.128.0/20</text>
+  <rect class="managed" x="620" y="445" width="220" height="95"/>
+  <text class="label" x="730" y="477" text-anchor="middle">Aurora PostgreSQL</text>
+  <text class="body" x="730" y="500" text-anchor="middle">monarchy-prod</text>
+  <text class="small" x="730" y="520" text-anchor="middle">private subnet group target</text>
+  <path class="line" d="M825 293 H885"/>
+  <text class="small" x="835" y="280">5432</text>
+
+  <rect class="managed" x="55" y="285" width="180" height="80"/>
+  <text class="label" x="145" y="318" text-anchor="middle">ECR</text>
+  <text class="body" x="145" y="342" text-anchor="middle">monarchy-api:latest</text>
+  <path class="dashed" d="M235 325 H625"/>
+  <text class="small" x="385" y="311">SSM update → pull + restart</text>
+
+  <rect class="managed" x="55" y="430" width="180" height="80"/>
+  <text class="label" x="145" y="463" text-anchor="middle">AWS Systems Manager</text>
+  <text class="body" x="145" y="487" text-anchor="middle">No SSH ingress</text>
+  <path class="dashed" d="M235 470 H625"/>
+
+  <rect class="service" x="55" y="590" width="420" height="95"/>
+  <text class="label" x="75" y="621">Why three private subnets?</text>
+  <text class="body" x="75" y="646">Aurora subnet groups span multiple Availability Zones.</text>
+  <text class="body" x="75" y="667">Three gives AZ coverage and matches the existing layout.</text>
+
+  <rect class="service" x="520" y="700" width="620" height="34"/>
+  <text class="small" x="830" y="722" text-anchor="middle">Initial plan: create private subnets; migrate Aurora separately and deliberately.</text>
+</svg>

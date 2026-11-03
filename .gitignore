@@ -10,3 +10,8 @@ MODULE.bazel*
 *.bazelproject
 .bsp
 .bazelbsp
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
