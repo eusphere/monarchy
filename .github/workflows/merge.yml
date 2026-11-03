@@ -43,16 +43,15 @@ jobs:
           REPO="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com"
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO
           bazel run //server/src/web:web-image-push
-      - name: Checking for secret changes
+      - name: Checking for changed paths
         id: secrets_changed
-        run: |
-          if git diff --quiet HEAD^ HEAD -- infra/secrets/; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            secrets:
+              - 'infra/secrets/**'
       - name: Deploying encrypted secrets
-        if: steps.secrets_changed.outputs.changed == 'true'
+        if: steps.secrets_changed.outputs.secrets == 'true'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
