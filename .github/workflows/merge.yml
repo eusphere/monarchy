@@ -17,7 +17,17 @@ jobs:
       - name: Cloning source
         uses: actions/checkout@v4
       - name: Installing bazel
-        uses: bazelbuild/setup-bazelisk@v2
+        run: |
+          curl --fail --silent --show-error --location \
+            https://github.com/bazelbuild/bazelisk/releases/download/v1.30.0/bazelisk-linux-amd64 \
+            --output "$RUNNER_TEMP/bazel"
+          chmod +x "$RUNNER_TEMP/bazel"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Installing bazel cache
+        uses: actions/cache@v3
+        with:
+          path: "~/.cache/bazel"
+          key: bazel
       - name: Pushing image
         if: github.event.ref == 'refs/heads/master'
         env:
