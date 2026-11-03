@@ -26,10 +26,11 @@ AWS_DEFAULT_REGION=us-east-1 ./infra/ec2-run.sh \
   "bash /tmp/monarchy-bootstrap.sh"
 ```
 
-On pushes to master, tests gate three parallel jobs: Publish, ReplaceSecrets,
-and Migrate. Restart waits for all three to succeed, synchronizes the runtime
+On pushes to master, tests gate the reusable `publish.yml` workflow with three
+parallel jobs: Schema, Secrets, and Docker. Restart waits for all three to
+succeed, synchronizes the runtime
 Compose/Caddy/update files, and then pulls the image and restarts the stack.
-Migrate installs its own runner; no separate Prepare job is needed.
+Schema installs its own migration runner; no separate Prepare job is needed.
 
 After the instance is managed by SSM, deploy the current image with:
 
