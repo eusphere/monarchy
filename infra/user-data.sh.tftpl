@@ -55,7 +55,6 @@ if [ -f /opt/monarchy/secrets/production.env.sops ]; then
   chmod 600 /etc/monarchy/app.env.tmp
   mv /etc/monarchy/app.env.tmp /etc/monarchy/app.env
 fi
-/usr/local/bin/monarchy-migrate
 aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin 930597685973.dkr.ecr.us-east-1.amazonaws.com
 docker compose pull api
 docker compose up -d --remove-orphans
