@@ -18,6 +18,11 @@ error. The master workflow builds `clients/web`, uploads the static files, and
 invalidates the distribution after tests pass. The existing root-domain
 distribution remains owned by `eusphere/eusphere/infra`.
 
+The API Compose service sets `ENV=prod`, `CLIENT_WEB_URL`, and
+`DISCORD_REDIRECT_URL` explicitly. Local development keeps localhost defaults.
+The production Discord application must register
+`https://api.monarchy1.com/oauth2/discord/exchange` as an OAuth redirect URI.
+
 ## Deployment lifecycle
 
 New instances run `bootstrap.sh` through Terraform user data to install Docker,
