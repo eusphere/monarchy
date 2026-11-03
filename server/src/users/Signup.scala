@@ -35,7 +35,7 @@ class Signup(implicit
           } yield userWr
           queryCli.write(dbio).map { u =>
             val bearer = Tooling.issueToken(u.id)
-            Result.Signup(Credentials(u, bearer, Tooling.tokenTtl))
+            Result.Signup(Credentials(u, bearer, Tooling.TokenTtl))
           }
       }
     }

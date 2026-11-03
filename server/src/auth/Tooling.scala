@@ -22,8 +22,8 @@ object Tooling {
       generator.generateKeyPair
     } else {
       new KeyPair(
-        parsePublicKey(sys.env("AUTH_PRIVKEY")),
-        parsePrivateKey(sys.env("AUTH_PUBKEY")),
+        parsePublicKey(sys.env("AUTH_PUBKEY")),
+        parsePrivateKey(sys.env("AUTH_PRIVKEY")),
       )
     }
   }
@@ -43,7 +43,7 @@ object Tooling {
       .setIssuer(Issuer)
       .setAudience(Audience)
       .setIssuedAt(Date.from(now))
-      .setExpiration(Date.from(now.plusSeconds(tokenTtl.toSeconds)))
+      .setExpiration(Date.from(now.plusSeconds(TokenTtl.toSeconds)))
       .signWith(SigningKeys.getPrivate, SignatureAlgorithm.RS256)
       .compact
   }

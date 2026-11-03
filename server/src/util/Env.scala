@@ -3,8 +3,8 @@ package monarchy.util
 sealed class Env(val repr: String)
 
 object Env {
-  case object Local("local") extends Env
-  case object Prod("prod") extends Env
+  case object Local extends Env("local")
+  case object Prod extends Env("prod")
 
   lazy val Current = apply(sys.env("ENV"))
 

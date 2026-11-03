@@ -9,6 +9,7 @@ names inside method bodies.
 
 Keep security allowlists explicit and centralized. Add environment-backed
 configuration only when deployment-specific values are actually required.
+
 ## Terraform
 
 Balance the infrastructure tree by responsibility. Keep the root module
@@ -20,11 +21,25 @@ moving blocks so state does not churn.
 ## Authentication
 
 Monarchy's internal JWT is separate from Discord's OAuth access token. Discord
-is used only during login: the server exchanges the authorization code,
-fetches the Discord profile, and then issues a Monarchy JWT. API requests use
-that internal JWT and never forward the Discord access token.
+is used only during login: the server exchanges the authorization code, fetches
+the Discord profile, and then issues a Monarchy JWT. API requests use that
+internal JWT and never forward the Discord access token.
 
-JWTs use RS256. When `ENV` contains `prod`, deployments must supply private
+Authorization is intentionally limited because most game objects are public.
+The server applies simple filtering for mutations to user data and shared
+objects such as game state.
+
+Discord is the primary authentication provider. The plumbing exists for a
+first-party authorization server, but Discord OAuth2 is expected to provide
+higher engagement. Two Discord applications are registered:
+
+- [`monarchy`](https://discord.com/developers/applications/1323331352283709491/oauth2) — production
+- [`monarchy-staging`](https://discord.com/developers/applications/1325545581304614912/oauth2) — test environments
+
+Additional OAuth2 providers can be added later. The user model should retain
+the provider's OpenID, with mappings from public keys to issuing services.
+
+JWTs use RS256. When `ENV` is `prod`, deployments must supply private
 and public RSA keys as base64-encoded DER through
 `AUTH_PRIVKEY` and `AUTH_PUBKEY`; the application
 crashes if either is missing. All other environments, including an unset

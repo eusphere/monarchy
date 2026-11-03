@@ -9,7 +9,7 @@ This project contains both client and server code.
 The repository documentation is organized by concern:
 
 - [`docs/backend.md`](docs/backend.md) — backend architecture, persistence, websockets, and matchmaking.
-- [`docs/auth.md`](docs/auth.md) — authentication and authorization.
+- [`docs/coding.md`](docs/coding.md) — coding, authentication, and authorization conventions.
 - [`docs/game-design.md`](docs/game-design.md) — game concept, universe, player progression, and expansion ideas.
 - [`docs/game-rules.md`](docs/game-rules.md) — turns, movement, attacks, blocking, armor, and wait mechanics.
 - [`docs/units.md`](docs/units.md) — spirit/unit roster, current server configuration, and historical design references.
