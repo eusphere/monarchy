@@ -16,7 +16,7 @@ Run the helper from the repository root in a trusted terminal with AWS
 credentials that can use the `alias/monarchy-secrets` KMS key:
 
 ```bash
-./skills/add-update-secret/scripts/edit-secret.sh
+./skills/add-update-secret/edit-secret.sh
 ```
 
 The helper opens the encrypted dotenv file in the operator's local editor.

@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if ! command -v sops >/dev/null 2>&1; then
+  echo "sops is required but was not found on PATH." >&2
+  echo "Install it with: brew install sops" >&2
+  exit 1
+fi
+
 repo_root="$(git rev-parse --show-toplevel)"
 secret_file="$repo_root/infra/secrets/production.env.sops"
 tmp_file="$(mktemp)"
