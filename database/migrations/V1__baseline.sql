@@ -25,7 +25,7 @@ CREATE TABLE users (
   UNIQUE(email)
 );
 
-CREATE TRIGGER users_updated_at
+CREATE TRIGGER updated_at
 BEFORE UPDATE ON users
 FOR EACH ROW EXECUTE PROCEDURE update_timestamps();
 
@@ -37,7 +37,7 @@ CREATE TABLE games (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TRIGGER games_updated_at
+CREATE TRIGGER updated_at
 BEFORE UPDATE ON games
 FOR EACH ROW EXECUTE PROCEDURE update_timestamps();
 
@@ -54,7 +54,7 @@ CREATE TABLE players (
   UNIQUE(user_id, game_id)
 );
 
-CREATE TRIGGER players_updated_at
+CREATE TRIGGER updated_at
 BEFORE UPDATE ON players
 FOR EACH ROW EXECUTE PROCEDURE update_timestamps();
 
@@ -69,6 +69,6 @@ CREATE TABLE profiles (
   UNIQUE(user_id)
 );
 
-CREATE TRIGGER profiles_updated_at
+CREATE TRIGGER updated_at
 BEFORE UPDATE ON profiles
 FOR EACH ROW EXECUTE PROCEDURE update_timestamps();
