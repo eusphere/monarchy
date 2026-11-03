@@ -1,4 +1,4 @@
 creation_rules:
-  - path_regex: secrets/.*\.env\.sops$
+  - path_regex: infra/secrets/.*\.env\.sops$
     kms: arn:aws:kms:us-east-1:930597685973:alias/monarchy-secrets
     encrypted_regex: '^(.*)$'
