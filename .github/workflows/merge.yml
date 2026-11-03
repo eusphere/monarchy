@@ -10,23 +10,6 @@ permissions:
   id-token: write
   
 jobs:
-  Prepare:
-    needs: [Test]
-    runs-on: ubuntu-latest
-    environment: prod
-    steps:
-      - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
-          aws-region: us-east-1
-      - name: Preparing instance runtime
-        run: |
-          PAYLOAD="$(tar -czf - -C infra prepare.sh user-data.sh.tftpl | base64 -w 0)"
-          ./infra/ec2-run.sh \
-            "install -d /opt/monarchy" \
-            "printf %s '$PAYLOAD' | base64 -d | tar -xzf - -C /opt/monarchy" \
-            "bash /opt/monarchy/prepare.sh"
   Test:
     uses: ./.github/workflows/test.yml
 
@@ -66,7 +49,7 @@ jobs:
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO
           bazel run //server/src/web:web-image-push
   ReplaceSecrets:
-    needs: [Prepare]
+    needs: [Test]
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -95,7 +78,7 @@ jobs:
             "chown root:root /opt/monarchy/secrets/production.env.sops" \
             "chmod 600 /opt/monarchy/secrets/production.env.sops"
   Migrate:
-    needs: [Prepare]
+    needs: [Test]
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -132,4 +115,10 @@ jobs:
           role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
           aws-region: us-east-1
       - name: Restarting API
-        run: ./infra/ec2-run.sh /usr/local/bin/monarchy-update
+        run: |
+          PAYLOAD="$(tar -czf - -C infra sync-runtime.sh user-data.sh.tftpl | base64 -w 0)"
+          ./infra/ec2-run.sh \
+            "install -d /opt/monarchy" \
+            "printf %s '$PAYLOAD' | base64 -d | tar -xzf - -C /opt/monarchy" \
+            "bash /opt/monarchy/sync-runtime.sh" \
+            "/usr/local/bin/monarchy-update"

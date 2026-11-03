@@ -11,6 +11,26 @@ the cluster is intentionally not recreated by this initial module.
 The security group permits only TCP 80 and 443 inbound. Deployment access is
 through AWS Systems Manager; no SSH ingress is opened.
 
+## Deployment lifecycle
+
+New instances run `bootstrap.sh` through Terraform user data to install Docker,
+Compose, SOPS, and the AWS CLI. First boot does not start the application without
+its configuration. Changes to user data do not rerun setup on existing instances.
+For an existing instance missing these prerequisites, run the same script once
+from the repository root:
+
+```bash
+PAYLOAD="$(base64 < infra/bootstrap.sh | tr -d '\n')"
+AWS_DEFAULT_REGION=us-east-1 ./infra/ec2-run.sh \
+  "printf %s '$PAYLOAD' | base64 -d > /tmp/monarchy-bootstrap.sh" \
+  "bash /tmp/monarchy-bootstrap.sh"
+```
+
+On pushes to master, tests gate three parallel jobs: Publish, ReplaceSecrets,
+and Migrate. Restart waits for all three to succeed, synchronizes the runtime
+Compose/Caddy/update files, and then pulls the image and restarts the stack.
+Migrate installs its own runner; no separate Prepare job is needed.
+
 After the instance is managed by SSM, deploy the current image with:
 
 ```bash
