@@ -29,7 +29,7 @@ class DiscordFlow(implicit
 
   private def handleLogin(user: dal.User): Future[Flow.Result] = {
     val bearer = Tooling.issueToken(user.id)
-    val result = Flow.Result.LoggedIn(Flow.Credentials(user, bearer, Tooling.tokenTtl))
+    val result = Flow.Result.LoggedIn(Flow.Credentials(user, bearer, Tooling.TokenTtl))
     Future.successful(result)
   }
 
