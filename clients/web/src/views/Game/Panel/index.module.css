@@ -2,12 +2,95 @@
   position: fixed;
   top: 64px;
   left: var(--grid-space);
+  right: var(--grid-space);
   z-index: 101;
-  backdrop-filter: var(--overlay-blur);
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: var(--grid-space);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: var(--grid-space);
   box-sizing: border-box;
-  width: 20vw;
+}
+
+.banner {
+  display: flex;
+  width: min(760px, 100%);
+  min-height: 82px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 24px;
+  background: rgba(231, 239, 247, 0.8);
+  box-shadow: 0 12px 32px rgba(46, 62, 79, 0.14);
+  backdrop-filter: var(--overlay-blur);
+}
+
+.side {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 12px 18px;
+  transition: flex-grow 280ms ease, background-color 280ms ease, opacity 280ms ease, transform 280ms ease;
+}
+
+.side.active {
+  flex-grow: 1;
+  background: rgba(119, 169, 220, 0.55);
+  opacity: 1;
+}
+
+.side.inactive {
+  flex-grow: 1;
+  opacity: 0.62;
+}
+
+.side.right {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.colorSquare {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.74);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(46, 62, 79, 0.2);
+  transition: transform 280ms ease, box-shadow 280ms ease;
+}
+
+.active .colorSquare {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.28), 0 5px 14px rgba(46, 62, 79, 0.24);
+}
+
+.playerDetails {
+  min-width: 0;
+}
+
+/* Status is intentionally quiet text for now; iconography will replace it later. */
+.phaseLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+@media (max-width: 520px) {
+  .root { left: 8px; right: 8px; }
+  .banner { min-height: 70px; border-radius: 18px; }
+  .side { gap: 8px; padding: 10px; }
+  .colorSquare { flex-basis: 36px; width: 36px; height: 36px; border-radius: 10px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .active .colorSquare { animation: turnPulse 2.4s ease-in-out infinite; }
+}
+
+@keyframes turnPulse {
+  0%, 100% { transform: scale(1.04); }
+  50% { transform: scale(1.1); }
 }

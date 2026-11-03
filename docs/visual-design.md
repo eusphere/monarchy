@@ -25,3 +25,17 @@ The top-right identity control should remain reachable at every width and should
 ## Color and identity
 
 Use the user's profile color as an identity accent when available, with a theme accent fallback. Avatar imagery can replace the current monogram later without changing the surrounding layout.
+
+## Turn banner
+
+The game turn indicator is a single, rounded two-player banner rather than a separate status card and player list. Both player sides have equal width. The active side receives the stronger background treatment while the inactive side remains visible but recedes. This change should animate smoothly when control changes.
+
+- Use the player's profile color in the small square accent so ownership is recognizable without relying on text alone.
+- Keep both player sides equal in width; turn state should be communicated through color, contrast, and motion rather than layout displacement.
+- Keep the username prominent and place the current phase below it as quiet supporting text.
+- `Move`, `Attack`, `Select`, and `Waiting` are quiet labels paired with simple line icons, not badges: they should not have a pill background, border, or extra padding.
+- Do not imply a clock until game timing exists; the square is an identity accent for now.
+- Keep the banner responsive: reduce the square and gutters on narrow screens while preserving the shared page/header alignment.
+- Prefer CSS transitions for the active-side change and respect `prefers-reduced-motion`.
+
+The current implementation is [`TurnBanner.tsx`](../clients/web/src/views/Game/Panel/TurnBanner.tsx) with its layout styles in [`Panel/index.module.css`](../clients/web/src/views/Game/Panel/index.module.css). The first icon set is implemented in [`GamePhaseIcon.tsx`](../clients/web/src/views/Game/Panel/GamePhaseIcon.tsx): hourglass for waiting, position arrow for moving, axe for attacking, compass for turning, flag for forfeiting, and crown for victory. Keep these as restrained line icons until the broader SVG icon system is defined.
