@@ -11,6 +11,13 @@ the cluster is intentionally not recreated by this initial module.
 The security group permits only TCP 80 and 443 inbound. Deployment access is
 through AWS Systems Manager; no SSH ingress is opened.
 
+The web client is hosted separately at `web.monarchy1.com` on a private S3
+bucket behind its own CloudFront distribution. A CloudFront Function maps
+extensionless client routes to `index.html`; missing assets still return an
+error. The master workflow builds `clients/web`, uploads the static files, and
+invalidates the distribution after tests pass. The existing root-domain
+distribution remains owned by `eusphere/eusphere/infra`.
+
 ## Deployment lifecycle
 
 New instances run `bootstrap.sh` through Terraform user data to install Docker,

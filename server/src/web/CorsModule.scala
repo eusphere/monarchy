@@ -19,6 +19,7 @@ object CorsModule {
     "http://localhost:5173",
     "http://localhost:8081",
     "https://monarchy1.com",
+    "https://web.monarchy1.com",
   )
 
   private val BaseHeaders = List(

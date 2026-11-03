@@ -2,7 +2,7 @@ package monarchy.controllers
 
 import akka.http.scaladsl.model._
 import com.typesafe.scalalogging.StrictLogging
-import java.net.URLEncoder
+import java.net.{URI, URLEncoder}
 import monarchy.auth.oauth2.{ExchangeClient, Oauth2}
 import monarchy.util.Json
 import monarchy.users.{DiscordFlow, Flow}
@@ -59,7 +59,7 @@ class DiscordExchangeController(implicit
       callerContext: DiscordAuthorizeController.CallerContext
   ): Future[HttpResponse] = {
     val flowReq = discordFlow(DiscordFlow.Context(token.accessToken)).map {
-      case Flow.Result.Signup(creds) => Some(creds -> mkProfileUrl)
+      case Flow.Result.Signup(creds) => Some(creds -> mkProfileUrl(callerContext.referrerUrl))
       case Flow.Result.LoggedIn(creds) => Some(creds -> callerContext.referrerUrl)
       case Flow.Result.Error(e) =>
         logger.error(s"error during flow: $e")
@@ -92,8 +92,10 @@ object DiscordExchangeController {
       bearer: String,
   )
 
-  private def mkProfileUrl: String =
-    s"$mkBaseUrl/profile"
+  private def mkProfileUrl(referrerUrl: String): String = {
+    val referrer = new URI(referrerUrl)
+    s"${referrer.getScheme}://${referrer.getAuthority}/profile"
+  }
 
   // Sets a cookie
   private def mkAuthHeader(bearer: String, ttl: Long): HttpHeader = {
