@@ -4,7 +4,6 @@ import styles from './index.module.css';
 import UserItem from './UserItem';
 import { Flex, Heading } from '@radix-ui/themes';
 import { Link } from 'react-router-dom';
-import logo from '~/assets/logo-black.svg';
 
 type Props = {
   useSpace?: boolean;

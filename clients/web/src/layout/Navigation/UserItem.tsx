@@ -7,13 +7,16 @@ import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 import { useLazyLoadQuery, useFragment } from 'react-relay';
 import { Button } from '@radix-ui/themes';
+import { Link } from 'react-router-dom';
 
 const UserItemInner = (): React.ReactNode => {
   const data = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
   const user = useFragment<UserFragment$key>(UserFragment, data.self);
   return (
-    <Button variant='ghost' size='2'>
-      <Profile icon user={user} />
+    <Button variant='ghost' size='2' asChild>
+      <Link to='/profile'>
+        <Profile icon user={user} />
+      </Link>
     </Button>
   );
 }
