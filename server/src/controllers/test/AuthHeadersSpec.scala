@@ -16,15 +16,15 @@ class AuthHeadersSpec extends AnyWordSpec {
     "ignore malformed encoding in unrelated headers" in {
       assert(AuthRoute.headers(Seq(RawHeader("X-Probe", "%"))).isEmpty)
     }
-    "reject malformed authorization without throwing" in {
-      assert(AuthRoute.headers(Seq(RawHeader("Authorization", "%"))).isEmpty)
+    "pass malformed authorization to token validation without throwing" in {
+      assert(AuthRoute.headers(Seq(RawHeader("Authorization", "%"))).contains("%"))
     }
     "recognize case-insensitive authorization headers" in {
-      assert(AuthRoute.headers(Seq(RawHeader("authorization", s"Bearer $token"))).contains((id, token)))
+      assert(AuthRoute.headers(Seq(RawHeader("authorization", s"Bearer $token"))).contains(token))
     }
     "not URL-decode bearer headers" in {
       val rawToken = token + "%2B"
-      assert(AuthRoute.headers(Seq(RawHeader("Authorization", s"Bearer $rawToken"))).contains((id, rawToken)))
+      assert(AuthRoute.headers(Seq(RawHeader("Authorization", s"Bearer $rawToken"))).contains(rawToken))
     }
     "ignore unrelated cookies with malformed encoding" in {
       assert(AuthRoute.cookies(Seq(HttpCookiePair("other", "%"))).isEmpty)
@@ -33,7 +33,7 @@ class AuthHeadersSpec extends AnyWordSpec {
       assert(AuthRoute.cookies(Seq(HttpCookiePair("Authorization", "%"))).isEmpty)
     }
     "preserve encoded authentication-cookie support" in {
-      assert(AuthRoute.cookies(Seq(HttpCookiePair("Authorization", s"Bearer%20$token"))).contains((id, token)))
+      assert(AuthRoute.cookies(Seq(HttpCookiePair("Authorization", s"Bearer%20$token"))).contains(token))
     }
   }
 }
