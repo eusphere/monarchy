@@ -11,9 +11,7 @@ repo_root="$(git rev-parse --show-toplevel)"
 secret_file="$repo_root/infra/secrets/production.env.sops"
 tmp_file="$(mktemp)"
 
-cleanup() {
-  rm -f -- "$tmp_file"
-}
+cleanup() { rm -f -- "$tmp_file"; }
 trap cleanup EXIT INT TERM
 chmod 600 "$tmp_file"
 

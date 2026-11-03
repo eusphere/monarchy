@@ -1,5 +1,5 @@
 ---
-name: add-update-secret
+name: update-secret
 description: Add or update a Monarchy runtime secret using the repository's SOPS and AWS KMS workflow. Use when a privileged operator needs to create or rotate an application secret.
 disable-model-invocation: true
 ---
@@ -16,7 +16,7 @@ Run the helper from the repository root in a trusted terminal with AWS
 credentials that can use the `alias/monarchy-secrets` KMS key:
 
 ```bash
-./skills/add-update-secret/edit-secret.sh
+./skills/update-secret/update-secret.sh
 ```
 
 The helper opens the encrypted dotenv file in the operator's local editor.
