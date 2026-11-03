@@ -63,26 +63,5 @@ docker compose pull api
 docker compose up -d --remove-orphans
 UPDATE
 chmod 700 /usr/local/bin/monarchy-update
-cat > /usr/local/bin/monarchy-migrate <<'MIGRATE'
-#!/bin/bash
-set -euo pipefail
-set -a
-source /etc/monarchy/app.env
-set +a
-: "$${JDBC_DATABASE_URL:?JDBC_DATABASE_URL is required for migrations}"
-docker run --rm --network host \
-  -e "FLYWAY_URL=$${FLYWAY_DATABASE_URL:-$JDBC_DATABASE_URL}" \
-  -v /opt/monarchy/migrations:/flyway/sql:ro \
-  -v /opt/monarchy/flyway.conf:/flyway/conf/flyway.conf:ro \
-  flyway/flyway:10.20-alpine \
-  -configFiles=/flyway/conf/flyway.conf migrate
-MIGRATE
-chmod 700 /usr/local/bin/monarchy-migrate
-cat > /opt/monarchy/flyway.conf <<'FLYWAY'
-flyway.locations=filesystem:/flyway/sql
-flyway.baselineOnMigrate=true
-flyway.baselineVersion=1
-flyway.connectRetries=10
-FLYWAY
 # CI installs encrypted configuration and migrations before starting the app.
 # Do not start an unconfigured stack on first boot.
