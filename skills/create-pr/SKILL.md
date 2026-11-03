@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: Create a reviewable GitHub pull request with repository-standard titles, validation, and scope checks. Use when opening a new pull request or preparing a branch for review.
+description: Create a reviewable GitHub pull request with repository-standard titles, validation, and CI debugging. Use when opening a pull request, preparing a branch for review, or fixing failed PR checks.
 disable-model-invocation: true
 ---
 
@@ -41,5 +41,26 @@ equally central, combine prefixes in changed-system order, for example
 4. Commit with a clear message and push the branch.
 5. Create the PR with `gh pr create`, using the required title prefix and a
    body that states what changed, how it was validated, and any follow-up.
-6. Report the PR URL and check status. Do not claim the build passes until the
-   remote checks confirm it.
+6. Monitor CI for the latest pushed commit and follow the debugging workflow
+   below until checks pass or a concrete blocker requires user input.
+7. Report the PR URL, verified check status, and any remaining blocker. Do not
+   claim the build passes until remote checks confirm it for the current commit.
+
+## Debug CI failures
+
+Inspect every failed job with `gh pr checks`, `gh run view`, and failed-job
+logs. Identify the underlying cause before editing or rerunning. When CI
+dispatches work to another system, inspect that system's command status and
+logs too; a successful dispatch does not establish successful execution.
+Avoid exposing credentials or decrypted configuration in diagnostic output.
+
+Fix failures within the task's scope, run relevant local validation, push the
+fix, and monitor the new run. Repeat until the applicable checks pass. Rerun
+without a code change only when evidence supports a transient failure.
+Do not disable checks or weaken assertions to obtain a green build.
+
+Distinguish PR checks from deployment workflows that run only after merge.
+Passing PR tests does not prove production deployment works. Do not merge or
+trigger a deployment solely to test it without existing user authorization.
+For an external outage, missing authority, or required user decision, report
+the failing job, supporting evidence, and the specific unblock needed.

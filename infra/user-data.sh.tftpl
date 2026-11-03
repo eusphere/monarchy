@@ -1,7 +1,6 @@
 #!/bin/bash
-set -euxo pipefail
-dnf install -y docker
-systemctl enable --now docker
+set -euo pipefail
+${bootstrap}
 usermod -aG docker ec2-user
 mkdir -p /opt/monarchy
 mkdir -p /opt/monarchy/secrets
@@ -47,6 +46,7 @@ CADDY
 cat > /usr/local/bin/monarchy-update <<'UPDATE'
 #!/bin/bash
 set -euo pipefail
+umask 077
 cd /opt/monarchy
 if [ -f /opt/monarchy/secrets/production.env.sops ]; then
   sops --decrypt --input-type dotenv --output-type dotenv \
@@ -68,7 +68,7 @@ source /etc/monarchy/app.env
 set +a
 : "$${JDBC_DATABASE_URL:?JDBC_DATABASE_URL is required for migrations}"
 docker run --rm --network host \
-  -e "FLYWAY_URL=$${FLYWAY_DATABASE_URL:-$$JDBC_DATABASE_URL}" \
+  -e "FLYWAY_URL=$${FLYWAY_DATABASE_URL:-$JDBC_DATABASE_URL}" \
   -v /opt/monarchy/migrations:/flyway/sql:ro \
   -v /opt/monarchy/flyway.conf:/flyway/conf/flyway.conf:ro \
   flyway/flyway:10.20-alpine \
@@ -81,12 +81,5 @@ flyway.baselineOnMigrate=true
 flyway.baselineVersion=1
 flyway.connectRetries=10
 FLYWAY
-install -o root -g root -m 600 /dev/null /etc/monarchy/app.env
-dnf install -y awscli2 || true
-if ! command -v sops >/dev/null 2>&1; then
-  curl --fail --silent --show-error --location \
-    https://github.com/getsops/sops/releases/download/v3.9.4/sops-v3.9.4.linux.amd64 \
-    --output /usr/local/bin/sops
-  chmod 755 /usr/local/bin/sops
-fi
-if docker compose version >/dev/null 2>&1; then /usr/local/bin/monarchy-update; fi
+# CI installs encrypted configuration and migrations before starting the app.
+# Do not start an unconfigured stack on first boot.

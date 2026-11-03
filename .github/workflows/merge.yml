@@ -15,90 +15,10 @@ jobs:
 
   Publish:
     needs: [Test]
-    runs-on: ubuntu-latest
-    environment: prod
-    steps:
-      - name: Cloning source
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-      - name: Installing bazel
-        run: |
-          curl --fail --silent --show-error --location \
-            https://github.com/bazelbuild/bazelisk/releases/download/v1.30.0/bazelisk-linux-amd64 \
-            --output "$RUNNER_TEMP/bazel"
-          chmod +x "$RUNNER_TEMP/bazel"
-          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
-      - name: Configuring AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
-          aws-region: us-east-1
-      - name: Installing bazel cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/bazel
-          key: bazel-${{ runner.os }}-${{ hashFiles('MODULE.bazel.lock', 'MODULE.bazel', 'WORKSPACE', '.bazelrc') }}
-          restore-keys: |
-            bazel-${{ runner.os }}-
-      - name: Pushing image
-        env:
-          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
-        run: |
-          REPO="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com"
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO
-          bazel run //server/src/web:web-image-push
-  ReplaceSecrets:
-    needs: [Test]
-    runs-on: ubuntu-latest
-    environment: prod
-    steps:
-      - name: Cloning source
-        uses: actions/checkout@v4
-      - name: Checking for changed paths
-        id: secrets_changed
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            secrets:
-              - 'infra/secrets/**'
-      - name: Configuring AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
-          aws-region: us-east-1
-      - name: Replacing encrypted secrets
-        if: steps.secrets_changed.outputs.secrets == 'true'
-        run: |
-          SECRET_B64="$(base64 -w 0 infra/secrets/production.env.sops)"
-          ./infra/ec2-run.sh \
-            "install -d -m 700 /opt/monarchy/secrets" \
-            "printf %s '${SECRET_B64}' | base64 -d > /opt/monarchy/secrets/production.env.sops" \
-            "chown root:root /opt/monarchy/secrets/production.env.sops" \
-            "chmod 600 /opt/monarchy/secrets/production.env.sops"
-  Migrate:
-    needs: [Test]
-    runs-on: ubuntu-latest
-    environment: prod
-    steps:
-      - name: Cloning source
-        uses: actions/checkout@v4
-      - name: Applying database migrations
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
-          aws-region: us-east-1
-      - name: Running database migrations
-        run: |
-          MIGRATIONS_B64="$(tar -czf - -C database migrations | base64 -w 0)"
-          ./infra/ec2-run.sh \
-            "install -d -m 755 /opt/monarchy/migrations" \
-            "printf %s '${MIGRATIONS_B64}' | base64 -d | tar -xzf - -C /opt/monarchy" \
-            "chown -R root:root /opt/monarchy/migrations" \
-            "/usr/local/bin/monarchy-migrate"
+    uses: ./.github/workflows/publish.yml
+
   Restart:
-    needs: [Publish, ReplaceSecrets, Migrate]
-    if: always() && needs.Publish.result == 'success' && needs.ReplaceSecrets.result == 'success' && needs.Migrate.result == 'success'
+    needs: [Publish]
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -110,4 +30,10 @@ jobs:
           role-to-assume: arn:aws:iam::930597685973:role/monarchy-github-actions
           aws-region: us-east-1
       - name: Restarting API
-        run: ./infra/ec2-run.sh /usr/local/bin/monarchy-update
+        run: |
+          PAYLOAD="$(tar -czf - -C infra sync-runtime.sh user-data.sh.tftpl | base64 -w 0)"
+          ./infra/ec2-run.sh \
+            "install -d /opt/monarchy" \
+            "printf %s '$PAYLOAD' | base64 -d | tar -xzf - -C /opt/monarchy" \
+            "bash /opt/monarchy/sync-runtime.sh" \
+            "/usr/local/bin/monarchy-update"
