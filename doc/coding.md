@@ -9,7 +9,6 @@ names inside method bodies.
 
 Keep security allowlists explicit and centralized. Add environment-backed
 configuration only when deployment-specific values are actually required.
-
 ## Terraform
 
 Balance the infrastructure tree by responsibility. Keep the root module
