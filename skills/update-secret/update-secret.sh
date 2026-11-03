@@ -15,7 +15,7 @@ cleanup() { rm -f -- "$tmp_file"; }
 trap cleanup EXIT INT TERM
 chmod 600 "$tmp_file"
 
-if [[ -f "$secret_file" ]]; then
+if [[ -s "$secret_file" ]]; then
   sops --decrypt --input-type dotenv --output-type dotenv "$secret_file" > "$tmp_file"
 else
   printf '# Monarchy production environment\n' > "$tmp_file"

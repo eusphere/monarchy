@@ -28,6 +28,9 @@ temporary plaintext file on exit. The encrypted file is:
 infra/secrets/production.env.sops
 ```
 
+An empty placeholder file is treated as a new secret file; a non-empty file
+must already contain valid SOPS metadata.
+
 Review the diff to confirm that only encrypted values changed, then commit and
 push the encrypted file. Do not display, cat, or paste its decrypted contents.
 
