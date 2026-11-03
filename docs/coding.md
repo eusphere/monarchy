@@ -26,7 +26,7 @@ that internal JWT and never forward the Discord access token.
 
 JWTs use RS256. When `ENV` contains `prod`, deployments must supply private
 and public RSA keys as base64-encoded DER through
-`MONARCHY_JWT_PRIVATE_KEY` and `MONARCHY_JWT_PUBLIC_KEY`; the application
+`AUTH_PRIVKEY` and `AUTH_PUBKEY`; the application
 crashes if either is missing. All other environments, including an unset
 `ENV` during local development, generate one in-memory 2048-bit key pair on
 first use, so local tokens are intentionally invalidated on restart. Generate
@@ -37,7 +37,7 @@ tmpdir=$(mktemp -d)
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 \
   -out "$tmpdir/private.pem"
 openssl pkey -in "$tmpdir/private.pem" -pubout -out "$tmpdir/public.pem"
-printf 'MONARCHY_JWT_PRIVATE_KEY=%s\nMONARCHY_JWT_PUBLIC_KEY=%s\n' \
+printf 'AUTH_PRIVKEY=%s\nAUTH_PUBKEY=%s\n' \
   "$(openssl pkcs8 -topk8 -nocrypt -in "$tmpdir/private.pem" -outform DER | base64 | tr -d '\n')" \
   "$(openssl pkey -pubin -in "$tmpdir/public.pem" -pubout -outform DER | base64 | tr -d '\n')" \
   > "$tmpdir/jwt.env"

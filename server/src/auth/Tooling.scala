@@ -6,26 +6,24 @@ import java.time.Instant
 import java.util.{Base64, Date, UUID}
 import io.jsonwebtoken.impl.crypto.MacProvider
 import io.jsonwebtoken.{Jwts, SignatureAlgorithm}
+import monarchy.util.Env
 import scala.concurrent.duration._
 import scala.util.Try
 
 object Tooling {
-  private val Issuer = "monarchy"
-  private val Audience = "monarchy-api"
-  private val PrivateKeyEnv = "MONARCHY_JWT_PRIVATE_KEY"
-  private val PublicKeyEnv = "MONARCHY_JWT_PUBLIC_KEY"
-  val tokenTtl: FiniteDuration = 365.days
-  private val IsLocal = !sys.env.get("ENV").exists(_.contains("prod"))
+  val Issuer = "monarchy"
+  val Audience = "monarchy-api"
+  val TokenTtl: FiniteDuration = 365.days
 
   private lazy val SigningKeys: KeyPair = {
-    if (IsLocal) {
+    if (Env.isLocal) {
       val generator = KeyPairGenerator.getInstance("RSA")
       generator.initialize(2048)
       generator.generateKeyPair
     } else {
       new KeyPair(
-        parsePublicKey(sys.env(PublicKeyEnv)),
-        parsePrivateKey(sys.env(PrivateKeyEnv)),
+        parsePublicKey(sys.env("AUTH_PRIVKEY")),
+        parsePrivateKey(sys.env("AUTH_PUBKEY")),
       )
     }
   }
