@@ -24,10 +24,11 @@ is used only during login: the server exchanges the authorization code,
 fetches the Discord profile, and then issues a Monarchy JWT. API requests use
 that internal JWT and never forward the Discord access token.
 
-JWTs use RS256. Deployments must supply private and public RSA keys as
-base64-encoded DER through `MONARCHY_JWT_PRIVATE_KEY` and
-`MONARCHY_JWT_PUBLIC_KEY`; startup fails if either is missing outside
-`ENV=local`. Local development generates one in-memory 2048-bit key pair on
+JWTs use RS256. When `ENV` contains `prod`, deployments must supply private
+and public RSA keys as base64-encoded DER through
+`MONARCHY_JWT_PRIVATE_KEY` and `MONARCHY_JWT_PUBLIC_KEY`; the application
+crashes if either is missing. All other environments, including an unset
+`ENV` during local development, generate one in-memory 2048-bit key pair on
 first use, so local tokens are intentionally invalidated on restart. Generate
 deployment keys and encrypt them with SOPS, for example:
 

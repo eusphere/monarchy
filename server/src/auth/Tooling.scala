@@ -1,7 +1,6 @@
 package monarchy.auth
 
 import java.security.{KeyFactory, KeyPair, KeyPairGenerator, PrivateKey, PublicKey}
-import java.security.interfaces.{RSAPrivateKey, RSAPublicKey}
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 import java.time.Instant
 import java.util.{Base64, Date, UUID}
@@ -16,17 +15,17 @@ object Tooling {
   private val PrivateKeyEnv = "MONARCHY_JWT_PRIVATE_KEY"
   private val PublicKeyEnv = "MONARCHY_JWT_PUBLIC_KEY"
   val tokenTtl: FiniteDuration = 365.days
-  private val IsLocal = sys.env.get("ENV").contains("local")
+  private val IsLocal = !sys.env.get("ENV").exists(_.contains("prod"))
 
-  private lazy val SigningKeys: KeyPair = validateKeyPair {
+  private lazy val SigningKeys: KeyPair = {
     if (IsLocal) {
       val generator = KeyPairGenerator.getInstance("RSA")
       generator.initialize(2048)
       generator.generateKeyPair
     } else {
       new KeyPair(
-        parsePublicKey(requiredEnv(PublicKeyEnv)),
-        parsePrivateKey(requiredEnv(PrivateKeyEnv)),
+        parsePublicKey(sys.env(PublicKeyEnv)),
+        parsePrivateKey(sys.env(PrivateKeyEnv)),
       )
     }
   }
@@ -60,32 +59,6 @@ object Tooling {
       .parseClaimsJws(raw)
       .getBody
     UUID.fromString(claims.getSubject)
-  }
-
-  private def requiredEnv(name: String): String =
-    sys.env.getOrElse(
-      name,
-      throw new IllegalStateException(s"$name must be configured outside ENV=local")
-    )
-
-  private def validateKeyPair(keys: KeyPair): KeyPair = {
-    val publicKey = keys.getPublic match {
-      case key: RSAPublicKey => key
-      case _ => throw new IllegalStateException("JWT public key must be RSA")
-    }
-    val privateKey = keys.getPrivate match {
-      case key: RSAPrivateKey => key
-      case _ => throw new IllegalStateException("JWT private key must be RSA")
-    }
-    require(
-      publicKey.getModulus.bitLength >= 2048,
-      "JWT RSA keys must be at least 2048 bits"
-    )
-    require(
-      publicKey.getModulus == privateKey.getModulus,
-      "JWT public and private keys do not match"
-    )
-    keys
   }
 
   private def parsePrivateKey(raw: String): PrivateKey = {
