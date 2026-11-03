@@ -39,10 +39,11 @@ AWS_DEFAULT_REGION=us-east-1 ./infra/ec2-run.sh \
 ```
 
 On pushes to master, tests gate the reusable `publish.yml` workflow. Docker,
-Web, and Secrets run in parallel; Schema waits for Secrets so Flyway reads the
-current encrypted production configuration. Restart waits for publication to
-succeed, synchronizes the runtime
-Compose/Caddy/update files, and then pulls the image and restarts the stack.
+Web, Secrets, and Schema run in parallel. Schema installs the encrypted file
+from its own checkout before running Flyway, so it does not depend on Secrets
+finishing first. Both jobs replace the same encrypted file atomically. Restart
+waits for publication to succeed, synchronizes the runtime Compose/Caddy/update
+files, and then pulls the image and restarts the stack.
 Schema installs its own migration runner; no separate Prepare job is needed.
 Schema runs Flyway on every master deployment. Flyway applies only pending
 migrations, so a newly initialized database or a previously skipped migration

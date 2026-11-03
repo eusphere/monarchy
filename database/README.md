@@ -16,5 +16,6 @@ credential is provisioned. Never edit a migration after it has been applied;
 add a new migration instead.
 
 On EC2, `ec2-migrate.sh` reads the same SOPS-encrypted production file as the
-application. CI uploads that file first, then runs Flyway on every master
-deployment; Flyway applies only pending migrations.
+application. The Schema job uploads the encrypted file from its own checkout,
+then runs Flyway on every master deployment in parallel with image and secret
+publication. Flyway applies only pending migrations.
