@@ -9,7 +9,7 @@ jobs:
   Test:
     uses: ./.github/workflows/test.yml
 
-  Push:
+  Publish:
     needs: [Test]
     runs-on: ubuntu-latest
     environment: prod
@@ -33,7 +33,6 @@ jobs:
           restore-keys: |
             bazel-${{ runner.os }}-
       - name: Pushing image
-        if: github.event.ref == 'refs/heads/master'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -43,6 +42,13 @@ jobs:
           REPO="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com"
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO
           bazel run //server/src/web:web-image-push
+  ReplaceSecrets:
+    needs: [Test]
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Cloning source
+        uses: actions/checkout@v4
       - name: Checking for changed paths
         id: secrets_changed
         uses: dorny/paths-filter@v3
@@ -50,20 +56,49 @@ jobs:
           filters: |
             secrets:
               - 'infra/secrets/**'
-      - name: Deploying API
+      - name: Replacing encrypted secrets
+        if: steps.secrets_changed.outputs.secrets == 'true'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.AWS_REGION }}
         run: |
-          if [[ "${{ steps.secrets_changed.outputs.secrets }}" == "true" ]]; then
-            SECRET_B64="$(base64 -w 0 infra/secrets/production.env.sops)"
-            ./infra/ec2-run.sh \
-              "install -d -m 700 /opt/monarchy/secrets" \
-              "printf %s '${SECRET_B64}' | base64 -d > /opt/monarchy/secrets/production.env.sops" \
-              "chown root:root /opt/monarchy/secrets/production.env.sops" \
-              "chmod 600 /opt/monarchy/secrets/production.env.sops" \
-              "/usr/local/bin/monarchy-update"
-          else
-            ./infra/ec2-run.sh /usr/local/bin/monarchy-update
-          fi
+          SECRET_B64="$(base64 -w 0 infra/secrets/production.env.sops)"
+          ./infra/ec2-run.sh \
+            "install -d -m 700 /opt/monarchy/secrets" \
+            "printf %s '${SECRET_B64}' | base64 -d > /opt/monarchy/secrets/production.env.sops" \
+            "chown root:root /opt/monarchy/secrets/production.env.sops" \
+            "chmod 600 /opt/monarchy/secrets/production.env.sops"
+  Migrate:
+    needs: [Test]
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Cloning source
+        uses: actions/checkout@v4
+      - name: Applying database migrations
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+        run: |
+          MIGRATIONS_B64="$(tar -czf - -C database migrations | base64 -w 0)"
+          ./infra/ec2-run.sh \
+            "install -d -m 755 /opt/monarchy/migrations" \
+            "printf %s '${MIGRATIONS_B64}' | base64 -d | tar -xzf - -C /opt/monarchy" \
+            "chown -R root:root /opt/monarchy/migrations" \
+            "/usr/local/bin/monarchy-migrate"
+  Restart:
+    needs: [Publish, ReplaceSecrets, Migrate]
+    if: always() && needs.Publish.result == 'success' && needs.ReplaceSecrets.result == 'success' && needs.Migrate.result == 'success'
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Cloning source
+        uses: actions/checkout@v4
+      - name: Restarting API
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+        run: ./infra/ec2-run.sh /usr/local/bin/monarchy-update
