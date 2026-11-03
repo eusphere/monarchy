@@ -15,9 +15,10 @@ import scala.concurrent.duration._
   */
 object CorsModule {
   private val AllowHeaders = Set("Content-Type", AuthRoute.AuthorizationKey)
-  private val AllowOrigins = Set(
+  val allowedOrigins: Set[String] = Set(
     "http://localhost:5173",
     "http://localhost:8081",
+    "https://monarchy1.com",
   )
 
   private val BaseHeaders = List(
@@ -44,7 +45,7 @@ object CorsModule {
   private def responseHeaders(req: HttpRequest): List[HttpHeader] = {
     val origins = req.headers.filter(_.name == "Origin").map(_.value)
     val originsAllowed = origins
-      .filter(AllowOrigins.contains)
+      .filter(allowedOrigins.contains)
       .map { og => `Access-Control-Allow-Origin`(HttpOriginRange(HttpOrigin(og))) }
     BaseHeaders ++ originsAllowed
   }
