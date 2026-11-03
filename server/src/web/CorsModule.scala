@@ -15,15 +15,11 @@ import scala.concurrent.duration._
   */
 object CorsModule {
   private val AllowHeaders = Set("Content-Type", AuthRoute.AuthorizationKey)
-  val allowedOrigins: Set[String] =
-    sys.env
-      .get("MONARCHY_ALLOWED_ORIGINS")
-      .map(_.split(",").map(_.trim).filter(_.nonEmpty).toSet)
-      .filter(_.nonEmpty)
-      .getOrElse(Set(
-        "http://localhost:5173",
-        "http://localhost:8081",
-      ))
+  val allowedOrigins: Set[String] = Set(
+    "http://localhost:5173",
+    "http://localhost:8081",
+    "https://monarchy1.com",
+  )
 
   private val BaseHeaders = List(
     `Access-Control-Allow-Credentials`(true),

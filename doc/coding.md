@@ -8,5 +8,5 @@ resulting `Option` rather than comparing directly with `null`.
 Keep imports at the top of the file instead of using fully qualified class
 names inside method bodies.
 
-Use local-development values for configuration defaults; production values
-should be supplied through the environment.
+Keep security allowlists explicit and centralized. Add environment-backed
+configuration only when deployment-specific values are actually required.
