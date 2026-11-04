@@ -4,6 +4,7 @@ import styles from './index.module.css';
 import UserItem from './UserItem';
 import { Flex, Heading } from '@radix-ui/themes';
 import { Link } from 'react-router-dom';
+import ConnectionStatus from '~/layout/ConnectionStatus';
 
 type Props = {
   useSpace?: boolean;
@@ -26,6 +27,7 @@ const Navigation = ({ useSpace = true }: Props): React.ReactNode => {
         </Heading>
       </Link>
       <Flex gap='4' className={styles.settings}>
+        <ConnectionStatus />
         <UserItem />
       </Flex>
     </Flex>
