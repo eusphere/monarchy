@@ -13,7 +13,7 @@ object UpdateProfileResolver extends Resolver[Unit, dal.User] {
   override def apply(in: In): Out = {
     import in.ctx._
     val userId = expectUserId(in)
-    val username = in.arg(GqlArgs.UpdateProfile).username.trim
+    val username = in.arg(GqlArgs.ProfileUpdate).username.trim
 
     if (!username.matches(dal.User.UsernamePattern)) {
       Future.failed(Exceptions.BadArgs(InvalidUsernameMessage))

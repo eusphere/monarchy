@@ -1,19 +1,33 @@
 import * as React from 'react';
 import { Button, Card, Flex, Heading, Text, Badge, Grid } from '@radix-ui/themes';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import GamesQuery from '~/autogen/relay/GamesQuery.graphql';
 import HomeQuery from '~/autogen/relay/HomeQueriesQuery.graphql';
 import HomeSeekMutation from '~/autogen/relay/HomeQueriesSeekMutation.graphql';
+import HomeChallengeAcceptMutation from '~/autogen/relay/HomeQueriesChallengeAcceptMutation.graphql';
+import HomeChallengeCancelMutation from '~/autogen/relay/HomeQueriesChallengeCancelMutation.graphql';
 import Game from '~/layout/GameSummary';
 import styles from './index.module.css';
+import { subscribe } from '~/network/stream';
 
 const Home = (): React.ReactNode => {
-  const data = useLazyLoadQuery<any>(HomeQuery, {});
+  const [refreshKey, setRefreshKey] = React.useState(0);
+  const navigate = useNavigate();
+  const data = useLazyLoadQuery<any>(HomeQuery, {}, { fetchPolicy: 'network-only', fetchKey: refreshKey });
   const user = data.self;
-  const games = useLazyLoadQuery<any>(GamesQuery, { q: { userId: user.id } }).games;
+  const games = useLazyLoadQuery<any>(GamesQuery, { q: { userId: user.id } }, { fetchPolicy: 'network-only', fetchKey: refreshKey }).games;
   const [seek, isSeeking] = useMutation<any>(HomeSeekMutation);
+  const [accept, isAccepting] = useMutation<any>(HomeChallengeAcceptMutation);
+  const [cancel, isCancelling] = useMutation<any>(HomeChallengeCancelMutation);
   const challenges = data.lobby.challenges;
+
+  React.useEffect(() => subscribe((message) => {
+    if (message.name === 'Matchmaking') setRefreshKey((key) => key + 1);
+    if (message.name === 'GameCreate' && typeof message.data === 'object' && message.data !== null && 'gameId' in message.data) {
+      navigate(`/game/${(message.data as { gameId: string }).gameId}`);
+    }
+  }), [navigate]);
 
   return <main className={styles.root}>
     <section className={styles.hero}>
@@ -30,7 +44,7 @@ const Home = (): React.ReactNode => {
           <Button onClick={() => seek({ variables: {} })} disabled={isSeeking}>Seek a challenge</Button>
         </Flex>
         {challenges.length === 0 ? <Text color='gray'>No open challenges yet. Seek one to get started.</Text> :
-          <Flex direction='column' gap='2'>{challenges.map((challenge: any) => <Flex key={challenge.host.id} justify='between' align='center' className={styles.row}><Text>{challenge.host.username}</Text><Badge>{challenge.host.rating}</Badge><Button size='1' variant='soft'>Accept</Button></Flex>)}</Flex>}
+          <Flex direction='column' gap='2'>{challenges.map((challenge: any) => <Flex key={challenge.host.id} justify='between' align='center' className={styles.row}><Text>{challenge.host.username}</Text><Badge>{challenge.host.rating}</Badge>{challenge.host.id === user.id ? <Button size='1' variant='soft' onClick={() => cancel({ variables: {} })} disabled={isCancelling}>Cancel</Button> : <Button size='1' variant='soft' onClick={() => accept({ variables: { q: { opponentId: challenge.host.id } }, onCompleted: (result: any) => navigate(`/game/${result.challengeAccept.id}`) })} disabled={isAccepting}>Accept</Button>}</Flex>)}</Flex>}
       </Card>
 
       <Card className={styles.panel}>

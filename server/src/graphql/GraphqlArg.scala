@@ -48,6 +48,9 @@ object EndTurnQuery extends GraphqlArg[EndTurnQuery]
 case class UpdateProfileQuery(username: String)
 object UpdateProfileQuery extends GraphqlArg[UpdateProfileQuery]
 
+case class ChallengeAcceptQuery(opponentId: String)
+object ChallengeAcceptQuery extends GraphqlArg[ChallengeAcceptQuery]
+
 object GqlArgs {
   implicit val VecQueryMacro: InputObjectType[VecQuery] =
     deriveInput[VecQuery]()
@@ -63,5 +66,6 @@ object GqlArgs {
   val Attack = Argument("q", deriveInput[AttackQuery](), description = "Attack a tile")
   val Direction = Argument("q", deriveInput[DirectionQuery](), description = "Orient a piece on a tile")
   val EndTurn = Argument("q", deriveInput[EndTurnQuery](), description = "End current turn")
-  val UpdateProfile = Argument("q", deriveInput[UpdateProfileQuery](), description = "Update your profile")
+  val ProfileUpdate = Argument("q", deriveInput[UpdateProfileQuery](), description = "Update your profile")
+  val ChallengeAccept = Argument("q", deriveInput[ChallengeAcceptQuery](), description = "Accept a challenge")
 }

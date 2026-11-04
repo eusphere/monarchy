@@ -29,6 +29,10 @@ input UpdateProfileQuery {
   username: String!
 }
 
+input ChallengeAcceptQuery {
+  opponentId: String!
+}
+
 type Game {
   id: String!
   status: GameStatus!
@@ -93,11 +97,16 @@ type Mutation {
     """End current turn"""
     q: EndTurnQuery!
   ): Selection!
-  updateProfile(
+  profileUpdate(
     """Update your profile"""
     q: UpdateProfileQuery!
   ): User!
   challengeSeek: Challenge!
+  challengeAccept(
+    """Accept a challenge"""
+    q: ChallengeAcceptQuery!
+  ): Game!
+  challengeSeekCancel: Boolean!
 }
 
 enum Phase {
