@@ -49,6 +49,12 @@ where users experience it. For visual or interactive work, the normal order is
 5. Record what was inspected and any limitation in the handoff. “Build passes”
    is not a substitute for browser verification.
 
+When a change touches `server/` or the server's GraphQL/websocket behavior,
+restart the local backend before browser verification. The running JVM does not
+reload Scala changes. Start it with `bazel run //server/src/web` (using the
+repository's configured Bazel output root when needed), then confirm
+`http://localhost:8080/healthz` returns `OK` before testing the client.
+
 When browser verification is not possible, say why and leave the feature
 explicitly unverified; do not imply that compilation or a code review proves
 the rendered behavior.

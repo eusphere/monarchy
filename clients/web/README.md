@@ -70,6 +70,10 @@ cd ../.. # to the root of the project
 bazel run //server/src/web
 ```
 
+Restart this backend after any change under `server/`; the running Scala
+process does not reload server or GraphQL/websocket code. Before browser
+verification, confirm that `curl http://localhost:8080/healthz` returns `OK`.
+
 ### Adding new client queries
 
 As you build, you might incur new data dependencies. We use `relay` and
