@@ -8,7 +8,6 @@ import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import { useFragment } from 'react-relay';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import type { Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
-import { setHoveredPiece } from './pieceHoverStore';
 
 const TILE_DIM = [
   Constants.TILE_SIZE,
@@ -47,31 +46,16 @@ const Tile = (props: Props): React.ReactNode => {
   }, [tile]);
 
 
-  const [hover, setHover] = React.useState(false);
-  const onPointerEnter = React.useCallback((e: React.MouseEvent<Group>) => {
-    e.stopPropagation();
-    setHover(true);
-    setHoveredPiece(tile.piece ?? null, piece?.id ?? null);
-  }, [tile.piece]);
-
-  const onPointerLeave = React.useCallback((e: React.MouseEvent<Group>) => {
-    e.stopPropagation();
-    setHover(false);
-    setHoveredPiece(null);
-  }, []);
-  
   const color = React.useMemo(() => {
     const isOdd = (tile.point.i + tile.point.j) % 2 === 0;
-    if (hover) return Constants.TILE_COLOR_HOVER;
     return isOdd ? Constants.TILE_COLOR_ODD : Constants.TILE_COLOR_EVEN;
-  }, [hover, tile.point]);
+  }, [tile.point]);
 
   return (
     <group
       position={position}
       onClick={onClick}
-      onPointerEnter={onPointerEnter}
-      onPointerLeave={onPointerLeave}>
+      >
       <mesh receiveShadow>
         <boxGeometry args={TILE_DIM} />
         <meshStandardMaterial

@@ -3,13 +3,25 @@ import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 
 let hoveredPiece: PieceFragment$key | null = null;
 let hoveredPieceId: string | null = null;
+let pendingFrame: number | null = null;
+let clearTimer: ReturnType<typeof setTimeout> | null = null;
 const listeners = new Set<() => void>();
 
 export const setHoveredPiece = (piece: PieceFragment$key | null, pieceId: string | null = null): void => {
+  if (clearTimer) clearTimeout(clearTimer);
   if (hoveredPieceId === pieceId) return;
-  hoveredPiece = piece;
-  hoveredPieceId = pieceId;
-  listeners.forEach((listener) => listener());
+  if (pendingFrame !== null) cancelAnimationFrame(pendingFrame);
+  pendingFrame = requestAnimationFrame(() => {
+    pendingFrame = null;
+    hoveredPiece = piece;
+    hoveredPieceId = pieceId;
+    listeners.forEach((listener) => listener());
+  });
+};
+
+export const clearHoveredPiece = (): void => {
+  if (clearTimer) clearTimeout(clearTimer);
+  clearTimer = setTimeout(() => setHoveredPiece(null), 80);
 };
 
 export const useHoveredPiece = (): PieceFragment$key | null => React.useSyncExternalStore(

@@ -32,7 +32,7 @@ const Piece = (props: Props): React.ReactNode => {
   }, [data.currentDirection]);
 
   return (
-    <group position={OFFSET} rotation={rotation}>
+    <group position={OFFSET} rotation={rotation} userData={{ pieceRef: piece, pieceId: data.id }}>
       <Model color={color} />
     </group>
   );

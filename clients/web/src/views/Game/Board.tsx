@@ -5,6 +5,8 @@ import Tile from './Tile';
 import GameSelectionFragment from '~/autogen/relay/GameSelectionFragment.graphql';
 import type { GameSelectionFragment$key } from '~/autogen/relay/GameSelectionFragment.graphql';
 import { setHoveredPiece } from './pieceHoverStore';
+import { clearHoveredPiece } from './pieceHoverStore';
+import type { ThreeEvent } from '@react-three/fiber';
 import { useFragment } from 'react-relay';
 
 type Props = {
@@ -31,8 +33,15 @@ const Board = (props: Props): React.ReactNode => {
     return [-xOffset, 0, -zOffset];
   }, [tiles]);
 
+  const onPointerMove = React.useCallback((event: ThreeEvent<PointerEvent>) => {
+    let object = event.object;
+    while (object && !object.userData.pieceRef) object = object.parent!;
+    const pieceRef = object?.userData.pieceRef;
+    setHoveredPiece(pieceRef ?? null, object?.userData.pieceId ?? null);
+  }, []);
+
   return (
-    <group position={offset}>
+    <group position={offset} onPointerMove={onPointerMove} onPointerLeave={clearHoveredPiece}>
       {tiles.map((tile) => {
         const { point } = tile;
         const key = `${point.i}-${point.j}`;
