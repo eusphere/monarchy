@@ -37,7 +37,9 @@ equally central, combine prefixes in changed-system order, for example
    working tree.
 2. Run the narrowest relevant validation plus `git diff --check`.
 3. Review the final diff and confirm no secrets, generated state, or unrelated
-   changes are included.
+   changes are included. During review cleanup, prefer database constraints over
+   preflight duplicate checks, centralize shared validation constants, and avoid
+   re-querying records after a write when the write can return the updated value.
 4. Commit with a clear message and push the branch.
 5. Create the PR with `gh pr create`, using the required title prefix and a
    body that states what changed, how it was validated, and any follow-up.

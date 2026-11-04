@@ -1,6 +1,7 @@
 package monarchy.dal
 
 import scala.concurrent.{ExecutionContext, Future}
+import java.sql.SQLException
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 
@@ -20,6 +21,15 @@ case class QueryClientImpl(
 
   private val connection = cfg.db
 
+  private def run[E](dbio: DBIO[E]): Future[E] =
+    connection.run(dbio).recoverWith {
+      case e: SQLException =>
+        Exception.DuplicateKeySql.unapply(e) match {
+          case Some(duplicate) => Future.failed(duplicate)
+          case None => Future.failed(e)
+        }
+    }
+
   // Methods for reading.
   override def all[E](query: Query[Table[E], E, Seq]): Future[Seq[E]] =
     connection.run(query.result)
@@ -31,9 +41,9 @@ case class QueryClientImpl(
     connection.run(query.size.result)
 
   override def read[E](dbio: DBIO[E]): Future[E] =
-    connection.run(dbio)
+    run(dbio)
 
   // Methods for writing.
   override def write[E](dbio: DBIO[E]): Future[E] =
-    connection.run(dbio.transactionally)
+    run(dbio.transactionally)
 }

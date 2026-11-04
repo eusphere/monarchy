@@ -22,7 +22,7 @@ class DiscordFlow(implicit
       userOpt <- fetchExisting(profile.email)
       result <- userOpt match {
         case Some(user) => handleLogin(user)
-        case None => signup(Signup.Context(profile.username, profile.email))
+        case None => signup(Signup.Context(profile.username, profile.email, Some(profile.id)))
       }
     } yield result
   }

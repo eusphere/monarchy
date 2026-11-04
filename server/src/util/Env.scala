@@ -6,7 +6,8 @@ object Env {
   case object Local extends Env("local")
   case object Prod extends Env("prod")
 
-  lazy val Current = apply(sys.env("ENV"))
+  lazy val Current: Env =
+    sys.env.get("ENV").map(apply).getOrElse { Local }
 
   def isLocal: Boolean =
     Current == Local

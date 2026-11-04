@@ -15,6 +15,7 @@ object MutationSchema {
       Field("direct", SelectionType, arguments = List(GqlArgs.Direction), resolve = DirectionResolver),
       Field("endTurn", SelectionType, arguments = List(GqlArgs.EndTurn), resolve = EndTurnResolver),
       Field("challengeSeek", QuerySchema.ChallengeType, resolve = ChallengeSeekResolver),
+      Field("updateProfile", QuerySchema.UserType, arguments = List(GqlArgs.UpdateProfile), resolve = UpdateProfileResolver),
     )
   )
 }

@@ -19,6 +19,21 @@ yarn dev
 
 This will start the development server on `http://localhost:5173`.
 
+For the complete local flow, run the server in one terminal and this client in
+another:
+
+```bash
+# repository root
+bazel run //server/src/web
+
+# clients/web
+yarn dev
+```
+
+The local server uses the `monarchy-staging` Discord application and redirects
+back to `http://localhost:5173/profile` after login. The production API mode is
+intended for API compatibility checks and does not use the local OAuth flow.
+
 To run the local client against the production API instead, use:
 
 ```bash

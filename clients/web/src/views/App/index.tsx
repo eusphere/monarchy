@@ -9,11 +9,12 @@ import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import { fetchQuery, useRelayEnvironment } from 'react-relay';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
+import Page from '~/layout/Page';
 
 const LoggedOut = (): React.ReactNode => (
   <>
     <Navigation />
-    <Splash />
+    <Page><Splash /></Page>
   </>
 );
 
@@ -34,14 +35,14 @@ const HomeView = (): React.ReactNode => (
 const MatchesView = (): React.ReactNode => (
   <>
     <Navigation />
-    <Games />
+    <Page><Games /></Page>
   </>
 );
 
 const ProfileView = (): React.ReactNode => (
   <>
     <Navigation />
-    <Profile />
+    <Page><Profile /></Page>
   </>
 );
 
