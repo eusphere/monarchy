@@ -2,9 +2,8 @@ import * as Constants from './constants';
 import * as React from 'react';
 import * as Types from '~/types';
 import type { Group } from 'three';
-import type { MeshStandardMaterial } from 'three';
-import { useFrame } from '@react-three/fiber';
 import Piece from './Piece';
+import TileHighlight from './TileHighlight';
 import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import { useFragment } from 'react-relay';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
@@ -33,14 +32,6 @@ const Tile = (props: Props): React.ReactNode => {
       props.phase === 'SELECT' ? piece.currentWait === 0 : piece.id === selectedPiece?.id
     ),
   );
-  const highlightMaterial = React.useRef<MeshStandardMaterial>(null);
-  useFrame(({ clock }) => {
-    if (highlightMaterial.current) {
-      const pulse = 0.5 + 0.5 * Math.sin(clock.elapsedTime * 2.2);
-      highlightMaterial.current.emissiveIntensity = highlight ? 0.35 + pulse * 0.3 : 0;
-      highlightMaterial.current.opacity = highlight ? 0.28 + pulse * 0.1 : 0;
-    }
-  });
   const position: [number, number, number] = React.useMemo(() => {
     const x = tile.point.j * Constants.TILE_SIZE;
     const z = tile.point.i * Constants.TILE_SIZE;
@@ -86,17 +77,7 @@ const Tile = (props: Props): React.ReactNode => {
           metalness={0.1}
         />
       </mesh>
-      <mesh position={[0, Constants.TILE_HEIGHT / 2 + 0.006, 0]}>
-        <boxGeometry args={[Constants.TILE_SIZE * 0.92, 0.015, Constants.TILE_SIZE * 0.92]} />
-        <meshStandardMaterial
-          ref={highlightMaterial}
-          color="#f6c453"
-          emissive="#f6c453"
-          transparent
-          opacity={highlight ? 0.3 : 0}
-          depthWrite={false}
-        />
-      </mesh>
+      <TileHighlight active={highlight} />
       {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} />}
     </group>
   );

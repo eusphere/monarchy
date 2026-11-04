@@ -35,9 +35,16 @@ const Board = (props: Props): React.ReactNode => {
       {tiles.map((tile) => {
         const { point } = tile;
         const key = `${point.i}-${point.j}`;
-        return <Tile key={key} tile={tile} pieceColors={props.pieceColors}
-          currentPlayerId={props.state.currentPlayerId} phase={phase}
-          selectedPiece={selectedPieceId ?? undefined} />;
+        return (
+          <Tile
+            key={key}
+            tile={tile}
+            pieceColors={props.pieceColors}
+            currentPlayerId={props.state.currentPlayerId}
+            phase={phase}
+            selectedPiece={selectedPieceId ?? undefined}
+          />
+        );
       })}
     </group>
   );

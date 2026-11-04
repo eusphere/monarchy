@@ -29,6 +29,8 @@ composition from surface styling so redesigns do not require rebuilding flows.
   screenshots and use geometry or interaction assertions for stable contracts.
   A successful TypeScript build is not evidence of correct visual rendering;
   report any verification limitations explicitly.
+- When a JSX component declaration wraps across lines, put each prop on its own
+  line and keep the opening and closing tags visually aligned.
 
 ## Feature verification
 
