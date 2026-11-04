@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<921b44b72697db45276c13d7a452d541>>
+ * @generated SignedSource<<01a29cc488b31cafebba3fed7070e948>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type HomeQueriesQuery$variables = Record<PropertyKey, never>;
 export type HomeQueriesQuery$data = {
   readonly lobby: {
     readonly challenges: ReadonlyArray<{
+      readonly expireAt: string | null | undefined;
       readonly host: {
         readonly id: string;
         readonly rating: number;
@@ -66,7 +67,14 @@ v3 = [
     "name": "UserFragment"
   }
 ],
-v4 = [
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "expireAt",
+  "storageKey": null
+},
+v5 = [
   (v0/*: any*/),
   (v1/*: any*/),
   (v2/*: any*/),
@@ -129,6 +137,7 @@ return {
             "name": "challenges",
             "plural": true,
             "selections": [
+              (v4/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -162,7 +171,7 @@ return {
         "kind": "LinkedField",
         "name": "self",
         "plural": false,
-        "selections": (v4/*: any*/),
+        "selections": (v5/*: any*/),
         "storageKey": null
       },
       {
@@ -181,6 +190,7 @@ return {
             "name": "challenges",
             "plural": true,
             "selections": [
+              (v4/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -188,7 +198,7 @@ return {
                 "kind": "LinkedField",
                 "name": "host",
                 "plural": false,
-                "selections": (v4/*: any*/),
+                "selections": (v5/*: any*/),
                 "storageKey": null
               }
             ],
@@ -200,16 +210,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e54a727a84a2c644921aab7d3c0d56b5",
+    "cacheID": "bdd0f2e3b253e6d51057bb31951491d3",
     "id": null,
     "metadata": {},
     "name": "HomeQueriesQuery",
     "operationKind": "query",
-    "text": "query HomeQueriesQuery {\n  self {\n    id\n    username\n    rating\n    ...UserFragment\n  }\n  lobby {\n    challenges {\n      host {\n        id\n        username\n        rating\n        ...UserFragment\n      }\n    }\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "query HomeQueriesQuery {\n  self {\n    id\n    username\n    rating\n    ...UserFragment\n  }\n  lobby {\n    challenges {\n      expireAt\n      host {\n        id\n        username\n        rating\n        ...UserFragment\n      }\n    }\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c8e29482c94d9e2f0dbcb97964f7233c";
+(node as any).hash = "4a6273dbb492c264c284c907c2a08836";
 
 export default node;

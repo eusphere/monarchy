@@ -31,6 +31,11 @@ before launch; the information roles and interaction semantics should survive.
 - Challenge summaries identify the host with the same color/username/rating
   presentation. Their trailing action is Cancel for the owner or Accept for
   another player. These are buttons, not tile navigation.
+  Place a quiet `m:ss remaining` countdown below the identity. The server supplies
+  an absolute ISO timestamp via `expireAt`; the client computes remaining time
+  locally without polling. At zero show `Expired` and disable the action until
+  the next lobby refresh removes the tile. Missing expiry is shown as `Evergreen`,
+  never as a fresh five-minute countdown. Do not announce every tick to screen readers.
 - Identity color belongs to the user; status color belongs to the outcome.
   Always retain text labels so color is not the only source of meaning.
 - User rating and game-player rating have distinct meanings: challenges show
