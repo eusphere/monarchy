@@ -1,5 +1,35 @@
 # Coding conventions
 
+## Modularity and design-system development
+
+Optimize for cohesive, composable modules and a consistent design language,
+not just completion of the current screen. Reuse existing components and extract
+shared responsibilities when multiple callers need the same behavior or
+presentation. Keep abstractions small and grounded in actual use cases; avoid
+speculative variants and configuration layers.
+
+For client work, the information hierarchy and interaction semantics are stable
+contracts. The visual language may change dramatically before launch. Separate
+data fetching and domain decisions from presentation, and separate content
+composition from surface styling so redesigns do not require rebuilding flows.
+
+- Build repeated UI patterns from shared components, including identity/rating
+  displays, tiles, status treatments, and icons. Share presentation without
+  conflating domain data with different meanings.
+- Use scoped CSS Modules for component layout and theme tokens/custom properties
+  for configurable visual choices. Keep vendor overrides local and explicit;
+  do not depend on stylesheet import order or duplicate page-specific geometry.
+- Preserve readable labels, accessible interactions, and the agreed information
+  hierarchy across visual variants and viewport sizes.
+- Treat design documentation as a required artifact: when introducing or changing
+  a reusable UI pattern, update [the visual-design guide](visual-design.md) in
+  the same change with its semantics, composition boundaries, styling controls,
+  and verification expectations. Implementation and documentation must agree.
+- Verify layout changes in a browser at desktop and phone widths. Inspect
+  screenshots and use geometry or interaction assertions for stable contracts.
+  A successful TypeScript build is not evidence of correct visual rendering;
+  report any verification limitations explicitly.
+
 ## Scala
 
 Wrap nullable values returned by Java APIs in `Option` immediately. Use the

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Card, Flex, Box } from '@radix-ui/themes';
+import { Box } from '@radix-ui/themes';
 import { formatDateRelative } from '~/util/format';
-import { Link } from 'react-router-dom';
+import SummaryTile from '~/layout/SummaryTile';
 import { useFragment } from 'react-relay';
 import GameFragment from '~/autogen/relay/GameFragment.graphql';
 import Note from '~/layout/Note';
@@ -21,19 +21,14 @@ const Game = (props: Props): React.ReactNode => {
   const gameAtFormatted = formatDateRelative(createdAt);
 
   return (
-    <Card size='1' asChild>
-      <Link to={`/game/${game.id}`}>
-        <Flex justify='between' align='center' gap='3'>
-          {game.selfStatus && <PlayerStatus status={game.selfStatus} size='3' />}
-          <Note text={gameAtFormatted} />
-        </Flex>
-        <Box className={styles.players}>
-          {game.players.map((player, index) => (
-            <Player key={index} player={player} selfId={props.selfId} />
-          ))}
-        </Box>
-      </Link>
-    </Card>
+    <SummaryTile to={`/game/${game.id}`} status={game.selfStatus && <PlayerStatus status={game.selfStatus} />}>
+      <Box className={styles.players}>
+        {game.players.map((player, index) => (
+          <Player key={index} player={player} selfId={props.selfId} />
+        ))}
+      </Box>
+      <Note text={gameAtFormatted} />
+    </SummaryTile>
   );
 };
 
