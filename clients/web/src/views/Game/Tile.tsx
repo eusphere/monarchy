@@ -57,7 +57,11 @@ const Tile = (props: Props): React.ReactNode => {
       position={position}
       onClick={onClick}
       >
-      <mesh receiveShadow userData={{ tileKey: `${tile.point.i}-${tile.point.j}` }}>
+      <mesh receiveShadow userData={{
+        tileKey: `${tile.point.i}-${tile.point.j}`,
+        pieceRef: tile.piece,
+        pieceId: piece?.id,
+      }}>
         <boxGeometry args={TILE_DIM} />
         <meshStandardMaterial
           color={color} 

@@ -35,12 +35,11 @@ const Board = (props: Props): React.ReactNode => {
   }, [tiles]);
 
   const onPointerMove = React.useCallback((event: ThreeEvent<PointerEvent>) => {
+    pointerMoves.current += 1;
     const tileObject = event.intersections.find((intersection) => intersection.object.userData.tileKey)?.object;
+    if (!tileObject) return;
     setHoveredTile(tileObject?.userData.tileKey ?? null);
-    let object = event.object;
-    while (object && !object.userData.pieceRef) object = object.parent!;
-    const pieceRef = object?.userData.pieceRef;
-    setHoveredPiece(pieceRef ?? null, object?.userData.pieceId ?? null);
+    setHoveredPiece(tileObject.userData.pieceRef ?? null, tileObject.userData.pieceId ?? null);
   }, []);
 
   return (
