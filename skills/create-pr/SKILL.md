@@ -40,6 +40,7 @@ equally central, combine prefixes in changed-system order, for example
    changes are included. During review cleanup, prefer database constraints over
    preflight duplicate checks, centralize shared validation constants, and avoid
    re-querying records after a write when the write can return the updated value.
+   Apply the modularity and design-system review criteria below before committing.
 4. Commit with a clear message and push the branch.
 5. Create the PR with `gh pr create`, using the required title prefix and a
    body that states what changed, how it was validated, and any follow-up.
@@ -47,6 +48,30 @@ equally central, combine prefixes in changed-system order, for example
    below until checks pass or a concrete blocker requires user input.
 7. Report the PR URL, verified check status, and any remaining blocker. Do not
    claim the build passes until remote checks confirm it for the current commit.
+
+## Modularity and design-system review
+
+Use [the coding conventions](../../docs/coding.md) and
+[the visual-design guide](../../docs/visual-design.md) as review criteria.
+Optimize for composable implementation and a coherent design system alongside
+the immediate feature outcome.
+
+- Reuse existing components and extract shared responsibilities where there are
+  concrete callers. Avoid duplicated UI treatments and speculative abstractions.
+- Keep domain/data logic separate from presentation. Preserve information
+  hierarchy and interaction semantics while allowing the visual language to
+  change substantially before launch.
+- Keep layout in scoped CSS Modules and configurable visual choices in shared
+  theme tokens/custom properties. Check that vendor overrides are explicit and
+  styling does not rely on import order or page-specific copies of shared rules.
+- For new or changed reusable UI patterns, require an updated design-language
+  artifact in `docs/visual-design.md` in the same PR. Document the pattern's
+  semantics, component boundaries, styling controls, and verification contract.
+  This documentation is part of completion, not an optional follow-up.
+- For layout changes, verify the rendered UI at desktop and phone widths and
+  inspect screenshots. Use geometry/interaction assertions for stable contracts
+  when practical. State what was actually verified and any limitations in the
+  PR; do not present typechecking as visual validation.
 
 ## Debug CI failures
 

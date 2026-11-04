@@ -25,7 +25,7 @@ const connect = () => {
 export const subscribe = (listener: Listener) => {
   listeners.add(listener);
   connect();
-  return () => listeners.delete(listener);
+  return () => { listeners.delete(listener); };
 };
 
 export const send = (name: string, body?: unknown) => {

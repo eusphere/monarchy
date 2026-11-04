@@ -10,6 +10,15 @@ Run local migrations with:
 JDBC_DATABASE_URL='jdbc:postgresql://...' ./database/migrate.sh
 ```
 
+From the web client directory, the same operation is available as:
+
+```bash
+yarn database:migrate
+```
+
+That command defaults to the local application's `monarchy_local` database;
+set `JDBC_DATABASE_URL` to target another database.
+
 Use a migration-capable database user for `FLYWAY_DATABASE_URL` in production.
 The application URL is used as a temporary fallback until that dedicated
 credential is provisioned. Never edit a migration after it has been applied;

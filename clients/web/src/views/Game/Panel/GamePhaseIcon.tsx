@@ -1,3 +1,5 @@
+import AttackIcon from '~/components/icons/AttackIcon';
+
 export type GamePhaseIconKind = 'waiting' | 'moving' | 'attacking' | 'turning' | 'forfeit' | 'victory';
 
 type Props = {
@@ -24,7 +26,7 @@ const GamePhaseIcon = ({ kind, size = 18 }: Props) => {
     case 'moving':
       return <svg {...common}><path d='M4 19 19 4' /><path d='M10 4h9v9' /><path d='M5 14v5h5' /></svg>;
     case 'attacking':
-      return <svg {...common}><path d='m5 4 15 15' /><path d='m5 4 3 8' /><path d='m5 4 8 3' /><path d='m8 12-4 4' /><path d='m12 16-4 4' /></svg>;
+      return <AttackIcon size={size} />;
     case 'turning':
       return <svg {...common}><circle cx='12' cy='12' r='8' /><path d='m12 4 2 8-2 8-2-8 2-8Z' /><path d='M4 12h16' /></svg>;
     case 'forfeit':
