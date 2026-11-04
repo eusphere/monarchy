@@ -167,7 +167,7 @@ object QuerySchema {
     "Challenge",
     fields[GraphqlContext, Challenge.Data](
       Field("host", QuerySchema.UserType, resolve = _.value.host),
-      Field("expireAt", OptionType(StringType), resolve = _.value.expireAt.toString),
+      Field("expireAt", OptionType(StringType), resolve = _.value.expireAt.map(_.toString)),
     )
   )
 
