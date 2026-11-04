@@ -4,7 +4,7 @@
 .rating { min-width: 120px; padding: 14px 18px; text-align: center; }
 .rating h1, .rating h2 { margin: 4px 0 0; }
 .panel { min-height: 170px; padding: 22px; }
-.row { border-top: 1px solid var(--gray-a4); padding-top: 10px; }
+.challengeTile { width: 100%; }
 .online { margin-top: 24px; padding: 22px; }
 .recentGames { width: 100%; }
 @media (max-width: 600px) { .hero { align-items: flex-start; flex-direction: column; gap: 20px; padding: 24px; } .rating { min-width: 0; } }

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Button, Card, Flex, Heading, Text, Badge, Grid } from '@radix-ui/themes';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
+import { Button, Card, Flex, Heading, Text, Grid } from '@radix-ui/themes';
+import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
 import { Link, useNavigate } from 'react-router-dom';
 import GamesQuery from '~/autogen/relay/GamesQuery.graphql';
 import HomeQuery from '~/autogen/relay/HomeQueriesQuery.graphql';
@@ -10,6 +10,10 @@ import HomeChallengeCancelMutation from '~/autogen/relay/HomeQueriesChallengeCan
 import Game from '~/layout/GameSummary';
 import styles from './index.module.css';
 import { subscribe } from '~/network/stream';
+import UserRating from '~/layout/GameSummary/UserRating';
+import CancelIcon from '~/components/icons/CancelIcon';
+import UserFragment from '~/autogen/relay/UserFragment.graphql';
+import AttackIcon from '~/components/icons/AttackIcon';
 
 const Home = (): React.ReactNode => {
   const [lobbyRefreshKey, setLobbyRefreshKey] = React.useState(0);
@@ -43,10 +47,10 @@ const Home = (): React.ReactNode => {
       <Card className={styles.panel}>
         <Flex justify='between' align='start' mb='4' gap='3'>
           <Heading size='5'>Challenges</Heading>
-          <Button onClick={() => seek({ variables: {} })} disabled={isSeeking}>Seek a challenge</Button>
+          <Button onClick={() => seek({ variables: {} })} disabled={isSeeking}>Seek</Button>
         </Flex>
         {challenges.length === 0 ? <Text color='gray'>No open challenges yet. Seek one to get started.</Text> :
-          <Flex direction='column' gap='2'>{challenges.map((challenge: any) => <Flex key={challenge.host.id} justify='between' align='center' className={styles.row}><Text>{challenge.host.username}</Text><Badge>{challenge.host.rating}</Badge>{challenge.host.id === user.id ? <Button size='1' variant='soft' onClick={() => cancel({ variables: {} })} disabled={isCancelling}>Cancel</Button> : <Button size='1' variant='soft' onClick={() => accept({ variables: { q: { opponentId: challenge.host.id } }, onCompleted: (result: any) => navigate(`/game/${result.challengeAccept.id}`) })} disabled={isAccepting}>Accept</Button>}</Flex>)}</Flex>}
+          <Flex direction='column' gap='3'>{challenges.map((challenge: any) => <ChallengeTile key={challenge.host.id} challenge={challenge} user={user} isCancelling={isCancelling} isAccepting={isAccepting} onCancel={() => cancel({ variables: {} })} onAccept={() => accept({ variables: { q: { opponentId: challenge.host.id } }, onCompleted: (result: any) => { void navigate(`/game/${result.challengeAccept.id}`); } })} />)}</Flex>}
       </Card>
 
       <Card className={styles.panel}>
@@ -62,5 +66,18 @@ const RecentGames = ({ games, selfId }: { games: any[], selfId: string }): React
   <Flex direction='column' gap='3' className={styles.recentGames}>
     {games.map((game) => <Game key={game.id} game={game} selfId={selfId} />)}
   </Flex>;
+
+const ChallengeTile = ({ challenge, user, isCancelling, isAccepting, onCancel, onAccept }: any): React.ReactNode => {
+  const host = useFragment<any>(UserFragment, challenge.host);
+  const isOwn = host.id === user.id;
+  return <Card size='1' className={styles.challengeTile}>
+    <Flex justify='between' align='center' gap='3'>
+      <Flex direction='column' gap='1'>
+        <UserRating user={host} rating={host.rating} />
+      </Flex>
+      {isOwn ? <Button size='1' variant='soft' color='gray' onClick={onCancel} disabled={isCancelling}><CancelIcon />Cancel</Button> : <Button size='1' variant='soft' color='blue' onClick={onAccept} disabled={isAccepting}><AttackIcon size={18} />Accept</Button>}
+    </Flex>
+  </Card>;
+};
 
 export default Home;
