@@ -22,6 +22,7 @@ type Props = {
   phase?: Phase;
   selectedPiece?: PieceFragment$key;
   hovered: boolean;
+  onSelect: (point: { i: number; j: number }) => void;
 };
 
 const Tile = (props: Props): React.ReactNode => {
@@ -43,8 +44,8 @@ const Tile = (props: Props): React.ReactNode => {
   // multiple times at this level.
   const onClick = React.useCallback((e: React.MouseEvent<Group>) => {
     e.stopPropagation();
-    console.log(tile);
-  }, [tile]);
+    props.onSelect(tile.point);
+  }, [props.onSelect, tile.point]);
 
 
   const color = React.useMemo(() => {

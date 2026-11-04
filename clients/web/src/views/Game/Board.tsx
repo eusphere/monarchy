@@ -12,6 +12,7 @@ import { useFragment } from 'react-relay';
 type Props = {
   state: Types.GameState;
   pieceColors: Record<string, string>;
+  onSelect: (point: { i: number; j: number }) => void;
 };
 
 // Basic board component
@@ -66,6 +67,7 @@ const Board = (props: Props): React.ReactNode => {
             phase={phase}
             selectedPiece={selectedPieceId ?? undefined}
             hovered={hoveredTile === key}
+            onSelect={props.onSelect}
           />
         );
       })}

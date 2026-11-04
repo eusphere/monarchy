@@ -46,7 +46,6 @@ class GameCreateRenderer(implicit ec: ExecutionContext)
 class GameChangeRenderer(implicit ec: ExecutionContext) extends ActionRenderer.Impl[GameChange] {
   override def renderOpt(axn: GameChange) = {
     val data = Option(axn)
-      .filterNot(_.action == "SELECT")
       .map { a => Map("gameId" -> axn.gameId, "action" -> axn.action) }
      Future.successful(data)
   }
