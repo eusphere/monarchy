@@ -12,19 +12,21 @@ import styles from './index.module.css';
 import { subscribe } from '~/network/stream';
 
 const Home = (): React.ReactNode => {
-  const [refreshKey, setRefreshKey] = React.useState(0);
+  const [lobbyRefreshKey, setLobbyRefreshKey] = React.useState(0);
+  const [gamesRefreshKey, setGamesRefreshKey] = React.useState(0);
   const navigate = useNavigate();
-  const data = useLazyLoadQuery<any>(HomeQuery, {}, { fetchPolicy: 'network-only', fetchKey: refreshKey });
+  const data = useLazyLoadQuery<any>(HomeQuery, {}, { fetchPolicy: 'network-only', fetchKey: lobbyRefreshKey });
   const user = data.self;
-  const games = useLazyLoadQuery<any>(GamesQuery, { q: { userId: user.id } }, { fetchPolicy: 'network-only', fetchKey: refreshKey }).games;
+  const games = useLazyLoadQuery<any>(GamesQuery, { q: { userId: user.id } }, { fetchPolicy: 'network-only', fetchKey: gamesRefreshKey }).games;
   const [seek, isSeeking] = useMutation<any>(HomeSeekMutation);
   const [accept, isAccepting] = useMutation<any>(HomeChallengeAcceptMutation);
   const [cancel, isCancelling] = useMutation<any>(HomeChallengeCancelMutation);
   const challenges = data.lobby.challenges;
 
   React.useEffect(() => subscribe((message) => {
-    if (message.name === 'Matchmaking') setRefreshKey((key) => key + 1);
+    if (message.name === 'Matchmaking') setLobbyRefreshKey((key) => key + 1);
     if (message.name === 'GameCreate' && typeof message.data === 'object' && message.data !== null && 'gameId' in message.data) {
+      setGamesRefreshKey((key) => key + 1);
       navigate(`/game/${(message.data as { gameId: string }).gameId}`);
     }
   }), [navigate]);
