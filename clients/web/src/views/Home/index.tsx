@@ -14,6 +14,7 @@ import UserRating from '~/layout/GameSummary/UserRating';
 import CancelIcon from '~/components/icons/CancelIcon';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import AttackIcon from '~/components/icons/AttackIcon';
+import useRemainingSeconds from '~/util/useRemainingSeconds';
 
 const Home = (): React.ReactNode => {
   const [lobbyRefreshKey, setLobbyRefreshKey] = React.useState(0);
@@ -70,12 +71,17 @@ const RecentGames = ({ games, selfId }: { games: any[], selfId: string }): React
 const ChallengeTile = ({ challenge, user, isCancelling, isAccepting, onCancel, onAccept }: any): React.ReactNode => {
   const host = useFragment<any>(UserFragment, challenge.host);
   const isOwn = host.id === user.id;
+  const remaining = useRemainingSeconds(challenge.expireAt);
+  const expired = remaining === 0;
   return <Card size='1' className={styles.challengeTile}>
     <Flex justify='between' align='center' gap='3'>
       <Flex direction='column' gap='1'>
         <UserRating user={host} rating={host.rating} />
+        <Text size='1' color='gray' role='timer' aria-live='off'>
+          {remaining === null ? 'Evergreen' : expired ? 'Expired' : `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')} remaining`}
+        </Text>
       </Flex>
-      {isOwn ? <Button size='1' variant='soft' color='gray' onClick={onCancel} disabled={isCancelling}><CancelIcon />Cancel</Button> : <Button size='1' variant='soft' color='blue' onClick={onAccept} disabled={isAccepting}><AttackIcon size={18} />Accept</Button>}
+      {isOwn ? <Button size='1' variant='soft' color='gray' onClick={onCancel} disabled={isCancelling || expired}><CancelIcon />Cancel</Button> : <Button size='1' variant='soft' color='blue' onClick={onAccept} disabled={isAccepting || expired}><AttackIcon size={18} />Accept</Button>}
     </Flex>
   </Card>;
 };

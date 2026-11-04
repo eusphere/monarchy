@@ -49,14 +49,15 @@ object LobbyResolver extends Resolver[Unit, Lobby.Data] {
         userId <- Try(UUID.fromString(userIdRaw)).toOption.toSeq
       } yield userId
       users <- queryCli.all(dal.User.query.filter(_.id inSet userIds))
-    } yield users.map(mkChallenge)
-  }
-
-  private def mkChallenge(user: dal.User): Challenge.Data = {
-    Challenge.Data(
-      host = user,
-      expireAt = None,
-    )
+      challenges <- Future.traverse(users) { user =>
+        val observedAt = Instant.now
+        redisCli.pttl(StreamingKey.Challenge(user.id)).map { remaining =>
+          if (remaining > 0) Some(Challenge.Data(user, Some(observedAt.plusMillis(remaining))))
+          else if (remaining == -1) Some(Challenge.Data(user, None))
+          else None
+        }
+      }
+    } yield challenges.flatten
   }
 
   private def mkLimit(millis: Long): Limit =
