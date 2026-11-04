@@ -49,13 +49,20 @@ object LobbyResolver extends Resolver[Unit, Lobby.Data] {
         userId <- Try(UUID.fromString(userIdRaw)).toOption.toSeq
       } yield userId
       users <- queryCli.all(dal.User.query.filter(_.id inSet userIds))
-      challenges <- Future.traverse(users) { user =>
-        redisCli.get[String](StreamingKey.Challenge(user.id)).map { metadataRaw =>
-          metadataRaw.flatMap(raw => Try(Json.parse[Challenge.Metadata](raw)).toOption)
-            .map(metadata => Challenge.Data(user, Some(metadata.expireAt)))
-        }
+      challengeKeys = userIds.map(userId => StreamingKey.Challenge(userId).toString)
+      metadata <- challengeKeys.headOption match {
+        case None => Future.successful(Seq.empty[Option[String]])
+        case Some(_) => redisCli.mget[String](challengeKeys: _*)
       }
-    } yield challenges.flatten
+      usersById = users.map(user => user.id -> user).toMap
+      challenges = userIds.zip(metadata).flatMap { case (userId, metadataRaw) =>
+        for {
+          user <- usersById.get(userId)
+          raw <- metadataRaw
+          metadata <- Try(Json.parse[Challenge.Metadata](raw)).toOption
+        } yield Challenge.Data(user, Some(metadata.expireAt))
+      }
+    } yield challenges
   }
 
   private def mkLimit(millis: Long): Limit =
