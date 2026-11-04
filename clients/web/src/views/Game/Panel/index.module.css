@@ -50,10 +50,12 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-top: 10px;
+  align-items: start;
 }
 
 .pieceStat {
   display: grid;
+  align-content: start;
   gap: 2px;
   min-width: 0;
 }
