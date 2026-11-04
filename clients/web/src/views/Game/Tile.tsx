@@ -21,6 +21,7 @@ type Props = {
   currentPlayerId: string;
   phase?: Phase;
   selectedPiece?: PieceFragment$key;
+  hovered: boolean;
 };
 
 const Tile = (props: Props): React.ReactNode => {
@@ -48,15 +49,15 @@ const Tile = (props: Props): React.ReactNode => {
 
   const color = React.useMemo(() => {
     const isOdd = (tile.point.i + tile.point.j) % 2 === 0;
-    return isOdd ? Constants.TILE_COLOR_ODD : Constants.TILE_COLOR_EVEN;
-  }, [tile.point]);
+    return props.hovered ? Constants.TILE_COLOR_HOVER : isOdd ? Constants.TILE_COLOR_ODD : Constants.TILE_COLOR_EVEN;
+  }, [props.hovered, tile.point]);
 
   return (
     <group
       position={position}
       onClick={onClick}
       >
-      <mesh receiveShadow>
+      <mesh receiveShadow userData={{ tileKey: `${tile.point.i}-${tile.point.j}` }}>
         <boxGeometry args={TILE_DIM} />
         <meshStandardMaterial
           color={color} 

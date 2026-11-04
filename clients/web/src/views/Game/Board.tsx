@@ -23,6 +23,7 @@ const Board = (props: Props): React.ReactNode => {
   );
   const phase = selection?.phases[0];
   const selectedPieceId = selection?.selection ? selection.piece : undefined;
+  const [hoveredTile, setHoveredTile] = React.useState<string | null>(null);
   const offset: [number, number, number] = React.useMemo(() => {
     const minI = Math.min(...tiles.map((_) => _.point.i));
     const minJ = Math.min(...tiles.map((_) => _.point.j));
@@ -34,6 +35,8 @@ const Board = (props: Props): React.ReactNode => {
   }, [tiles]);
 
   const onPointerMove = React.useCallback((event: ThreeEvent<PointerEvent>) => {
+    const tileObject = event.intersections.find((intersection) => intersection.object.userData.tileKey)?.object;
+    setHoveredTile(tileObject?.userData.tileKey ?? null);
     let object = event.object;
     while (object && !object.userData.pieceRef) object = object.parent!;
     const pieceRef = object?.userData.pieceRef;
@@ -41,7 +44,10 @@ const Board = (props: Props): React.ReactNode => {
   }, []);
 
   return (
-    <group position={offset} onPointerMove={onPointerMove} onPointerLeave={clearHoveredPiece}>
+    <group position={offset} onPointerMove={onPointerMove} onPointerLeave={() => {
+      setHoveredTile(null);
+      clearHoveredPiece();
+    }}>
       {tiles.map((tile) => {
         const { point } = tile;
         const key = `${point.i}-${point.j}`;
@@ -53,7 +59,7 @@ const Board = (props: Props): React.ReactNode => {
             currentPlayerId={props.state.currentPlayerId}
             phase={phase}
             selectedPiece={selectedPieceId ?? undefined}
-            onPieceHover={setHoveredPiece}
+            hovered={hoveredTile === key}
           />
         );
       })}
