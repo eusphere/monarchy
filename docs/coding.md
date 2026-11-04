@@ -10,6 +10,13 @@ names inside method bodies.
 Keep security allowlists explicit and centralized. Add environment-backed
 configuration only when deployment-specific values are actually required.
 
+Use database unique constraints as the source of truth for duplicate-key
+validation. Do not add a read-before-write existence check that can race with
+the write; `QueryClient` lifts duplicate-key violations into DAL exceptions so
+callers can translate them at their boundary. When updating a persisted record,
+load it once, copy the changed fields, and use `WriteQueryBuilder.put` to return
+the written value.
+
 ## Terraform
 
 Balance the infrastructure tree by responsibility. Keep the root module

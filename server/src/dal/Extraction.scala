@@ -20,9 +20,10 @@ object Exception {
     def unapply(e: SQLException): Option[DuplicateKey] =
       if (e.getSQLState != "23505") None
       else {
-        Option(e.getMessage).flatMap(Pattern.findFirstMatchIn) match {
+        val message = Option(e.getMessage)
+        message.flatMap(Pattern.findFirstMatchIn) match {
           case Some(m) => Some(DuplicateKey(m.group(1), m.group(2)))
-          case None => Some(DuplicateKey("unknown", Option(e.getMessage).getOrElse("unknown")))
+          case None => Some(DuplicateKey("unknown", message.getOrElse("unknown")))
         }
       }
   }

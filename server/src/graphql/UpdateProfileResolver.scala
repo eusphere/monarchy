@@ -21,15 +21,9 @@ object UpdateProfileResolver extends Resolver[Unit, dal.User] {
       queryCli.first(dal.User.query.filter(_.id === userId)).flatMap {
         case None => Future.failed(Exceptions.NotFound("User not found"))
         case Some(user) =>
-          queryCli.first(
-            dal.User.query.filter(_.username === username).filterNot(_.id === userId)
-          ).flatMap {
-            case Some(_) => Future.failed(Exceptions.BadArgs(UsernameInUseMessage))
-            case None =>
-              queryCli.write(WriteQueryBuilder.put(user.copy(username = username))).recoverWith {
-                case dal.Exception.DuplicateKey("username", _) =>
-                  Future.failed(Exceptions.BadArgs(UsernameInUseMessage))
-              }
+          queryCli.write(WriteQueryBuilder.put(user.copy(username = username))).recoverWith {
+            case dal.Exception.DuplicateKey("username", _) =>
+              Future.failed(Exceptions.BadArgs(UsernameInUseMessage))
           }
       }
     }
