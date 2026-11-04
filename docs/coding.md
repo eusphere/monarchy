@@ -30,6 +30,27 @@ composition from surface styling so redesigns do not require rebuilding flows.
   A successful TypeScript build is not evidence of correct visual rendering;
   report any verification limitations explicitly.
 
+## Feature verification
+
+Every client feature is complete only after it has been checked at the level
+where users experience it. For visual or interactive work, the normal order is
+
+1. Run the relevant static checks and tests.
+2. Start the real local API and client, or use the closest deterministic fixture
+   when the feature does not require a live backend.
+3. Open the affected route in a browser and exercise the important states,
+   including loading, empty, success, error, and responsive states where they
+   apply.
+4. Inspect the rendered result visually at desktop and narrow/mobile widths.
+   For game-board changes, verify each relevant turn phase and ownership/state
+   combination rather than checking only the default starting view.
+5. Record what was inspected and any limitation in the handoff. “Build passes”
+   is not a substitute for browser verification.
+
+When browser verification is not possible, say why and leave the feature
+explicitly unverified; do not imply that compilation or a code review proves
+the rendered behavior.
+
 ## Scala
 
 Wrap nullable values returned by Java APIs in `Option` immediately. Use the

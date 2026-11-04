@@ -19,6 +19,25 @@ yarn dev
 
 This will start the development server on `http://localhost:5173`.
 
+### Browser verification
+
+Client changes that affect layout, interaction, animation, or the game board
+must be checked in the running browser before they are considered complete.
+Use the real local API when the behavior depends on game state. For a game
+feature, exercise at least the relevant `SELECT`, action, and end/waiting
+states, confirm both player-ownership cases, and inspect the result at desktop
+and narrow widths. Capture a screenshot or other concrete observation when the
+visual result is important. Report any state that could not be reached or
+verified.
+
+The minimum handoff should state:
+
+- the route and states inspected;
+- the viewport sizes checked;
+- whether the browser result matched the intended behavior; and
+- any checks that were unavailable because the API, dependencies, or browser
+  could not be started.
+
 For the complete local flow, run the server in one terminal and this client in
 another:
 
