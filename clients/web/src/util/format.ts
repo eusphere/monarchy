@@ -4,6 +4,10 @@ export function formatRatingDelta(ratingDelta: number): string {
   return `${ratingDelta}`;
 }
 
+export function formatPercentage(value: number): string {
+  return `${Math.round(value * 100)}%`;
+}
+
 /**
  * Formats a date relative to the current time
  * Returns a string in the format:

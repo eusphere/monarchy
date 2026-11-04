@@ -73,16 +73,6 @@ const Tile = (props: Props): React.ReactNode => {
           metalness={0.1}
         />
       </mesh>
-      {piece && <mesh
-        position={[0, Constants.TILE_HEIGHT + 0.45, 0]}
-        userData={{
-          tileKey: `${tile.point.i}-${tile.point.j}`,
-          pieceRef: tile.piece,
-          pieceId: piece.id,
-        }}>
-        <boxGeometry args={[Constants.TILE_SIZE * 0.72, 0.9, Constants.TILE_SIZE * 0.72]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-      </mesh>}
       {highlight && <TileHighlight active />}
       {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} />}
     </group>

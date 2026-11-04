@@ -3,6 +3,7 @@ import { useFragment } from 'react-relay';
 import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import styles from './index.module.css';
+import { formatPercentage } from '~/util/format';
 
 type Props = {
   piece: PieceFragment$key;
@@ -27,7 +28,7 @@ const PieceDetails = ({ piece: pieceRef, pieceColors }: Props): React.ReactNode 
       </div>
       <div className={styles.pieceStats}>
         <Stat label='Health' value={piece.currentHealth} />
-        <Stat label='Blocking' value={piece.currentBlocking.toFixed(1)} detail='effective' />
+        <Stat label='Blocking' value={formatPercentage(piece.currentBlocking)} detail='effective' />
         {piece.currentWait > 0 && <Stat label='Wait' value={piece.currentWait} />}
       </div>
     </div>
