@@ -4,6 +4,7 @@ import * as Pieces from './pieces';
 import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import { useFragment } from 'react-relay';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
+import type { Group } from 'three';
 
 const OFFSET = [0, Constants.TILE_HEIGHT / 2, 0] as const;
 const MAPPING: Record<string, React.ComponentType<any>> = {
@@ -20,6 +21,7 @@ type Props = {
 
 const Piece = (props: Props): React.ReactNode => {
   const { piece, color } = props;
+  const modelRef = React.useRef<Group>(null);
   const data = useFragment<PieceFragment$key>(PieceFragment, piece);
   const Model = MAPPING[data.order] ?? Pieces.Default;
 
@@ -31,8 +33,14 @@ const Piece = (props: Props): React.ReactNode => {
     return [0, angle, 0]; // Rotate around y-axis
   }, [data.currentDirection]);
 
+  React.useLayoutEffect(() => {
+    modelRef.current?.traverse((object) => {
+      if ('isMesh' in object && object.isMesh) object.raycast = () => null;
+    });
+  }, [data.id]);
+
   return (
-    <group position={OFFSET} rotation={rotation}>
+    <group ref={modelRef} position={OFFSET} rotation={rotation} userData={{ pieceRef: piece, pieceId: data.id }}>
       <Model color={color} />
     </group>
   );

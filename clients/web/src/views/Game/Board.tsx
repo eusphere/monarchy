@@ -4,6 +4,9 @@ import * as Types from '~/types';
 import Tile from './Tile';
 import GameSelectionFragment from '~/autogen/relay/GameSelectionFragment.graphql';
 import type { GameSelectionFragment$key } from '~/autogen/relay/GameSelectionFragment.graphql';
+import { setHoveredPiece } from './pieceHoverStore';
+import { clearHoveredPiece } from './pieceHoverStore';
+import type { ThreeEvent } from '@react-three/fiber';
 import { useFragment } from 'react-relay';
 
 type Props = {
@@ -20,6 +23,7 @@ const Board = (props: Props): React.ReactNode => {
   );
   const phase = selection?.phases[0];
   const selectedPieceId = selection?.selection ? selection.piece : undefined;
+  const [hoveredTile, setHoveredTile] = React.useState<string | null>(null);
   const offset: [number, number, number] = React.useMemo(() => {
     const minI = Math.min(...tiles.map((_) => _.point.i));
     const minJ = Math.min(...tiles.map((_) => _.point.j));
@@ -30,8 +34,26 @@ const Board = (props: Props): React.ReactNode => {
     return [-xOffset, 0, -zOffset];
   }, [tiles]);
 
+  const onPointerMove = React.useCallback((event: ThreeEvent<PointerEvent>) => {
+    let tileObject = event.object;
+    while (tileObject && !tileObject.userData.tileKey) tileObject = tileObject.parent!;
+    if (!tileObject?.userData.tileKey) {
+      tileObject = event.intersections.find((intersection) => intersection.object.userData.tileKey)?.object;
+    }
+    if (!tileObject) return;
+    setHoveredTile(tileObject?.userData.tileKey ?? null);
+    if (tileObject.userData.pieceRef) {
+      setHoveredPiece(tileObject.userData.pieceRef, tileObject.userData.pieceId ?? null);
+    } else {
+      clearHoveredPiece();
+    }
+  }, []);
+
   return (
-    <group position={offset}>
+    <group position={offset} onPointerMove={onPointerMove} onPointerLeave={() => {
+      setHoveredTile(null);
+      clearHoveredPiece();
+    }}>
       {tiles.map((tile) => {
         const { point } = tile;
         const key = `${point.i}-${point.j}`;
@@ -43,6 +65,7 @@ const Board = (props: Props): React.ReactNode => {
             currentPlayerId={props.state.currentPlayerId}
             phase={phase}
             selectedPiece={selectedPieceId ?? undefined}
+            hovered={hoveredTile === key}
           />
         );
       })}

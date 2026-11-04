@@ -21,6 +21,7 @@ type Props = {
   currentPlayerId: string;
   phase?: Phase;
   selectedPiece?: PieceFragment$key;
+  hovered: boolean;
 };
 
 const Tile = (props: Props): React.ReactNode => {
@@ -46,30 +47,25 @@ const Tile = (props: Props): React.ReactNode => {
   }, [tile]);
 
 
-  const [hover, setHover] = React.useState(false);
-  const onPointerEnter = React.useCallback((e: React.MouseEvent<Group>) => {
-    e.stopPropagation();
-    setHover(true);
-  }, []);
-
-  const onPointerLeave = React.useCallback((e: React.MouseEvent<Group>) => {
-    e.stopPropagation();
-    setHover(false);
-  }, []);
-  
   const color = React.useMemo(() => {
     const isOdd = (tile.point.i + tile.point.j) % 2 === 0;
-    if (hover) return Constants.TILE_COLOR_HOVER;
-    return isOdd ? Constants.TILE_COLOR_ODD : Constants.TILE_COLOR_EVEN;
-  }, [hover, tile.point]);
+    return props.hovered ? Constants.TILE_COLOR_HOVER : isOdd ? Constants.TILE_COLOR_ODD : Constants.TILE_COLOR_EVEN;
+  }, [props.hovered, tile.point]);
 
   return (
     <group
       position={position}
       onClick={onClick}
-      onPointerEnter={onPointerEnter}
-      onPointerLeave={onPointerLeave}>
-      <mesh receiveShadow>
+      userData={{
+        tileKey: `${tile.point.i}-${tile.point.j}`,
+        pieceRef: tile.piece,
+        pieceId: piece?.id,
+      }}>
+      <mesh receiveShadow userData={{
+        tileKey: `${tile.point.i}-${tile.point.j}`,
+        pieceRef: tile.piece,
+        pieceId: piece?.id,
+      }}>
         <boxGeometry args={TILE_DIM} />
         <meshStandardMaterial
           color={color} 
@@ -77,7 +73,7 @@ const Tile = (props: Props): React.ReactNode => {
           metalness={0.1}
         />
       </mesh>
-      <TileHighlight active={highlight} />
+      {highlight && <TileHighlight active />}
       {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} />}
     </group>
   );

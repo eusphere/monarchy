@@ -29,7 +29,7 @@ const Game = (): React.ReactNode => {
 
   return (
     <Box className={styles.root}>
-      {data.game && <Panel game={data.game} />}
+      {data.game && <Panel game={data.game} pieceColors={pieceColors} />}
       <Canvas
         camera={{ position: CAMERA_POS, fov: 45 }}
         style={{ background: '#f0f0f0' }}

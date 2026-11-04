@@ -6,13 +6,17 @@ import { useFragment } from 'react-relay';
 import GameSelectionFragment from '~/autogen/relay/GameSelectionFragment.graphql';
 import type { GameSelectionFragment$key } from '~/autogen/relay/GameSelectionFragment.graphql';
 import TurnBanner from './TurnBanner';
+import PieceDetails from './PieceDetails';
+import { useHoveredPiece } from '../pieceHoverStore';
 
 type Props = {
   game: Types.Game;
+  pieceColors: Record<string, string>;
 };
 
 const Panel = (props: Props): React.ReactNode => {
-  const { game } = props;
+  const { game, pieceColors } = props;
+  const hoveredPiece = useHoveredPiece();
   const selection = useFragment<GameSelectionFragment$key>(
     GameSelectionFragment,
     game.state?.currentSelection,
@@ -25,6 +29,12 @@ const Panel = (props: Props): React.ReactNode => {
         currentPlayerId={game.state?.currentPlayerId}
         phase={selection?.phases[0]}
       />
+      {(hoveredPiece ?? selection?.piece) && (
+        <PieceDetails
+          piece={(hoveredPiece ?? selection?.piece) as PieceFragment$key}
+          pieceColors={pieceColors}
+        />
+      )}
     </Box>
   );
 };
