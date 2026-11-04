@@ -15,6 +15,7 @@ import CancelIcon from '~/components/icons/CancelIcon';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import AttackIcon from '~/components/icons/AttackIcon';
 import useRemainingSeconds from '~/util/useRemainingSeconds';
+import { formatDuration } from '~/util/duration';
 
 const Home = (): React.ReactNode => {
   const [lobbyRefreshKey, setLobbyRefreshKey] = React.useState(0);
@@ -78,7 +79,7 @@ const ChallengeTile = ({ challenge, user, isCancelling, isAccepting, onCancel, o
       <Flex direction='column' gap='1'>
         <UserRating user={host} rating={host.rating} />
         <Text size='1' color='gray' role='timer' aria-live='off'>
-          {remaining === null ? 'Evergreen' : expired ? 'Expired' : `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')} remaining`}
+          {remaining === null ? 'Evergreen' : expired ? 'Expired' : formatDuration(remaining)}
         </Text>
       </Flex>
       {isOwn ? <Button size='1' variant='soft' color='gray' onClick={onCancel} disabled={isCancelling || expired}><CancelIcon />Cancel</Button> : <Button size='1' variant='soft' color='blue' onClick={onAccept} disabled={isAccepting || expired}><AttackIcon size={18} />Accept</Button>}

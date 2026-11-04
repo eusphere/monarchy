@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { parseExpiry } from './duration';
 
 /** Recompute from the absolute deadline so background-tab throttling cannot accumulate drift. */
 export default function useRemainingSeconds(expiresAt: string | null | undefined) {
-  const deadline = expiresAt ? Date.parse(expiresAt) : NaN;
+  const deadline = parseExpiry(expiresAt);
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
-    if (!Number.isFinite(deadline)) return;
+    if (deadline === null) return;
     const update = () => setNow(Date.now());
     update();
     const timer = window.setInterval(update, 1000);
@@ -15,5 +16,5 @@ export default function useRemainingSeconds(expiresAt: string | null | undefined
       window.removeEventListener('focus', update);
     };
   }, [deadline]);
-  return Number.isFinite(deadline) ? Math.max(0, Math.ceil((deadline - now) / 1000)) : null;
+  return deadline === null ? null : Math.max(0, Math.ceil((deadline - now) / 1000));
 }

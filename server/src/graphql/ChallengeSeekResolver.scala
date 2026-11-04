@@ -25,7 +25,7 @@ object ChallengeSeekResolver extends Resolver[Unit, Challenge.Data] {
     val expireAt = Instant.now.plusSeconds(TtlSeconds)
     Async.join(
       queryCli.first(dal.User.query.filter(_.id === userId)),
-      redisCli.set(StreamingKey.Challenge(userId), "true", exSeconds = Some(TtlSeconds)),
+      redisCli.set(StreamingKey.Challenge(userId), expireAt.toString, exSeconds = Some(TtlSeconds)),
       redisCli.publish(StreamingChannel.Matchmaking, Json.stringify(Matchmaking(true))),
     ).map {
       case (None, _, _) => throw NotFound(s"user $userId")

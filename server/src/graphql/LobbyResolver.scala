@@ -50,11 +50,8 @@ object LobbyResolver extends Resolver[Unit, Lobby.Data] {
       } yield userId
       users <- queryCli.all(dal.User.query.filter(_.id inSet userIds))
       challenges <- Future.traverse(users) { user =>
-        val observedAt = Instant.now
-        redisCli.pttl(StreamingKey.Challenge(user.id)).map { remaining =>
-          if (remaining > 0) Some(Challenge.Data(user, Some(observedAt.plusMillis(remaining))))
-          else if (remaining == -1) Some(Challenge.Data(user, None))
-          else None
+        redisCli.get[String](StreamingKey.Challenge(user.id)).map { expireAtRaw =>
+          expireAtRaw.flatMap(raw => Try(Instant.parse(raw)).toOption).map(expireAt => Challenge.Data(user, Some(expireAt)))
         }
       }
     } yield challenges.flatten

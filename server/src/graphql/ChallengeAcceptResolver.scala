@@ -18,8 +18,8 @@ object ChallengeAcceptResolver extends Resolver[Unit, dal.Game] {
     if (userId == opponentId) throw new IllegalArgumentException("cannot challenge yourself")
     val ownKey = StreamingKey.Challenge(userId)
     val opponentKey = StreamingKey.Challenge(opponentId)
-    redisCli.get[Boolean](opponentKey).flatMap {
-      case Some(true) =>
+    redisCli.get[String](opponentKey).flatMap {
+      case Some(_) =>
         val processor = new ChallengeAcceptProcessor
         processor.create(Seq(userId, opponentId)).flatMap { gameId =>
           Async.join(
