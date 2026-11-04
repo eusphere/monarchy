@@ -46,8 +46,14 @@ const Tile = (props: Props): React.ReactNode => {
   // multiple times at this level.
   const onClick = React.useCallback((e: React.MouseEvent<Group>) => {
     e.stopPropagation();
+    if (
+      props.phase !== 'SELECT'
+      || !piece
+      || piece.playerId !== props.currentPlayerId
+      || piece.currentWait !== 0
+    ) return;
     props.onSelect(tile.point);
-  }, [props.onSelect, tile.point]);
+  }, [piece, props.currentPlayerId, props.onSelect, props.phase, tile.point]);
 
 
   const color = React.useMemo(() => {
