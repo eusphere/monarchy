@@ -15,6 +15,9 @@ type Props = {
   onSelect: (point: { i: number; j: number }) => void;
 };
 
+type LegalAction = 'MOVE' | 'ATTACK' | 'DIR';
+const pointKey = (point: { i: number; j: number }) => `${point.i}-${point.j}`;
+
 // Basic board component
 const Board = (props: Props): React.ReactNode => {
   const tiles = props.state.tiles;
@@ -24,6 +27,14 @@ const Board = (props: Props): React.ReactNode => {
   );
   const phase = selection?.phases[0];
   const selectedPieceId = selection?.selection ? selection.piece : undefined;
+  const legalTargets = React.useMemo(() => {
+    const targets = new Map<string, LegalAction>();
+    if (!selection) return targets;
+    if (phase === 'MOVE') selection.movements.forEach((point) => targets.set(pointKey(point), 'MOVE'));
+    if (phase === 'ATTACK') selection.attacks.forEach((attack) => attack.tiles.forEach((point) => targets.set(pointKey(point), 'ATTACK')));
+    if (phase === 'DIR') selection.directions.forEach((direction) => targets.set(pointKey(direction), 'DIR'));
+    return targets;
+  }, [phase, selection]);
   const [hoveredTile, setHoveredTile] = React.useState<string | null>(null);
   const offset: [number, number, number] = React.useMemo(() => {
     const minI = Math.min(...tiles.map((_) => _.point.i));
@@ -67,6 +78,8 @@ const Board = (props: Props): React.ReactNode => {
             phase={phase}
             selectedPiece={selectedPieceId ?? undefined}
             hovered={hoveredTile === key}
+            legalAction={legalTargets.get(key)}
+            selected={selection?.selection ? pointKey(selection.selection) === key : false}
             onSelect={props.onSelect}
           />
         );

@@ -4,3 +4,6 @@ export const TILE_ROTATION = [-Math.PI / 2, 0, 0] as const;
 export const TILE_COLOR_ODD = '#D0D0D0';
 export const TILE_COLOR_EVEN = '#DDDDDD';
 export const TILE_COLOR_HOVER = '#EEEEEE';
+export const TILE_COLOR_MOVE = '#CDE8D3';
+export const TILE_COLOR_ATTACK = '#F2C7C3';
+export const TILE_COLOR_DIRECTION = '#C8DDF2';

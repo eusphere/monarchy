@@ -23,6 +23,8 @@ type Props = {
   selectedPiece?: PieceFragment$key;
   hovered: boolean;
   onSelect: (point: { i: number; j: number }) => void;
+  legalAction?: 'MOVE' | 'ATTACK' | 'DIR';
+  selected: boolean;
 };
 
 const Tile = (props: Props): React.ReactNode => {
@@ -50,8 +52,12 @@ const Tile = (props: Props): React.ReactNode => {
 
   const color = React.useMemo(() => {
     const isOdd = (tile.point.i + tile.point.j) % 2 === 0;
-    return props.hovered ? Constants.TILE_COLOR_HOVER : isOdd ? Constants.TILE_COLOR_ODD : Constants.TILE_COLOR_EVEN;
-  }, [props.hovered, tile.point]);
+    if (props.hovered) return Constants.TILE_COLOR_HOVER;
+    if (props.legalAction === 'MOVE') return Constants.TILE_COLOR_MOVE;
+    if (props.legalAction === 'ATTACK') return Constants.TILE_COLOR_ATTACK;
+    if (props.legalAction === 'DIR') return Constants.TILE_COLOR_DIRECTION;
+    return isOdd ? Constants.TILE_COLOR_ODD : Constants.TILE_COLOR_EVEN;
+  }, [props.hovered, props.legalAction, tile.point]);
 
   return (
     <group
@@ -74,7 +80,7 @@ const Tile = (props: Props): React.ReactNode => {
           metalness={0.1}
         />
       </mesh>
-      {highlight && <TileHighlight active />}
+      {(props.selected || highlight) && <TileHighlight active />}
       {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} />}
     </group>
   );
