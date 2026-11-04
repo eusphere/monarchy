@@ -19,6 +19,16 @@ yarn dev
 
 This will start the development server on `http://localhost:5173`.
 
+To run the local client against the production API instead, use:
+
+```bash
+yarn dev:production
+```
+
+This still serves the client locally at `http://localhost:5173`, but uses
+`https://api.monarchy1.com` for API requests. You can override the API host
+with `VITE_API_HOST` when needed.
+
 ### Running the server
 
 ```bash
