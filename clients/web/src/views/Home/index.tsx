@@ -79,7 +79,7 @@ const ChallengeTile = ({ challenge, user, isCancelling, isAccepting, onCancel, o
       <Flex direction='column' gap='1'>
         <UserRating user={host} rating={host.rating} />
         <Text size='1' color='gray' role='timer' aria-live='off'>
-          {remaining === null ? 'Evergreen' : expired ? 'Expired' : formatDuration(remaining)}
+          {remaining === null ? 'Evergreen' : expired ? 'Expired' : `${formatDuration(remaining)} remaining`}
         </Text>
       </Flex>
       {isOwn ? <Button size='1' variant='soft' color='gray' onClick={onCancel} disabled={isCancelling || expired}><CancelIcon />Cancel</Button> : <Button size='1' variant='soft' color='blue' onClick={onAccept} disabled={isAccepting || expired}><AttackIcon size={18} />Accept</Button>}

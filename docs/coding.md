@@ -47,6 +47,12 @@ callers can translate them at their boundary. When updating a persisted record,
 load it once, copy the changed fields, and use `WriteQueryBuilder.put` to return
 the written value.
 
+When storing structured metadata in Redis or another key-value store, use a
+small JSON-serialized case class rather than encoding fields in a primitive
+string. Keep the expiration/cleanup TTL separate from the metadata payload so
+the payload can grow without changing key semantics. Parse the case class at
+the boundary and handle malformed or missing metadata explicitly.
+
 ## Terraform
 
 Balance the infrastructure tree by responsibility. Keep the root module

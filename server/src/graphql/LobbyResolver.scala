@@ -4,7 +4,7 @@ import java.time.Instant
 import java.util.UUID
 import monarchy.dal
 import monarchy.streaming.core._
-import monarchy.util.Async
+import monarchy.util.{Async, Json}
 import redis.api.Limit
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -50,8 +50,9 @@ object LobbyResolver extends Resolver[Unit, Lobby.Data] {
       } yield userId
       users <- queryCli.all(dal.User.query.filter(_.id inSet userIds))
       challenges <- Future.traverse(users) { user =>
-        redisCli.get[String](StreamingKey.Challenge(user.id)).map { expireAtRaw =>
-          expireAtRaw.flatMap(raw => Try(Instant.parse(raw)).toOption).map(expireAt => Challenge.Data(user, Some(expireAt)))
+        redisCli.get[String](StreamingKey.Challenge(user.id)).map { metadataRaw =>
+          metadataRaw.flatMap(raw => Try(Json.parse[Challenge.Metadata](raw)).toOption)
+            .map(metadata => Challenge.Data(user, Some(metadata.expireAt)))
         }
       }
     } yield challenges.flatten
