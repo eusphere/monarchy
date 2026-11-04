@@ -2,6 +2,9 @@ import * as Constants from './constants';
 import * as React from 'react';
 import * as Types from '~/types';
 import Tile from './Tile';
+import GameSelectionFragment from '~/autogen/relay/GameSelectionFragment.graphql';
+import type { GameSelectionFragment$key } from '~/autogen/relay/GameSelectionFragment.graphql';
+import { useFragment } from 'react-relay';
 
 type Props = {
   state: Types.GameState;
@@ -11,6 +14,12 @@ type Props = {
 // Basic board component
 const Board = (props: Props): React.ReactNode => {
   const tiles = props.state.tiles;
+  const selection = useFragment<GameSelectionFragment$key>(
+    GameSelectionFragment,
+    props.state.currentSelection,
+  );
+  const phase = selection?.phases[0];
+  const selectedPieceId = selection?.selection ? selection.piece : undefined;
   const offset: [number, number, number] = React.useMemo(() => {
     const minI = Math.min(...tiles.map((_) => _.point.i));
     const minJ = Math.min(...tiles.map((_) => _.point.j));
@@ -26,7 +35,16 @@ const Board = (props: Props): React.ReactNode => {
       {tiles.map((tile) => {
         const { point } = tile;
         const key = `${point.i}-${point.j}`;
-        return <Tile key={key} tile={tile} pieceColors={props.pieceColors} />;
+        return (
+          <Tile
+            key={key}
+            tile={tile}
+            pieceColors={props.pieceColors}
+            currentPlayerId={props.state.currentPlayerId}
+            phase={phase}
+            selectedPiece={selectedPieceId ?? undefined}
+          />
+        );
       })}
     </group>
   );

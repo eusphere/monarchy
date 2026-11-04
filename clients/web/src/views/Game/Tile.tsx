@@ -3,9 +3,11 @@ import * as React from 'react';
 import * as Types from '~/types';
 import type { Group } from 'three';
 import Piece from './Piece';
+import TileHighlight from './TileHighlight';
 import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import { useFragment } from 'react-relay';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
+import type { Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
 
 const TILE_DIM = [
   Constants.TILE_SIZE,
@@ -16,11 +18,20 @@ const TILE_DIM = [
 type Props = {
   tile: Types.Tile;
   pieceColors: Record<string, string>;
+  currentPlayerId: string;
+  phase?: Phase;
+  selectedPiece?: PieceFragment$key;
 };
 
 const Tile = (props: Props): React.ReactNode => {
   const { tile } = props;
   const piece = useFragment<PieceFragment$key>(PieceFragment, tile.piece);
+  const selectedPiece = useFragment<PieceFragment$key>(PieceFragment, props.selectedPiece);
+  const highlight = Boolean(
+    piece && props.currentPlayerId === piece.playerId && (
+      props.phase === 'SELECT' ? piece.currentWait === 0 : piece.id === selectedPiece?.id
+    ),
+  );
   const position: [number, number, number] = React.useMemo(() => {
     const x = tile.point.j * Constants.TILE_SIZE;
     const z = tile.point.i * Constants.TILE_SIZE;
@@ -66,6 +77,7 @@ const Tile = (props: Props): React.ReactNode => {
           metalness={0.1}
         />
       </mesh>
+      <TileHighlight active={highlight} />
       {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} />}
     </group>
   );
