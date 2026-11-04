@@ -10,5 +10,5 @@ package object graphql extends StrictLogging {
 
   case object NotAuthorized extends RuntimeException("not authorized")
   case class NotFound(m: String) extends RuntimeException(m)
-  case class Rejection(r: Reject) extends RuntimeException(s"rejected: $r")
+  case class Rejection(r: Reject) extends RuntimeException(r.toString)
 }

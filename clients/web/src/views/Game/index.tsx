@@ -28,7 +28,6 @@ const Game = (): React.ReactNode => {
   const selfData = useLazyLoadQuery<SelfQueryType>(SelfQuery, {}, { fetchPolicy: 'store-or-network' });
   const self = useFragment<UserFragment$key>(UserFragment, selfData.self);
   const selfPlayerId = data.game?.players.find((player) => (player.user as { readonly id?: string } | null | undefined)?.id === self.id)?.id;
-  const [actionError, setActionError] = React.useState<string | null>(null);
   const data = useLazyLoadQuery<GameQueryType>(GameQuery, { id: gameId }, { fetchPolicy: 'network-only', fetchKey: refreshKey });
   const [selectPiece] = useMutation<GameSelectMutationType>(GameSelectMutation);
   const gameState = data.game?.state;
@@ -39,11 +38,7 @@ const Game = (): React.ReactNode => {
   }), [gameId]);
 
   const onSelect = React.useCallback((point: { i: number; j: number }) => {
-    setActionError(null);
-    selectPiece({
-      variables: { q: { gameId, point } },
-      onError: (error) => setActionError(error.message),
-    });
+    selectPiece({ variables: { q: { gameId, point } } });
   }, [gameId, selectPiece]);
   const pieceColors = React.useMemo(() => {
     const colors: Record<string, string> = {};
@@ -56,7 +51,7 @@ const Game = (): React.ReactNode => {
 
   return (
     <Box className={styles.root}>
-      {data.game && <Panel game={data.game} pieceColors={pieceColors} actionError={actionError} />}
+      {data.game && <Panel game={data.game} pieceColors={pieceColors} />}
       <Canvas
         camera={{ position: CAMERA_POS, fov: 45 }}
         style={{ background: '#f0f0f0' }}

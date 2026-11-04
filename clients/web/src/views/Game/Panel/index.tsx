@@ -9,16 +9,14 @@ import TurnBanner from './TurnBanner';
 import PieceDetails from './PieceDetails';
 import { useHoveredPiece } from '../pieceHoverStore';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
-import { formatGraphqlError } from '~/util/graphqlError';
 
 type Props = {
   game: Types.Game;
   pieceColors: Record<string, string>;
-  actionError: string | null;
 };
 
 const Panel = (props: Props): React.ReactNode => {
-  const { game, pieceColors, actionError } = props;
+  const { game, pieceColors } = props;
   const hoveredPiece = useHoveredPiece();
   const selection = useFragment<GameSelectionFragment$key>(
     GameSelectionFragment,
@@ -32,7 +30,6 @@ const Panel = (props: Props): React.ReactNode => {
         currentPlayerId={game.state?.currentPlayerId}
         phase={selection?.phases[0]}
       />
-      {actionError && <div className={styles.actionError} role='alert'>{formatGraphqlError(new Error(actionError))}</div>}
       {(hoveredPiece ?? selection?.piece) && (
         <PieceDetails
           piece={(hoveredPiece ?? selection?.piece) as PieceFragment$key}
