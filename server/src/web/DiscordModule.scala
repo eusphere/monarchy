@@ -7,17 +7,11 @@ import monarchy.util.http.HttpClient
 import scala.concurrent.ExecutionContext
 
 object DiscordModule {
-  private val IsProduction = sys.env.get("ENV").contains("prod")
-  private val StagingClientId = "1325545581304614912"
-  private val StagingClientSecret = "drUn5j62dtzSUuJDEf__mK6-3-e3IZaj"
-
-  // Local development must use the `monarchy-staging` Discord app. Production
-  // credentials are only read when the server is explicitly running in prod.
   private def clientId: String =
-    if (IsProduction) sys.env("DISCORD_CLIENT_ID") else StagingClientId
+    sys.env.getOrElse("DISCORD_CLIENT_ID", "1325545581304614912")
 
   private def clientSecret: String =
-    if (IsProduction) sys.env("DISCORD_CLIENT_SECRET") else StagingClientSecret
+    sys.env.getOrElse("DISCORD_CLIENT_SECRET", "drUn5j62dtzSUuJDEf__mK6-3-e3IZaj")
 
   private def redirectUrl: String =
     sys.env.getOrElse("DISCORD_REDIRECT_URL", "http://localhost:8080/oauth2/discord/exchange")
