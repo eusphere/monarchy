@@ -56,7 +56,11 @@ const Tile = (props: Props): React.ReactNode => {
     <group
       position={position}
       onClick={onClick}
-      >
+      userData={{
+        tileKey: `${tile.point.i}-${tile.point.j}`,
+        pieceRef: tile.piece,
+        pieceId: piece?.id,
+      }}>
       <mesh receiveShadow userData={{
         tileKey: `${tile.point.i}-${tile.point.j}`,
         pieceRef: tile.piece,
