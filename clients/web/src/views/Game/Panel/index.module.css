@@ -22,6 +22,17 @@
   backdrop-filter: var(--overlay-blur);
 }
 
+.actionError {
+  width: fit-content;
+  margin: 10px auto 0;
+  padding: 7px 12px;
+  border: 1px solid rgba(190, 70, 70, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 235, 235, 0.92);
+  color: #9c3030;
+  font-size: 13px;
+}
+
 .pieceHeading {
   display: flex;
   align-items: center;

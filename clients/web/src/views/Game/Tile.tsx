@@ -8,6 +8,7 @@ import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import { useFragment } from 'react-relay';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import type { Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
+import { canSelectPiece } from './guards';
 
 const TILE_DIM = [
   Constants.TILE_SIZE,
@@ -23,6 +24,7 @@ type Props = {
   selectedPiece?: PieceFragment$key;
   hovered: boolean;
   onSelect: (point: { i: number; j: number }) => void;
+  selfPlayerId?: string;
   legalAction?: 'MOVE' | 'ATTACK' | 'DIR';
   selected: boolean;
 };
@@ -46,14 +48,15 @@ const Tile = (props: Props): React.ReactNode => {
   // multiple times at this level.
   const onClick = React.useCallback((e: React.MouseEvent<Group>) => {
     e.stopPropagation();
-    if (
-      props.phase !== 'SELECT'
-      || !piece
-      || piece.playerId !== props.currentPlayerId
-      || piece.currentWait !== 0
-    ) return;
+    if (!canSelectPiece({
+      piecePlayerId: piece?.playerId,
+      currentPlayerId: props.currentPlayerId,
+      selfPlayerId: props.selfPlayerId,
+      phase: props.phase,
+      wait: piece?.currentWait,
+    })) return;
     props.onSelect(tile.point);
-  }, [piece, props.currentPlayerId, props.onSelect, props.phase, tile.point]);
+  }, [piece, props.currentPlayerId, props.onSelect, props.phase, props.selfPlayerId, tile.point]);
 
 
   const color = React.useMemo(() => {

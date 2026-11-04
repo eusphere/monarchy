@@ -13,6 +13,7 @@ type Props = {
   state: Types.GameState;
   pieceColors: Record<string, string>;
   onSelect: (point: { i: number; j: number }) => void;
+  selfPlayerId?: string;
 };
 
 type LegalAction = 'MOVE' | 'ATTACK' | 'DIR';
@@ -78,6 +79,7 @@ const Board = (props: Props): React.ReactNode => {
             phase={phase}
             selectedPiece={selectedPieceId ?? undefined}
             hovered={hoveredTile === key}
+            selfPlayerId={props.selfPlayerId}
             legalAction={legalTargets.get(key)}
             selected={selection?.selection ? pointKey(selection.selection) === key : false}
             onSelect={props.onSelect}

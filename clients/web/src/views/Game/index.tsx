@@ -12,6 +12,11 @@ import type { GameQuery as GameQueryType } from '~/autogen/relay/GameQuery.graph
 import GameSelectMutation from '~/autogen/relay/GameSelectMutation.graphql';
 import type { GameSelectMutation as GameSelectMutationType } from '~/autogen/relay/GameSelectMutation.graphql';
 import { subscribe } from '~/network/stream';
+import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
+import UserFragment from '~/autogen/relay/UserFragment.graphql';
+import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
+import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
+import { useFragment } from 'react-relay';
 
 const CAMERA_DIST = 9;
 const CAMERA_POS = [0, 1.4 * CAMERA_DIST, CAMERA_DIST] as const;
@@ -20,6 +25,10 @@ const Game = (): React.ReactNode => {
   const { gameId: _gameId } = useParams();
   const gameId = _gameId as string;
   const [refreshKey, setRefreshKey] = React.useState(0);
+  const selfData = useLazyLoadQuery<SelfQueryType>(SelfQuery, {}, { fetchPolicy: 'store-or-network' });
+  const self = useFragment<UserFragment$key>(UserFragment, selfData.self);
+  const selfPlayerId = data.game?.players.find((player) => (player.user as { readonly id?: string } | null | undefined)?.id === self.id)?.id;
+  const [actionError, setActionError] = React.useState<string | null>(null);
   const data = useLazyLoadQuery<GameQueryType>(GameQuery, { id: gameId }, { fetchPolicy: 'network-only', fetchKey: refreshKey });
   const [selectPiece] = useMutation<GameSelectMutationType>(GameSelectMutation);
   const gameState = data.game?.state;
@@ -30,7 +39,11 @@ const Game = (): React.ReactNode => {
   }), [gameId]);
 
   const onSelect = React.useCallback((point: { i: number; j: number }) => {
-    selectPiece({ variables: { q: { gameId, point } } });
+    setActionError(null);
+    selectPiece({
+      variables: { q: { gameId, point } },
+      onError: (error) => setActionError(error.message),
+    });
   }, [gameId, selectPiece]);
   const pieceColors = React.useMemo(() => {
     const colors: Record<string, string> = {};
@@ -43,7 +56,7 @@ const Game = (): React.ReactNode => {
 
   return (
     <Box className={styles.root}>
-      {data.game && <Panel game={data.game} pieceColors={pieceColors} />}
+      {data.game && <Panel game={data.game} pieceColors={pieceColors} actionError={actionError} />}
       <Canvas
         camera={{ position: CAMERA_POS, fov: 45 }}
         style={{ background: '#f0f0f0' }}
@@ -52,7 +65,7 @@ const Game = (): React.ReactNode => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} castShadow />
         <directionalLight position={[5, 5, 5]} castShadow />
-        {gameState && <Board state={gameState} pieceColors={pieceColors} onSelect={onSelect} />}
+        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} onSelect={onSelect} />}
       </Canvas>
     </Box>
   );
