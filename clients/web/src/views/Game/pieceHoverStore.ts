@@ -25,7 +25,7 @@ export const clearHoveredPiece = (): void => {
     pendingFrame = null;
   }
   if (clearTimer) clearTimeout(clearTimer);
-  clearTimer = setTimeout(() => setHoveredPiece(null), 80);
+  clearTimer = setTimeout(() => setHoveredPiece(null), 40);
 };
 
 export const useHoveredPiece = (): PieceFragment$key | null => React.useSyncExternalStore(
