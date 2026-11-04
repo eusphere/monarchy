@@ -33,7 +33,12 @@ In addition, we use Redis for the following:
 
 As cited above, we use **Redis PubSub** channels to mediate peer-to-peer communication. Events from one client can be sent (bidirectionally) to `monarchy-api` which then processes them and computes an necessary transformations and fanout.
 
-When clients come online, they open a single websocket connection that `monarchy-api` uses to send any relevant events to. This dramatically limits the number of connections as the expense of needing to unmarshal events more carefully on the client, since they are union types.
+When clients come online, they open a single websocket connection that `monarchy-api` uses to send small, relevant events to. Client commands should use authenticated GraphQL mutations over HTTP and receive synchronous success or failure responses. The websocket is an event and invalidation channel: listeners use compact event payloads to trigger Relay refetches or navigation rather than treating websocket data as the source of truth.
+
+Events should identify their type and affected entity, for example `game.created`
+with a `gameId` or `lobby.updated` without embedding the complete game or lobby.
+This keeps commands observable, mutations easy to report as errors, and refreshes
+idempotent after reconnects.
 
 #### Why not Kafka?
 
@@ -59,5 +64,18 @@ This simple mechanism affords the following:
 
 The matchmaking system is designed to pair players into a new game. It consists of two types of requests:
 
-* `seek` requests issued by 1 client and broadcast to all other connected clients
-* `accept` requests attempt to claim the `seek` request and form a new game
+* `challengeSeek`, `challengeAccept`, and `challengeSeekCancel` are authenticated GraphQL mutations over HTTP
+* successful mutations update Postgres/Redis synchronously and publish a compact matchmaking event
+* connected clients receive the event over websocket and refresh their lobby or games query
+
+The websocket no longer acts as the command transport for matchmaking. This
+avoids silent command failures and makes expired or already-claimed challenges
+available as normal GraphQL errors.
+
+### Client action policy
+
+Use GraphQL mutations for state-changing client actions. Use websocket messages
+for `Ping`/`Pong`, connection state, and small server-originated notifications
+such as `lobby.updated`, `game.created`, and `game.updated`. A notification may
+cause a larger HTTP/GraphQL refresh, but should not duplicate the full resource
+payload.

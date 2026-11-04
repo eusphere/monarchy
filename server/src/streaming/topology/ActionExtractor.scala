@@ -13,10 +13,6 @@ object ActionExtractor {
     (name, auth, body) match {
       case ("Ping", a: Authenticated, None) =>
         Iterable(Ping(a))
-      case ("ChallengeAccept", a: Authenticated, Some(s)) =>
-        Iterable(ChallengeAccept(a, Json.parse[ChallengeAccept.Body](s)))
-      case ("ChallengeSeekCancel", a: Authenticated, None) =>
-        Iterable(ChallengeSeekCancel(a))
       case _ =>
         Iterable.empty
     }

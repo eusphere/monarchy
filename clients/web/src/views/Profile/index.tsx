@@ -15,8 +15,8 @@ import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import styles from './index.module.css';
-import UpdateProfileMutation from '~/autogen/relay/UpdateProfileMutation.graphql';
-import type { UpdateProfileMutation as UpdateProfileMutationType } from '~/autogen/relay/UpdateProfileMutation.graphql';
+import ProfileUpdateMutation from '~/autogen/relay/ProfileUpdateMutation.graphql';
+import type { ProfileUpdateMutation as ProfileUpdateMutationType } from '~/autogen/relay/ProfileUpdateMutation.graphql';
 
 const initials = (username: string): string =>
   username.trim().slice(0, 2).toUpperCase() || '??';
@@ -24,7 +24,7 @@ const initials = (username: string): string =>
 const Profile = (): React.ReactNode => {
   const selfRef = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
   const user = useFragment<UserFragment$key>(UserFragment, selfRef.self);
-  const [commit, isCommitting] = useMutation<UpdateProfileMutationType>(UpdateProfileMutation);
+  const [commit, isCommitting] = useMutation<ProfileUpdateMutationType>(ProfileUpdateMutation);
   const [username, setUsername] = React.useState('');
   const [message, setMessage] = React.useState<string | null>(null);
 

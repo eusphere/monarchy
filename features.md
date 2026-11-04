@@ -16,10 +16,9 @@ building them.
   ignores that field.
 - `MutationSchema.scala` exposes game actions (`select`, `deselect`, `move`,
   `attack`, `direct`, and `endTurn`) plus `challengeSeek`.
-- Accepting a challenge and cancelling a seek are streaming actions
-  (`ChallengeAccept` and `ChallengeSeekCancel`), rather than GraphQL
-  mutations. A challenge accept creates the game through the streaming
-  processor.
+- Challenge seeking, accepting, and cancelling are GraphQL mutations over
+  HTTP. The websocket remains available for ping/pong and small matchmaking or
+  game notifications that prompt a client-side refresh.
 - The current dashboard has no useful content when the user has no games or
   challenges: both sections disappear, leaving only the welcome message and a
   seek button.
@@ -94,8 +93,8 @@ dashboard, not become a full social or game-history application.
 
 ### Live dashboard updates
 
-- Update challenges and games after streaming events rather than relying only
-  on a one-time mount fetch.
+- Use websocket events to invalidate or refresh challenges and games rather
+  than sending complete resources over the socket.
 - Surface connection state and reconnect behavior unobtrusively.
 - Consider a lightweight polling fallback if a reliable event subscription is
   not yet available.
@@ -126,8 +125,8 @@ stable.
   display turn ownership without fetching full game state for every row.
 - Confirm authorization rules before exposing all-player activity or public
   game state.
-- Document the streaming action contract alongside GraphQL mutations so
-  challenge acceptance/cancellation are discoverable to client developers.
+- Document the websocket event contract alongside GraphQL mutations so event
+  listeners and refresh behavior are discoverable to client developers.
 - Define how Redis presence, challenge keys, and game state are expired and
   how the UI should react when the backing data disappears between fetch and
   action.
@@ -147,5 +146,5 @@ stable.
 - A full social feed.
 - Chat or messaging.
 - Ranking/leaderboard redesign.
-- Replacing the streaming action protocol with GraphQL solely for consistency.
+- Sending complete game or lobby resources over the websocket.
 - Loading or rendering full board state for every dashboard game.

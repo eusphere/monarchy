@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0b0616197a915603119c6553bdf24fc9>>
+ * @generated SignedSource<<9f9524e25d792c415b7e713bd7c19658>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,17 +13,17 @@ import { FragmentRefs } from "relay-runtime";
 export type UpdateProfileQuery = {
   username: string;
 };
-export type UpdateProfileMutation$variables = {
+export type ProfileUpdateMutation$variables = {
   q: UpdateProfileQuery;
 };
-export type UpdateProfileMutation$data = {
-  readonly updateProfile: {
+export type ProfileUpdateMutation$data = {
+  readonly profileUpdate: {
     readonly " $fragmentSpreads": FragmentRefs<"UserFragment">;
   };
 };
-export type UpdateProfileMutation = {
-  response: UpdateProfileMutation$data;
-  variables: UpdateProfileMutation$variables;
+export type ProfileUpdateMutation = {
+  response: ProfileUpdateMutation$data;
+  variables: ProfileUpdateMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -46,14 +46,14 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "UpdateProfileMutation",
+    "name": "ProfileUpdateMutation",
     "selections": [
       {
         "alias": null,
         "args": (v1/*: any*/),
         "concreteType": "User",
         "kind": "LinkedField",
-        "name": "updateProfile",
+        "name": "profileUpdate",
         "plural": false,
         "selections": [
           {
@@ -72,14 +72,14 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "UpdateProfileMutation",
+    "name": "ProfileUpdateMutation",
     "selections": [
       {
         "alias": null,
         "args": (v1/*: any*/),
         "concreteType": "User",
         "kind": "LinkedField",
-        "name": "updateProfile",
+        "name": "profileUpdate",
         "plural": false,
         "selections": [
           {
@@ -134,16 +134,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "fb670b27eb8000e10dc54ccd9909d89c",
+    "cacheID": "eac02298cc96a16b45c1098a3b6b0c24",
     "id": null,
     "metadata": {},
-    "name": "UpdateProfileMutation",
+    "name": "ProfileUpdateMutation",
     "operationKind": "mutation",
-    "text": "mutation UpdateProfileMutation(\n  $q: UpdateProfileQuery!\n) {\n  updateProfile(q: $q) {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "mutation ProfileUpdateMutation(\n  $q: UpdateProfileQuery!\n) {\n  profileUpdate(q: $q) {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "7c3dcb62e8d5f483f28e88a680f44ebf";
+(node as any).hash = "dd7cccbc87c397eba6cefd3a61a9e9d3";
 
 export default node;

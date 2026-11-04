@@ -6,10 +6,8 @@ import monarchy.dalwrite.{GameNode, WriteQueryBuilder}
 import monarchy.game._
 import monarchy.marshalling.game.GameJson
 import monarchy.streaming.core._
-import monarchy.util.{Async, Json}
 import redis.RedisClient
 import scala.concurrent.{Future, ExecutionContext}
-import scala.util.Random
 
 /**
  * TODO (adu): Actually solve this with some sort of mutex implementation
@@ -22,40 +20,9 @@ class ChallengeAcceptProcessor(implicit
   ec: ExecutionContext,
   redisCli: RedisClient,
   queryCli: dal.QueryClient
-) extends ClientActionProcessor[ChallengeAccept] {
+) {
   import ChallengeAcceptProcessor._
   import dal.PostgresProfile.Implicits._
-
-  override def apply(axn: ChallengeAccept): Future[StreamAction] = {
-    val ChallengeAccept(auth, body) = axn
-    val userId = auth.userId
-    val opponentUserId = UUID.fromString(body.opponentId)
-    if (userId == opponentUserId) {
-      AsyncNullAction
-    } else {
-      val challengeKey = StreamingKey.Challenge(userId).toString
-      val opponentChallengeKey = StreamingKey.Challenge(opponentUserId).toString
-      redisCli.get[Boolean](opponentChallengeKey).flatMap {
-        case None => AsyncNullAction
-        case Some(false) => AsyncNullAction
-        case Some(true) =>
-          Async.join(
-            redisCli.del(challengeKey, opponentChallengeKey),
-            redisCli.publish(StreamingChannel.Matchmaking, Json.stringify(Matchmaking(true))),
-            create(Seq(userId, opponentUserId))
-          ).flatMap { case (count, _,  gameId) =>
-            val channelEvent = Json.stringify(GameCreate(gameId))
-            Async.join(
-              redisCli.publish(StreamingChannel.gameCreate(userId), channelEvent),
-              redisCli.publish(StreamingChannel.gameCreate(opponentUserId), channelEvent)
-            ).map { case _ =>
-              println(s"removed $count challenges on $challengeKey, $opponentChallengeKey and accept")
-              StreamAction.Null
-            }
-          }
-      }
-    }
-  }
 
   def create(userIds: Seq[UUID]): Future[UUID] = {
     for {

@@ -12,6 +12,7 @@ scala_library(
     '//server/src/dal-write',
     '//server/src/game',
     '//server/src/streaming/core',
+    '//server/src/streaming/process',
     '//server/src/marshalling/game',
     '//server/src/marshalling/game-redis',
     '//server/src/util',

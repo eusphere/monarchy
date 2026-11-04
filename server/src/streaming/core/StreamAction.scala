@@ -20,13 +20,6 @@ object StreamAction {
  * and identity.
  */
 case class Ping(auth: Authenticated) extends StreamAction
-case class ChallengeAccept(auth: Authenticated, body: ChallengeAccept.Body) extends StreamAction
-object ChallengeAccept {
-  case class Body(opponentId: String)
-}
-
-case class ChallengeSeekCancel(auth: Authenticated) extends StreamAction
-
 /**
  * Intermediate actions
  *
