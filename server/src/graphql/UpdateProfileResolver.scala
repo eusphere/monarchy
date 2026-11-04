@@ -1,6 +1,7 @@
 package monarchy.graphql
 
 import monarchy.dal
+import monarchy.dalwrite.WriteQueryBuilder
 import scala.concurrent.Future
 
 object UpdateProfileResolver extends Resolver[Unit, dal.User] {
@@ -17,21 +18,18 @@ object UpdateProfileResolver extends Resolver[Unit, dal.User] {
     if (!username.matches(dal.User.UsernamePattern)) {
       Future.failed(Exceptions.BadArgs(InvalidUsernameMessage))
     } else {
-      val existing = queryCli.first(
-        dal.User.query.filter(_.username === username).filterNot(_.id === userId)
-      )
-      existing.flatMap {
-        case Some(_) => Future.failed(Exceptions.BadArgs(UsernameInUseMessage))
-        case None =>
-          val update = dal.User.query.filter(_.id === userId).map(_.username).update(username)
-          queryCli.write(update).flatMap { _ =>
-            queryCli.first(dal.User.query.filter(_.id === userId)).map {
-              case Some(user) => user
-              case None => throw Exceptions.NotFound("User not found")
-            }
-          }.recoverWith {
-            case dal.Exception.DuplicateKey("username", _) =>
-              Future.failed(Exceptions.BadArgs(UsernameInUseMessage))
+      queryCli.first(dal.User.query.filter(_.id === userId)).flatMap {
+        case None => Future.failed(Exceptions.NotFound("User not found"))
+        case Some(user) =>
+          queryCli.first(
+            dal.User.query.filter(_.username === username).filterNot(_.id === userId)
+          ).flatMap {
+            case Some(_) => Future.failed(Exceptions.BadArgs(UsernameInUseMessage))
+            case None =>
+              queryCli.write(WriteQueryBuilder.put(user.copy(username = username))).recoverWith {
+                case dal.Exception.DuplicateKey("username", _) =>
+                  Future.failed(Exceptions.BadArgs(UsernameInUseMessage))
+              }
           }
       }
     }
