@@ -5,6 +5,11 @@
   --corner-radius: 4px;
   --font-size: 14px;
   --overlay-blur: blur(12px);
+  --design-surface: #ffffff;
+  --design-surface-muted: #f7f9fb;
+  --design-border: #e0e6ed;
+  --design-text-muted: #66788b;
+  --design-accent: #52739c;
 }
 
 html, body {
