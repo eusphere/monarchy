@@ -23,13 +23,11 @@ case class QueryClientImpl(
 
   private def run[E](dbio: DBIO[E]): Future[E] =
     connection.run(dbio).recoverWith {
-      case e: SQLException if e.getSQLState == "23505" =>
-        val duplicate = "Key \\(([^)]+)\\)=\\(([^)]*)\\) already exists\\.".r
-        val (key, value) = Option(e.getMessage).flatMap(duplicate.findFirstMatchIn) match {
-          case Some(m) => (m.group(1), m.group(2))
-          case None => ("unknown", Option(e.getMessage).getOrElse("unknown"))
+      case e: SQLException =>
+        Exception.DuplicateKey.unapply(e) match {
+          case Some(duplicate) => Future.failed(duplicate)
+          case None => Future.failed(e)
         }
-        Future.failed(Exceptions.DuplicateKey(key, value))
     }
 
   // Methods for reading.

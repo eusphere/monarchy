@@ -27,7 +27,7 @@ object UpdateProfileResolver extends Resolver[Unit, dal.User] {
               case None => throw Exceptions.NotFound("User not found")
             }
           }.recoverWith {
-            case dal.Exceptions.DuplicateKey("username", _) =>
+            case duplicate: dal.Exception.DuplicateKey if duplicate.key == "username" =>
               Future.failed(Exceptions.BadArgs("That username is already in use"))
           }
       }
