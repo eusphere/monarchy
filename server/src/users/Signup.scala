@@ -31,7 +31,7 @@ class Signup(implicit
           val user = dal.User(email = email, username = username, secret = secret)
           val dbio = for {
             userWr <- WriteQueryBuilder.put(user)
-            profileWr <- WriteQueryBuilder.put(mkProfile(userWr.id))
+            profileWr <- WriteQueryBuilder.put(mkProfile(userWr.id, ctx.discordId))
           } yield userWr
           queryCli.write(dbio).map { u =>
             val bearer = Tooling.issueToken(u.id)
@@ -46,6 +46,7 @@ object Signup {
   case class Context(
       username: String,
       email: String,
+      discordId: Option[String] = None,
   )
 
   private def validEmail(email: String): Boolean =
@@ -54,10 +55,10 @@ object Signup {
   private def validUsername(username: String): Boolean =
     username.matches("^[a-zA-Z0-9_]{3,20}$")
 
-  private def mkProfile(userId: UUID): dal.Profile = {
+  private def mkProfile(userId: UUID, discordId: Option[String]): dal.Profile = {
     val colorIndex = math.abs(userId.hashCode) % Colors.length
     val color = Colors(colorIndex)
-    dal.Profile(userId = userId, avatar = "Knight", color = color)
+    dal.Profile(userId = userId, avatar = "Knight", color = color, discordId = discordId)
   }
 
   // Expand these as necessary. Took inspiration from:
