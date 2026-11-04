@@ -3,9 +3,18 @@ package monarchy.dal
 import java.sql.SQLException
 
 object Exception {
-  case class DuplicateKey(key: String, value: String) extends RuntimeException
+  class DuplicateKey(val key: String, val value: String) extends RuntimeException
 
   object DuplicateKey {
+    def apply(key: String, value: String): DuplicateKey =
+      new DuplicateKey(key, value)
+
+    def unapply(duplicate: DuplicateKey): Option[(String, String)] =
+      Some((duplicate.key, duplicate.value))
+
+  }
+
+  object DuplicateKeySql {
     private val Pattern = "Key \\(([^)]+)\\)=\\(([^)]*)\\) already exists\\.".r
 
     def unapply(e: SQLException): Option[DuplicateKey] =

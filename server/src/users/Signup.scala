@@ -53,7 +53,7 @@ object Signup {
     email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
 
   private def validUsername(username: String): Boolean =
-    username.matches("^[a-zA-Z0-9_]{3,20}$")
+    username.matches(dal.User.UsernamePattern)
 
   private def mkProfile(userId: UUID, discordId: Option[String]): dal.Profile = {
     val colorIndex = math.abs(userId.hashCode) % Colors.length

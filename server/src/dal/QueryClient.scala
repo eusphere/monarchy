@@ -24,7 +24,7 @@ case class QueryClientImpl(
   private def run[E](dbio: DBIO[E]): Future[E] =
     connection.run(dbio).recoverWith {
       case e: SQLException =>
-        Exception.DuplicateKey.unapply(e) match {
+        Exception.DuplicateKeySql.unapply(e) match {
           case Some(duplicate) => Future.failed(duplicate)
           case None => Future.failed(e)
         }
