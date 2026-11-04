@@ -9,6 +9,7 @@ case class Profile(
   avatar: String,
   color: String,
   colorAccent: Option[String] = None,
+  discordId: Option[String] = None,
   createdAt: Instant = Instant.now,
   updatedAt: Instant = Instant.now
 )
@@ -21,5 +22,6 @@ class ProfileTable(tag: Tag) extends TableDef[Profile](tag, "profiles") {
   def avatar = column[String]("avatar")
   def color = column[String]("color")
   def colorAccent = column[Option[String]]("color_accent")
-  def * = (id, userId, avatar, color, colorAccent, createdAt, updatedAt) <> ((Profile.apply _).tupled, Profile.unapply)
+  def discordId = column[Option[String]]("discord_id")
+  def * = (id, userId, avatar, color, colorAccent, discordId, createdAt, updatedAt) <> ((Profile.apply _).tupled, Profile.unapply)
 }

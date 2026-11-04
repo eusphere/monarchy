@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useFragment, useLazyLoadQuery } from 'react-relay';
+import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
 import {
   Card,
   Flex,
@@ -7,12 +7,16 @@ import {
   Section,
   Separator,
   Text,
+  TextField,
+  Button,
 } from '@radix-ui/themes';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import styles from './index.module.css';
+import UpdateProfileMutation from '~/autogen/relay/UpdateProfileMutation.graphql';
+import type { UpdateProfileMutation as UpdateProfileMutationType } from '~/autogen/relay/UpdateProfileMutation.graphql';
 
 const initials = (username: string): string =>
   username.trim().slice(0, 2).toUpperCase() || '??';
@@ -20,8 +24,22 @@ const initials = (username: string): string =>
 const Profile = (): React.ReactNode => {
   const selfRef = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
   const user = useFragment<UserFragment$key>(UserFragment, selfRef.self);
+  const [commit, isCommitting] = useMutation<UpdateProfileMutationType>(UpdateProfileMutation);
+  const [username, setUsername] = React.useState('');
+  const [message, setMessage] = React.useState<string | null>(null);
 
   if (!user) return null;
+
+  const saveUsername = (): void => {
+    setMessage(null);
+    commit({
+      variables: { q: { username } },
+      onCompleted: (_, errors) => {
+        setMessage(errors?.[0]?.message || 'Username updated');
+      },
+      onError: (error) => setMessage(error.message),
+    });
+  };
 
   const profileColor = user.profile?.color || 'var(--accent-9)';
 
@@ -61,6 +79,18 @@ const Profile = (): React.ReactNode => {
 
           <Flex direction='column' gap='2'>
             <Text weight='bold'>Make it yours</Text>
+            <Flex gap='2' align='end' wrap='wrap'>
+              <TextField.Root
+                value={username}
+                placeholder={user.username}
+                onChange={(event) => setUsername(event.target.value)}
+                aria-label='Username'
+              />
+              <Button onClick={saveUsername} disabled={isCommitting || username.trim().length === 0}>
+                Save username
+              </Button>
+            </Flex>
+            {message && <Text size='2' color={message === 'Username updated' ? 'green' : 'red'}>{message}</Text>}
             <Text size='2' color='gray'>
               Avatar, banner, and player tagline customization are coming next.
             </Text>

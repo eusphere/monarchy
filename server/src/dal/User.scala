@@ -22,7 +22,9 @@ case class User(
 )
 
 import PostgresProfile.Implicits._
-object User extends TableSchema[User, UserTable](TableQuery[UserTable])
+object User extends TableSchema[User, UserTable](TableQuery[UserTable]) {
+  val UsernamePattern = "^[a-zA-Z0-9_]{3,20}$"
+}
 
 class UserTable(tag: Tag) extends TableDef[User](tag, "users") {
   def secret = column[String]("secret")

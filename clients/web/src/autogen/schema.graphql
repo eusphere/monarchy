@@ -25,6 +25,10 @@ input EndTurnQuery {
   gameId: String!
 }
 
+input UpdateProfileQuery {
+  username: String!
+}
+
 type Game {
   id: String!
   status: GameStatus!
@@ -89,6 +93,10 @@ type Mutation {
     """End current turn"""
     q: EndTurnQuery!
   ): Selection!
+  updateProfile(
+    """Update your profile"""
+    q: UpdateProfileQuery!
+  ): User!
   challengeSeek: Challenge!
 }
 
@@ -199,4 +207,3 @@ input VecQuery {
   i: Int!
   j: Int!
 }
-
