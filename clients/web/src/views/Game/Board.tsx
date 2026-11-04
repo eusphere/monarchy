@@ -4,6 +4,7 @@ import * as Types from '~/types';
 import Tile from './Tile';
 import GameSelectionFragment from '~/autogen/relay/GameSelectionFragment.graphql';
 import type { GameSelectionFragment$key } from '~/autogen/relay/GameSelectionFragment.graphql';
+import { setHoveredPiece } from './pieceHoverStore';
 import { useFragment } from 'react-relay';
 
 type Props = {
@@ -43,6 +44,7 @@ const Board = (props: Props): React.ReactNode => {
             currentPlayerId={props.state.currentPlayerId}
             phase={phase}
             selectedPiece={selectedPieceId ?? undefined}
+            onPieceHover={setHoveredPiece}
           />
         );
       })}
