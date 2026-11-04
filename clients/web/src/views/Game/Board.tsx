@@ -42,7 +42,11 @@ const Board = (props: Props): React.ReactNode => {
     }
     if (!tileObject) return;
     setHoveredTile(tileObject?.userData.tileKey ?? null);
-    setHoveredPiece(tileObject.userData.pieceRef ?? null, tileObject.userData.pieceId ?? null);
+    if (tileObject.userData.pieceRef) {
+      setHoveredPiece(tileObject.userData.pieceRef, tileObject.userData.pieceId ?? null);
+    } else {
+      clearHoveredPiece();
+    }
   }, []);
 
   return (
