@@ -12,7 +12,7 @@
     "database:migrate": "JDBC_DATABASE_URL=\"${JDBC_DATABASE_URL:-jdbc:postgresql://localhost:5432/monarchy_local}\" ../../database/migrate.sh",
     "relay": "mkdir -p src/autogen/relay && relay-compiler",
     "relay:sync": "mkdir -p src/autogen && get-graphql-schema http://localhost:8080/graphql > ./src/autogen/schema.graphql",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.2",
