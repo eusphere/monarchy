@@ -99,12 +99,13 @@ const Tile = (props: Props): React.ReactNode => {
           metalness={0.1}
         />
       </mesh>
-      {(props.selected || highlight) && <TileHighlight active />}
+      {(props.selected || highlight) && <TileHighlight active hovered={props.hovered} />}
       {props.legalAction && (
         <TileHighlight
           active
           color={overlayColor}
-          intensity={props.hovered ? Constants.TILE_HIGHLIGHT_HOVER_INTENSITY : 1}
+          hovered={props.hovered}
+          opacity={Constants.TILE_HIGHLIGHT_ACTION_OPACITY}
         />
       )}
       {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} />}
