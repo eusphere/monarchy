@@ -19,6 +19,7 @@ type Props = {
   onAttack: (attack: ReadonlyArray<{ i: number; j: number }>) => void;
   activePhase?: import('~/autogen/relay/GameSelectionFragment.graphql').Phase;
   selfPlayerId?: string;
+  onDirection: (direction: { i: number; j: number }) => void;
 };
 
 type LegalAction = 'MOVE' | 'ATTACK' | 'EFFECT';
@@ -100,6 +101,8 @@ const Board = (props: Props): React.ReactNode => {
             onDeselect={props.onDeselect}
             onMove={props.onMove}
             onAttack={props.onAttack}
+            onDirection={props.onDirection}
+            directions={selection?.directions ?? []}
           />
         );
       })}

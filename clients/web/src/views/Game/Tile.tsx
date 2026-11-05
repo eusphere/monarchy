@@ -9,6 +9,7 @@ import { useFragment } from 'react-relay';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import type { Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
 import { canSelectPiece } from './guards';
+import DirectionControls from './DirectionControls';
 
 const TILE_DIM = [
   Constants.TILE_SIZE,
@@ -34,6 +35,8 @@ type Props = {
   selected: boolean;
   hasSelection: boolean;
   attack?: ReadonlyArray<{ i: number; j: number }>;
+  directions: ReadonlyArray<{ i: number; j: number }>;
+  onDirection: (direction: { i: number; j: number }) => void;
 };
 
 const Tile = (props: Props): React.ReactNode => {
@@ -120,6 +123,7 @@ const Tile = (props: Props): React.ReactNode => {
         />
       )}
       {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} />}
+      {props.phase === 'DIR' && props.selected && <DirectionControls directions={props.directions} onDirection={props.onDirection} />}
     </group>
   );
 };
