@@ -12,9 +12,11 @@ import type { GameQuery as GameQueryType } from '~/autogen/relay/GameQuery.graph
 import GameSelectMutation from '~/autogen/relay/GameSelectMutation.graphql';
 import GameDeselectMutation from '~/autogen/relay/GameDeselectMutation.graphql';
 import GameMoveMutation from '~/autogen/relay/GameMoveMutation.graphql';
+import GameAttackMutation from '~/autogen/relay/GameAttackMutation.graphql';
 import type { GameSelectMutation as GameSelectMutationType } from '~/autogen/relay/GameSelectMutation.graphql';
 import type { GameDeselectMutation as GameDeselectMutationType } from '~/autogen/relay/GameDeselectMutation.graphql';
 import type { GameMoveMutation as GameMoveMutationType } from '~/autogen/relay/GameMoveMutation.graphql';
+import type { GameAttackMutation as GameAttackMutationType } from '~/autogen/relay/GameAttackMutation.graphql';
 import { subscribe } from '~/network/stream';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
@@ -40,11 +42,25 @@ const Game = (): React.ReactNode => {
   const [selectPiece] = useMutation<GameSelectMutationType>(GameSelectMutation);
   const [deselectPiece] = useMutation<GameDeselectMutationType>(GameDeselectMutation);
   const [movePiece] = useMutation<GameMoveMutationType>(GameMoveMutation);
+  const [attackPiece] = useMutation<GameAttackMutationType>(GameAttackMutation);
   const [endTurn] = useMutation<GameEndTurnMutationType>(GameEndTurnMutation);
   const gameState = data.game?.state;
   const selection = useFragment<GameSelectionFragment$key>(GameSelectionFragment, gameState?.currentSelection);
   const [activePhase, setActivePhase] = React.useState<Phase | undefined>();
   const allowedPhases = selection?.phases ?? [];
+  const serverSelectionKey = [
+    gameState?.currentPlayerId,
+    selection?.selection?.i,
+    selection?.selection?.j,
+    selection?.phases.join(','),
+  ].join(':');
+  const previousServerSelectionKey = React.useRef(serverSelectionKey);
+  React.useEffect(() => {
+    if (previousServerSelectionKey.current !== serverSelectionKey) {
+      previousServerSelectionKey.current = serverSelectionKey;
+      setActivePhase(undefined);
+    }
+  }, [serverSelectionKey]);
   React.useEffect(() => {
     if (!activePhase || !allowedPhases.includes(activePhase)) setActivePhase(allowedPhases[0]);
   }, [activePhase, allowedPhases]);
@@ -54,22 +70,41 @@ const Game = (): React.ReactNode => {
     if ('gameId' in message.data && message.data.gameId === gameId) setRefreshKey((key) => key + 1);
   }), [gameId]);
 
+  const refreshGame = React.useCallback(() => {
+    setActivePhase(undefined);
+    setRefreshKey((key) => key + 1);
+  }, []);
+
   const onSelect = React.useCallback((point: { i: number; j: number }) => {
     selectPiece({
       variables: { q: { gameId, point } },
+      onCompleted: refreshGame,
     });
-  }, [gameId, selectPiece]);
+  }, [gameId, refreshGame, selectPiece]);
   const onDeselect = React.useCallback(() => {
     deselectPiece({
       variables: { q: { gameId } },
+      onCompleted: refreshGame,
     });
-  }, [deselectPiece, gameId]);
+  }, [deselectPiece, gameId, refreshGame]);
   const onMove = React.useCallback((point: { i: number; j: number }) => {
-    movePiece({ variables: { q: { gameId, point } } });
-  }, [gameId, movePiece]);
+    movePiece({
+      variables: { q: { gameId, point } },
+      onCompleted: refreshGame,
+    });
+  }, [gameId, movePiece, refreshGame]);
   const onEndTurn = React.useCallback(() => {
-    endTurn({ variables: { q: { gameId } } });
-  }, [endTurn, gameId]);
+    endTurn({
+      variables: { q: { gameId } },
+      onCompleted: refreshGame,
+    });
+  }, [endTurn, gameId, refreshGame]);
+  const onAttack = React.useCallback((attack: ReadonlyArray<{ i: number; j: number }>) => {
+    attackPiece({
+      variables: { q: { gameId, attack } },
+      onCompleted: refreshGame,
+    });
+  }, [attackPiece, gameId, refreshGame]);
   const pieceColors = React.useMemo(() => {
     const colors: Record<string, string> = {};
     const fallbackColors = ['#4f46e5', '#d97706'];
@@ -81,7 +116,7 @@ const Game = (): React.ReactNode => {
 
   return (
     <Box className={styles.root}>
-      {data.game && <Panel game={data.game} pieceColors={pieceColors} activePhase={activePhase} onPhaseChange={setActivePhase} onEndTurn={onEndTurn} showPhaseSwitcher={selfPlayerId === gameState?.currentPlayerId} />}
+      {data.game && <Panel game={data.game} pieceColors={pieceColors} activePhase={activePhase} onPhaseChange={setActivePhase} onEndTurn={onEndTurn} />}
       <Canvas
         camera={{ position: CAMERA_POS, fov: 45 }}
         style={{ background: '#f0f0f0' }}
@@ -90,7 +125,7 @@ const Game = (): React.ReactNode => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} castShadow />
         <directionalLight position={[5, 5, 5]} castShadow />
-        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} activePhase={activePhase} onSelect={onSelect} onDeselect={onDeselect} onMove={onMove} />}
+        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} activePhase={activePhase} onSelect={onSelect} onDeselect={onDeselect} onMove={onMove} onAttack={onAttack} />}
       </Canvas>
     </Box>
   );

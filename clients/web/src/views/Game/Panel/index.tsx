@@ -18,7 +18,6 @@ type Props = {
   activePhase?: Phase;
   onPhaseChange: (phase: Phase) => void;
   onEndTurn: () => void;
-  showPhaseSwitcher: boolean;
 };
 
 const Panel = (props: Props): React.ReactNode => {
@@ -35,7 +34,7 @@ const Panel = (props: Props): React.ReactNode => {
         players={game.players}
         currentPlayerId={game.state?.currentPlayerId}
         phase={props.activePhase ?? selection?.phases[0]}
-        phaseControls={props.showPhaseSwitcher && selection ? (
+        phaseControls={selection ? (
           <PhaseSwitcher
             activePhase={props.activePhase}
             allowedPhases={selection.phases}
