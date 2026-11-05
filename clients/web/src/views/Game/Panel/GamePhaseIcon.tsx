@@ -1,11 +1,10 @@
 import Attack from '~/components/icons/Attack';
 import Compass from '~/components/icons/Compass';
 import Cursor from '~/components/icons/Cursor';
-import EndTurn from '~/components/icons/EndTurn';
 import Forfeit from '~/components/icons/Forfeit';
 import Move from '~/components/icons/Move';
 import Victory from '~/components/icons/Victory';
-import Waiting from '~/components/icons/Waiting';
+import Hourglass from '~/components/icons/Hourglass';
 
 export type GamePhaseIconKind = 'waiting' | 'selecting' | 'moving' | 'attacking' | 'turning' | 'ending' | 'forfeit' | 'victory';
 
@@ -17,7 +16,7 @@ type Props = {
 const GamePhaseIcon = ({ kind, size = 18 }: Props) => {
   switch (kind) {
     case 'waiting':
-      return <Waiting size={size} />;
+      return <Hourglass size={size} />;
     case 'selecting':
       return <Cursor size={size} />;
     case 'moving':
@@ -27,7 +26,7 @@ const GamePhaseIcon = ({ kind, size = 18 }: Props) => {
     case 'turning':
       return <Compass size={size} />;
     case 'ending':
-      return <EndTurn size={size} />;
+      return <Hourglass size={size} />;
     case 'forfeit':
       return <Forfeit size={size} />;
     case 'victory':

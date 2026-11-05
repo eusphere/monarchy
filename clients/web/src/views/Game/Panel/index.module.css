@@ -10,10 +10,10 @@
 .phaseSwitcher {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   width: max-content;
-  margin-top: 8px;
-  min-height: 32px;
+  margin-top: 0;
+  min-height: 40px;
   padding: 0;
   border: 0;
   border-radius: 12px;
@@ -26,17 +26,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   border-radius: 10px;
-  min-width: 30px;
-  height: 32px;
-  padding: 0 7px;
+  min-width: 36px;
+  height: 40px;
+  padding: 0 9px;
   line-height: 1;
-  color: var(--gray-11);
+  color: #000;
   background: transparent;
   cursor: pointer;
   font: inherit;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
   transition: color 160ms ease, background-color 160ms ease, opacity 160ms ease;
 }
@@ -45,7 +45,7 @@
 
 .phaseButton:hover:not(:disabled) { background: rgba(255, 255, 255, 0.55); }
 .phaseButton:disabled { cursor: default; opacity: 0.34; }
-.phaseButtonActive { color: var(--accent-11); background: rgba(255, 255, 255, 0.82); }
+.phaseButtonActive { color: #000; background: rgba(255, 255, 255, 0.82); }
 .phaseSwitcherWaiting .phaseButtonActive { color: var(--gray-11); background: rgba(255, 255, 255, 0.48); }
 
 .pieceDetails {
@@ -120,6 +120,7 @@
 }
 
 .banner {
+  position: relative;
   display: flex;
   width: min(760px, 100%);
   min-height: 112px;
@@ -130,6 +131,14 @@
   background: rgba(231, 239, 247, 0.8);
   box-shadow: 0 12px 32px rgba(46, 62, 79, 0.14);
   backdrop-filter: var(--overlay-blur);
+}
+
+.phaseCenter {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .side {
@@ -191,6 +200,10 @@
   background: transparent;
   font-weight: 400;
   line-height: 1.2;
+}
+
+.right .phaseLabel {
+  justify-content: flex-end;
 }
 
 @media (max-width: 520px) {

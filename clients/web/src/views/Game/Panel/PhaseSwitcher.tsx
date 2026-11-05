@@ -45,7 +45,7 @@ const PhaseSwitcher = ({ activePhase, allowedPhases, onChange, onEndTurn, compac
           disabled={!enabled}
           className={`${styles.phaseButton} ${active ? styles.phaseButtonActive : ''}`}
           onClick={() => value === 'END' ? onEndTurn() : value !== 'WAITING' && onChange(value)}>
-          <GamePhaseIcon kind={waiting ? 'waiting' : phaseIcon(value)} size={16} />
+          <GamePhaseIcon kind={waiting ? 'waiting' : phaseIcon(value)} size={18} />
           {active && <span>{label}</span>}
         </button>
       );

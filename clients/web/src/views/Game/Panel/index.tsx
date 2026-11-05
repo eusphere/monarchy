@@ -42,16 +42,6 @@ const Panel = (props: Props): React.ReactNode => {
             onEndTurn={props.onEndTurn}
           />
         ) : undefined}
-        inactivePhaseControls={selection ? (
-          <PhaseSwitcher
-            activePhase={props.activePhase ?? selection.phases[0]}
-            allowedPhases={[]}
-            onChange={props.onPhaseChange}
-            onEndTurn={props.onEndTurn}
-            compact
-            waiting
-          />
-        ) : undefined}
       />
       {(hoveredPiece ?? selection?.piece) && (
         <PieceDetails
