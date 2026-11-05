@@ -7,6 +7,7 @@ import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import type { Group } from 'three';
 import Arrow from '~/components/geo/Arrow';
 import Debug from '~/components/Debug';
+import HealthBar from '~/components/geo/HealthBar';
 
 const OFFSET = [0, Constants.TILE_HEIGHT / 2, 0] as const;
 const ORIENTATION_MARKER_POSITION = [0, 0.75, 0] as const;
@@ -39,6 +40,7 @@ const Piece = (props: Props): React.ReactNode => {
   return (
     <group ref={modelRef} position={OFFSET} rotation={rotation} userData={{ pieceRef: piece, pieceId: data.id }}>
       <Model color={color} />
+      <HealthBar current={data.currentHealth} maximum={data.stats.health} />
       <Debug>
         <Arrow position={ORIENTATION_MARKER_POSITION} />
       </Debug>

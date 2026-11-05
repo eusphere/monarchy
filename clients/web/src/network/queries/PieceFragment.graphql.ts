@@ -6,6 +6,9 @@ export const PieceFragment = graphql`
     order
     name
     playerId
+    stats {
+      health
+    }
     currentWait
     currentHealth
     currentBlocking
