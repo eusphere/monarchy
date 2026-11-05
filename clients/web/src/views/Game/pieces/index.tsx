@@ -10,6 +10,11 @@ type Props = {
   color?: string;
 };
 
+export type PieceVisual = {
+  component: React.ComponentType<{ color?: string }>;
+  rotationOffset: number;
+};
+
 const Base = (props: Props) => {
   const { scale, offset, model, color } = props;
   const { scene } = useGLTF(model);
@@ -77,3 +82,10 @@ export const Pyromancer = (props: { color?: string }) => (
     color={props.color}
   />
 );
+
+export const visuals: Record<string, PieceVisual> = {
+  Scout: { component: Archer, rotationOffset: 0 },
+  Knight: { component: Knight, rotationOffset: 0 },
+  Cleric: { component: Priestess, rotationOffset: 0 },
+  Pyromancer: { component: Pyromancer, rotationOffset: 0 },
+};

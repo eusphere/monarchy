@@ -7,13 +7,6 @@ import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import type { Group } from 'three';
 
 const OFFSET = [0, Constants.TILE_HEIGHT / 2, 0] as const;
-const MAPPING: Record<string, React.ComponentType<any>> = {
-  Scout: Pieces.Archer,
-  Knight: Pieces.Knight,
-  Cleric: Pieces.Priestess,
-  Pyromancer: Pieces.Pyromancer,
-};
-
 type Props = {
   piece: PieceFragment$key;
   color?: string;
@@ -23,14 +16,16 @@ const Piece = (props: Props): React.ReactNode => {
   const { piece, color } = props;
   const modelRef = React.useRef<Group>(null);
   const data = useFragment<PieceFragment$key>(PieceFragment, piece);
-  const Model = MAPPING[data.order] ?? Pieces.Default;
+  const visual = Pieces.visuals[data.order];
+  const Model = visual?.component ?? Pieces.Default;
+  const rotationOffset = visual?.rotationOffset ?? 0;
 
   // The board maps i to world Z and j to world X. The imported models face
   // world +Z at zero yaw, so convert the grid direction into that model axis.
   const rotation: [number, number, number] = React.useMemo(() => {
-    const angle = Math.PI / 2 - Math.atan2(data.currentDirection.i, data.currentDirection.j);
+    const angle = rotationOffset + Math.PI / 2 - Math.atan2(data.currentDirection.i, data.currentDirection.j);
     return [0, angle, 0];
-  }, [data.currentDirection]);
+  }, [data.currentDirection, rotationOffset]);
 
   React.useLayoutEffect(() => {
     modelRef.current?.traverse((object) => {
