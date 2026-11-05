@@ -9,6 +9,7 @@ import {
   Text,
   TextField,
   Button,
+  Switch,
 } from '@radix-ui/themes';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
@@ -17,6 +18,7 @@ import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import styles from './index.module.css';
 import ProfileUpdateMutation from '~/autogen/relay/ProfileUpdateMutation.graphql';
 import type { ProfileUpdateMutation as ProfileUpdateMutationType } from '~/autogen/relay/ProfileUpdateMutation.graphql';
+import { useDebug } from '~/hooks/useDebug';
 
 const initials = (username: string): string =>
   username.trim().slice(0, 2).toUpperCase() || '??';
@@ -27,6 +29,7 @@ const Profile = (): React.ReactNode => {
   const [commit, isCommitting] = useMutation<ProfileUpdateMutationType>(ProfileUpdateMutation);
   const [username, setUsername] = React.useState('');
   const [message, setMessage] = React.useState<string | null>(null);
+  const [debugEnabled, setDebugEnabled] = useDebug();
 
   if (!user) return null;
 
@@ -63,6 +66,18 @@ const Profile = (): React.ReactNode => {
           </Flex>
 
           <Separator size='4' />
+
+          <Flex align='center' justify='between' gap='4'>
+            <Flex direction='column' gap='1'>
+              <Text weight='bold'>Debug mode</Text>
+              <Text size='2' color='gray'>Show temporary development diagnostics in this browser.</Text>
+            </Flex>
+            <Switch
+              checked={debugEnabled}
+              onCheckedChange={setDebugEnabled}
+              aria-label='Enable debug mode'
+            />
+          </Flex>
 
           <Flex gap='3' wrap='wrap'>
             <Card variant='surface' className={styles.stat}>
