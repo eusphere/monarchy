@@ -20,6 +20,7 @@ export type GameQuery$data = {
     readonly players: ReadonlyArray<{
       readonly id: string;
       readonly user: {
+        readonly id: string;
         readonly profile: {
           readonly color: string;
         } | null | undefined;
@@ -237,6 +238,7 @@ return {
                 "name": "user",
                 "plural": false,
                 "selections": [
+                  (v2/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -277,6 +279,7 @@ return {
                 "name": "currentSelection",
                 "plural": false,
                 "selections": [
+                  (v2/*: any*/),
                   {
                     "args": null,
                     "kind": "FragmentSpread",

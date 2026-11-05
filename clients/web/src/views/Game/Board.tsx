@@ -8,6 +8,7 @@ import { setHoveredPiece } from './pieceHoverStore';
 import { clearHoveredPiece } from './pieceHoverStore';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useFragment } from 'react-relay';
+import type { Object3D } from 'three';
 
 type Props = {
   state: Types.GameState;
@@ -48,7 +49,7 @@ const Board = (props: Props): React.ReactNode => {
   }, [tiles]);
 
   const onPointerMove = React.useCallback((event: ThreeEvent<PointerEvent>) => {
-    let tileObject = event.object;
+    let tileObject: Object3D | undefined = event.object;
     while (tileObject && !tileObject.userData.tileKey) tileObject = tileObject.parent!;
     if (!tileObject?.userData.tileKey) {
       tileObject = event.intersections.find((intersection) => intersection.object.userData.tileKey)?.object;

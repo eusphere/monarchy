@@ -27,8 +27,8 @@ const Game = (): React.ReactNode => {
   const [refreshKey, setRefreshKey] = React.useState(0);
   const selfData = useLazyLoadQuery<SelfQueryType>(SelfQuery, {}, { fetchPolicy: 'store-or-network' });
   const self = useFragment<UserFragment$key>(UserFragment, selfData.self);
-  const selfPlayerId = data.game?.players.find((player) => (player.user as { readonly id?: string } | null | undefined)?.id === self.id)?.id;
   const data = useLazyLoadQuery<GameQueryType>(GameQuery, { id: gameId }, { fetchPolicy: 'network-only', fetchKey: refreshKey });
+  const selfPlayerId = data.game?.players.find((player) => player.user?.id === self.id)?.id;
   const [selectPiece] = useMutation<GameSelectMutationType>(GameSelectMutation);
   const gameState = data.game?.state;
 
