@@ -38,8 +38,8 @@ jobs:
       - name: Running tests
         working-directory: ./clients/web
         run: |
-          yarn
-          yarn tsc
+          yarn install --frozen-lockfile
+          yarn typecheck
   Client-web-devel:
     runs-on: ubuntu-latest
     steps:

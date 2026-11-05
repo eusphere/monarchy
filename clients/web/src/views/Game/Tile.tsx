@@ -70,14 +70,13 @@ const Tile = (props: Props): React.ReactNode => {
     const allowed = canSelectPiece({
       piecePlayerId: piece?.playerId,
       currentPlayerId: props.currentPlayerId,
-      selfPlayerId: props.selfPlayerId,
       phase: props.phase,
       canSelect: props.canSelect,
       wait: piece?.currentWait,
     });
     if (!allowed) return;
     props.onSelect(tile.point);
-  }, [piece, props.attack, props.canDeselect, props.canSelect, props.currentPlayerId, props.hasSelection, props.legalAction, props.onAttack, props.onDeselect, props.onMove, props.onSelect, props.phase, props.selfPlayerId, props.selected, tile.point]);
+  }, [piece, props.attack, props.canDeselect, props.canSelect, props.currentPlayerId, props.hasSelection, props.legalAction, props.onAttack, props.onDeselect, props.onMove, props.onSelect, props.phase, props.selected, tile.point]);
 
 
   const color = React.useMemo(() => {
