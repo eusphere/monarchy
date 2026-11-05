@@ -94,6 +94,18 @@ resource "aws_rds_cluster" "prod" {
   }
 }
 
+# Aurora's managed master secret had automatic seven-day rotation enabled
+# outside Terraform. The AWS provider cannot represent cancellation of
+# rotation for an RDS-managed secret, so make the cancellation an explicit,
+# idempotent Terraform action.
+resource "terraform_data" "disable_prod_database_rotation" {
+  input = aws_rds_cluster.prod.master_user_secret[0].secret_arn
+
+  provisioner "local-exec" {
+    command = "aws secretsmanager cancel-rotate-secret --secret-id '${self.input}'"
+  }
+}
+
 resource "aws_vpc_security_group_ingress_rule" "database_from_api" {
   security_group_id            = one(aws_rds_cluster.prod.vpc_security_group_ids)
   referenced_security_group_id = aws_security_group.api.id
