@@ -66,7 +66,7 @@ const Game = (): React.ReactNode => {
         camera={{ position: CAMERA_POS, fov: 45 }}
         style={{ background: '#f0f0f0' }}
       >
-        <OrbitControls />
+        <OrbitControls maxPolarAngle={Math.PI / 2 - 0.05} />
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} castShadow />
         <directionalLight position={[5, 5, 5]} castShadow />

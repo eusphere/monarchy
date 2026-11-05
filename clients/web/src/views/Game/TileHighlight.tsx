@@ -1,68 +1,85 @@
 import * as React from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AdditiveBlending, Color, ShaderMaterial } from 'three';
+import { AdditiveBlending, Color, Mesh, ShaderMaterial } from 'three';
 import * as Constants from './constants';
 
 type Props = {
   active: boolean;
   color?: string;
-  intensity?: number;
+  hovered?: boolean;
+  opacity?: number;
 };
 
-const TileHighlight = ({ active, color = '#fff0a8', intensity = 1 }: Props): React.ReactNode => {
-  const material = React.useRef<ShaderMaterial>(null);
+const TileHighlight = ({ active, color = '#fff0a8', hovered = false, opacity = 1 }: Props): React.ReactNode => {
   const highlightColor = React.useMemo(() => new Color(color), [color]);
+  const material = React.useRef<ShaderMaterial>(null);
+  const mesh = React.useRef<Mesh>(null);
+  const baseHeight = Constants.TILE_HEIGHT * Constants.TILE_HIGHLIGHT_HEIGHT_RATIO;
+  const targetHeight = baseHeight * (hovered ? Constants.TILE_HIGHLIGHT_HOVER_HEIGHT_RATIO : 1);
+  const height = React.useRef(baseHeight);
 
   React.useLayoutEffect(() => {
     if (!material.current) return;
     material.current.uniforms.color.value.copy(highlightColor);
-    material.current.uniforms.intensity.value = intensity;
-  }, [highlightColor, intensity]);
+    material.current.uniforms.opacity.value = opacity;
+  }, [highlightColor, opacity]);
 
-  useFrame(({ clock }) => {
-    if (material.current) {
-      const pulse = 0.5 + 0.5 * Math.sin(clock.elapsedTime * 2.2);
-      material.current.uniforms.opacity.value = active ? 0.22 + pulse * 0.1 : 0;
-    }
+  useFrame((_, delta) => {
+    if (!mesh.current) return;
+    const step = Math.min(1, delta * 14);
+    height.current += (targetHeight - height.current) * step;
+    mesh.current.scale.y = height.current / baseHeight;
+    mesh.current.position.y = Constants.TILE_HEIGHT / 2 + height.current / 2;
   });
-
   if (!active) {
     return null;
   }
 
   return (
-    <mesh position={[0, Constants.TILE_HEIGHT / 2 + 0.008, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <circleGeometry args={[Constants.TILE_SIZE * 0.62, 32]} />
+    <mesh ref={mesh} position={[0, Constants.TILE_HEIGHT / 2 + baseHeight / 2, 0]}>
+      <cylinderGeometry args={[
+        Constants.TILE_SIZE * Constants.TILE_HIGHLIGHT_DIAMETER_RATIO / 2,
+        Constants.TILE_SIZE * Constants.TILE_HIGHLIGHT_DIAMETER_RATIO / 2,
+        baseHeight,
+        32,
+      ]} />
       <shaderMaterial
         ref={material}
-        uniforms={{ color: { value: highlightColor }, intensity: { value: intensity }, opacity: { value: 0.27 } }}
+        uniforms={{ color: { value: highlightColor }, opacity: { value: opacity } }}
         vertexShader={VERTEX_SHADER}
         fragmentShader={FRAGMENT_SHADER}
-        blending={AdditiveBlending}
         transparent
         depthWrite={false}
+        blending={AdditiveBlending}
       />
     </mesh>
   );
 };
 
 const VERTEX_SHADER = `
-  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying vec3 vViewDirection;
+
   void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+    vNormal = normalize(normalMatrix * normal);
+    vViewDirection = normalize(cameraPosition - worldPosition.xyz);
+    gl_Position = projectionMatrix * viewMatrix * worldPosition;
   }
 `;
 
 const FRAGMENT_SHADER = `
   uniform vec3 color;
-  uniform float intensity;
   uniform float opacity;
-  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying vec3 vViewDirection;
+
   void main() {
-    float distanceFromCenter = distance(vUv, vec2(0.5));
-    float falloff = 1.0 - smoothstep(0.05, 0.5, distanceFromCenter);
-    gl_FragColor = vec4(color, falloff * opacity * intensity);
+    float facing = abs(dot(normalize(vNormal), normalize(vViewDirection)));
+    float rim = pow(1.0 - facing, 3.0);
+    vec3 glassColor = color * (0.55 + rim * 0.9);
+    float alpha = min(1.0, opacity * 1.25 * (0.28 + rim * 0.72));
+    gl_FragColor = vec4(glassColor, alpha);
   }
 `;
 
