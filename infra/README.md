@@ -71,7 +71,7 @@ file and removes it after the migration. The KMS key ARN is available as the
 
 ## DNS
 
-`api.monarchy1.com` currently has a legacy CNAME to Render. This module
-allocates an Elastic IP, replaces that record with an A record, and uses Caddy
-to terminate HTTPS and proxy HTTP/WebSocket traffic to the API container.
-Apply this change only when the instance is ready to receive production DNS.
+`api.monarchy1.com` points to the Elastic IP of the `monarchy-api` EC2
+instance. Caddy terminates HTTPS there and proxies HTTP/WebSocket traffic to
+the API container. The API container uses the Aurora PostgreSQL cluster and
+the local Redis container defined by the Compose configuration above.

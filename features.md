@@ -5,6 +5,10 @@ intended to turn the current dashboard sketch into a small, coherent home page
 and to keep later lobby and social features visible without prematurely
 building them.
 
+## Roadmap
+- Browser notifications when tab is inactive and the game state has changed
+
+
 ## Current implementation
 
 - The logged-in landing page is `DashboardView`.
