@@ -397,9 +397,12 @@ class GameSpec extends AnyWordSpec with Matchers {
     //
     val endTurnChange = for {
       g1 <- directionChange
-      g2 <- g1.endTurn(PlayerId(Ids.A))
-      g3 <- g2.nextTurn
-    } yield g3
+      g2 = g1.copy(board = g1.board.commit(
+        PieceUpdate(Vec(6, 4), _.copy(blockingAjustment = 0.8))
+      ))
+      g3 <- g2.endTurn(PlayerId(Ids.A))
+      g4 <- g3.nextTurn
+    } yield g4
 
     "have applied wait decrement on frost golem" in {
       val Accept(nextGame) = endTurnChange
@@ -410,7 +413,7 @@ class GameSpec extends AnyWordSpec with Matchers {
     "have applied blocking-adjustment decay" in {
       val Accept(nextGame) = endTurnChange
       val Some(PieceLocation(p, piece)) = nextGame.board.piece(Vec(6, 4))
-      assert(piece.blockingAjustment === 0.0)
+      assert(piece.blockingAjustment === 0.72)
     }
 
     "have applied wait on assassin after attacking" in {
