@@ -5,8 +5,11 @@ import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import { useFragment } from 'react-relay';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import type { Group } from 'three';
+import { useDebug } from '~/hooks/useDebug';
+import Arrow from '~/components/geo/Arrow';
 
 const OFFSET = [0, Constants.TILE_HEIGHT / 2, 0] as const;
+const ORIENTATION_MARKER_POSITION = [0, 0.75, 0] as const;
 type Props = {
   piece: PieceFragment$key;
   color?: string;
@@ -19,6 +22,7 @@ const Piece = (props: Props): React.ReactNode => {
   const visual = Pieces.visuals[data.order];
   const Model = visual?.component ?? Pieces.Default;
   const rotationOffset = visual?.rotationOffset ?? 0;
+  const [debugEnabled] = useDebug();
 
   // The board maps i to world Z and j to world X. The imported models face
   // world +Z at zero yaw, so convert the grid direction into that model axis.
@@ -36,6 +40,7 @@ const Piece = (props: Props): React.ReactNode => {
   return (
     <group ref={modelRef} position={OFFSET} rotation={rotation} userData={{ pieceRef: piece, pieceId: data.id }}>
       <Model color={color} />
+      {debugEnabled && <Arrow position={ORIENTATION_MARKER_POSITION} />}
     </group>
   );
 };
