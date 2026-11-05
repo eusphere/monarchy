@@ -8,6 +8,7 @@ import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import { useFragment } from 'react-relay';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import type { Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
+import { canSelectPiece } from './guards';
 
 const TILE_DIM = [
   Constants.TILE_SIZE,
@@ -20,8 +21,16 @@ type Props = {
   pieceColors: Record<string, string>;
   currentPlayerId: string;
   phase?: Phase;
+  canSelect: boolean;
+  canDeselect: boolean;
   selectedPiece?: PieceFragment$key;
   hovered: boolean;
+  onSelect: (point: { i: number; j: number }) => void;
+  onDeselect: () => void;
+  selfPlayerId?: string;
+  legalAction?: 'MOVE' | 'ATTACK' | 'EFFECT';
+  selected: boolean;
+  hasSelection: boolean;
 };
 
 const Tile = (props: Props): React.ReactNode => {
@@ -43,14 +52,31 @@ const Tile = (props: Props): React.ReactNode => {
   // multiple times at this level.
   const onClick = React.useCallback((e: React.MouseEvent<Group>) => {
     e.stopPropagation();
-    console.log(tile);
-  }, [tile]);
+    if (props.canDeselect && (props.selected || (!piece && props.hasSelection))) {
+      props.onDeselect();
+      return;
+    }
+    const allowed = canSelectPiece({
+      piecePlayerId: piece?.playerId,
+      currentPlayerId: props.currentPlayerId,
+      selfPlayerId: props.selfPlayerId,
+      phase: props.phase,
+      canSelect: props.canSelect,
+      wait: piece?.currentWait,
+    });
+    if (!allowed) return;
+    props.onSelect(tile.point);
+  }, [piece, props.canDeselect, props.canSelect, props.currentPlayerId, props.hasSelection, props.onDeselect, props.onSelect, props.phase, props.selfPlayerId, props.selected, tile.point]);
 
 
   const color = React.useMemo(() => {
     const isOdd = (tile.point.i + tile.point.j) % 2 === 0;
-    return props.hovered ? Constants.TILE_COLOR_HOVER : isOdd ? Constants.TILE_COLOR_ODD : Constants.TILE_COLOR_EVEN;
+    const baseColor = isOdd ? Constants.TILE_COLORS.ODD : Constants.TILE_COLORS.EVEN;
+    return props.hovered ? Constants.TILE_COLORS.HOVER : baseColor;
   }, [props.hovered, tile.point]);
+  const overlayColor = props.legalAction
+    ? Constants.TILE_COLORS[props.legalAction]
+    : Constants.TILE_COLORS.MOVE;
 
   return (
     <group
@@ -73,7 +99,14 @@ const Tile = (props: Props): React.ReactNode => {
           metalness={0.1}
         />
       </mesh>
-      {highlight && <TileHighlight active />}
+      {(props.selected || highlight) && <TileHighlight active />}
+      {props.legalAction && (
+        <TileHighlight
+          active
+          color={overlayColor}
+          intensity={props.hovered ? Constants.TILE_HIGHLIGHT_HOVER_INTENSITY : 1}
+        />
+      )}
       {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} />}
     </group>
   );

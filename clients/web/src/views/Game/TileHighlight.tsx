@@ -1,14 +1,23 @@
 import * as React from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AdditiveBlending, ShaderMaterial } from 'three';
+import { AdditiveBlending, Color, ShaderMaterial } from 'three';
 import * as Constants from './constants';
 
 type Props = {
   active: boolean;
+  color?: string;
+  intensity?: number;
 };
 
-const TileHighlight = ({ active }: Props): React.ReactNode => {
+const TileHighlight = ({ active, color = '#fff0a8', intensity = 1 }: Props): React.ReactNode => {
   const material = React.useRef<ShaderMaterial>(null);
+  const highlightColor = React.useMemo(() => new Color(color), [color]);
+
+  React.useLayoutEffect(() => {
+    if (!material.current) return;
+    material.current.uniforms.color.value.copy(highlightColor);
+    material.current.uniforms.intensity.value = intensity;
+  }, [highlightColor, intensity]);
 
   useFrame(({ clock }) => {
     if (material.current) {
@@ -26,7 +35,7 @@ const TileHighlight = ({ active }: Props): React.ReactNode => {
       <circleGeometry args={[Constants.TILE_SIZE * 0.62, 32]} />
       <shaderMaterial
         ref={material}
-        uniforms={{ opacity: { value: 0.27 } }}
+        uniforms={{ color: { value: highlightColor }, intensity: { value: intensity }, opacity: { value: 0.27 } }}
         vertexShader={VERTEX_SHADER}
         fragmentShader={FRAGMENT_SHADER}
         blending={AdditiveBlending}
@@ -46,13 +55,14 @@ const VERTEX_SHADER = `
 `;
 
 const FRAGMENT_SHADER = `
+  uniform vec3 color;
+  uniform float intensity;
   uniform float opacity;
   varying vec2 vUv;
   void main() {
     float distanceFromCenter = distance(vUv, vec2(0.5));
     float falloff = 1.0 - smoothstep(0.05, 0.5, distanceFromCenter);
-    vec3 warmWhite = vec3(1.0, 0.93, 0.68);
-    gl_FragColor = vec4(warmWhite, falloff * opacity);
+    gl_FragColor = vec4(color, falloff * opacity * intensity);
   }
 `;
 

@@ -8,6 +8,7 @@ import type { GameSelectionFragment$key } from '~/autogen/relay/GameSelectionFra
 import TurnBanner from './TurnBanner';
 import PieceDetails from './PieceDetails';
 import { useHoveredPiece } from '../pieceHoverStore';
+import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 
 type Props = {
   game: Types.Game;

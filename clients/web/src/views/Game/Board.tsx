@@ -8,11 +8,18 @@ import { setHoveredPiece } from './pieceHoverStore';
 import { clearHoveredPiece } from './pieceHoverStore';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useFragment } from 'react-relay';
+import type { Object3D } from 'three';
 
 type Props = {
   state: Types.GameState;
   pieceColors: Record<string, string>;
+  onSelect: (point: { i: number; j: number }) => void;
+  onDeselect: () => void;
+  selfPlayerId?: string;
 };
+
+type LegalAction = 'MOVE' | 'ATTACK' | 'EFFECT';
+const pointKey = (point: { i: number; j: number }) => `${point.i}-${point.j}`;
 
 // Basic board component
 const Board = (props: Props): React.ReactNode => {
@@ -22,7 +29,16 @@ const Board = (props: Props): React.ReactNode => {
     props.state.currentSelection,
   );
   const phase = selection?.phases[0];
+  const canSelect = selection?.phases.includes('SELECT') || selection?.phases.includes('MOVE') || false;
+  const canDeselect = canSelect;
   const selectedPieceId = selection?.selection ? selection.piece : undefined;
+  const legalTargets = React.useMemo(() => {
+    const targets = new Map<string, LegalAction>();
+    if (!selection) return targets;
+    if (phase === 'MOVE') selection.movements.forEach((point) => targets.set(pointKey(point), 'MOVE'));
+    if (phase === 'ATTACK') selection.attacks.forEach((attack) => attack.tiles.forEach((point) => targets.set(pointKey(point), 'ATTACK')));
+    return targets;
+  }, [phase, selection]);
   const [hoveredTile, setHoveredTile] = React.useState<string | null>(null);
   const offset: [number, number, number] = React.useMemo(() => {
     const minI = Math.min(...tiles.map((_) => _.point.i));
@@ -35,7 +51,7 @@ const Board = (props: Props): React.ReactNode => {
   }, [tiles]);
 
   const onPointerMove = React.useCallback((event: ThreeEvent<PointerEvent>) => {
-    let tileObject = event.object;
+    let tileObject: Object3D | undefined = event.object;
     while (tileObject && !tileObject.userData.tileKey) tileObject = tileObject.parent!;
     if (!tileObject?.userData.tileKey) {
       tileObject = event.intersections.find((intersection) => intersection.object.userData.tileKey)?.object;
@@ -64,8 +80,16 @@ const Board = (props: Props): React.ReactNode => {
             pieceColors={props.pieceColors}
             currentPlayerId={props.state.currentPlayerId}
             phase={phase}
+            canSelect={canSelect}
+            canDeselect={canDeselect}
             selectedPiece={selectedPieceId ?? undefined}
             hovered={hoveredTile === key}
+            selfPlayerId={props.selfPlayerId}
+            legalAction={legalTargets.get(key)}
+            selected={selection?.selection ? pointKey(selection.selection) === key : false}
+            hasSelection={Boolean(selection?.selection)}
+            onSelect={props.onSelect}
+            onDeselect={props.onDeselect}
           />
         );
       })}

@@ -9,7 +9,7 @@
 
 .pieceDetails {
   position: fixed;
-  bottom: var(--grid-space);
+  bottom: 64px;
   left: 50%;
   width: min(380px, calc(100vw - 32px));
   margin: 0;
@@ -21,6 +21,7 @@
   box-shadow: 0 10px 26px rgba(46, 62, 79, 0.14);
   backdrop-filter: var(--overlay-blur);
 }
+
 
 .pieceHeading {
   display: flex;
@@ -154,7 +155,7 @@
   .banner { min-height: 70px; border-radius: 18px; }
   .side { gap: 8px; padding: 10px; }
   .colorSquare { flex-basis: 36px; width: 36px; height: 36px; border-radius: 10px; }
-  .pieceDetails { bottom: 8px; width: calc(100vw - 16px); }
+  .pieceDetails { bottom: 32px; width: calc(100vw - 16px); }
 }
 
 @media (prefers-reduced-motion: no-preference) {

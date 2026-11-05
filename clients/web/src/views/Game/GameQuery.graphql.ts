@@ -8,6 +8,7 @@ export const GameQuery = graphql`
       players {
         id
         user {
+          id
           profile {
             color
           }

@@ -16,15 +16,15 @@ type Props = {
 };
 
 const Game = (props: Props): React.ReactNode => {
-  const game = useFragment<GameFragment$key>(GameFragment, props.game);
+  const game = useFragment(GameFragment, props.game);
   const createdAt = new Date(game.createdAt);
   const gameAtFormatted = formatDateRelative(createdAt);
 
   return (
     <SummaryTile to={`/game/${game.id}`} status={game.selfStatus && <PlayerStatus status={game.selfStatus} />}>
       <Box className={styles.players}>
-        {game.players.map((player) => (
-          <Player key={player.id} player={player} selfId={props.selfId} />
+        {game.players.map((player, index) => (
+          <Player key={index} player={player} selfId={props.selfId} />
         ))}
       </Box>
       <Note text={gameAtFormatted} />
