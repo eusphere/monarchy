@@ -11,13 +11,19 @@ import styles from './index.module.css';
 import type { GameQuery as GameQueryType } from '~/autogen/relay/GameQuery.graphql';
 import GameSelectMutation from '~/autogen/relay/GameSelectMutation.graphql';
 import GameDeselectMutation from '~/autogen/relay/GameDeselectMutation.graphql';
+import GameMoveMutation from '~/autogen/relay/GameMoveMutation.graphql';
 import type { GameSelectMutation as GameSelectMutationType } from '~/autogen/relay/GameSelectMutation.graphql';
 import type { GameDeselectMutation as GameDeselectMutationType } from '~/autogen/relay/GameDeselectMutation.graphql';
+import type { GameMoveMutation as GameMoveMutationType } from '~/autogen/relay/GameMoveMutation.graphql';
 import { subscribe } from '~/network/stream';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
+import GameSelectionFragment from '~/autogen/relay/GameSelectionFragment.graphql';
+import type { GameSelectionFragment$key, Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
+import GameEndTurnMutation from '~/autogen/relay/GameEndTurnMutation.graphql';
+import type { GameEndTurnMutation as GameEndTurnMutationType } from '~/autogen/relay/GameEndTurnMutation.graphql';
 import { useFragment } from 'react-relay';
 
 const CAMERA_DIST = 9;
@@ -33,7 +39,15 @@ const Game = (): React.ReactNode => {
   const selfPlayerId = data.game?.players.find((player) => player.user?.id === self.id)?.id;
   const [selectPiece] = useMutation<GameSelectMutationType>(GameSelectMutation);
   const [deselectPiece] = useMutation<GameDeselectMutationType>(GameDeselectMutation);
+  const [movePiece] = useMutation<GameMoveMutationType>(GameMoveMutation);
+  const [endTurn] = useMutation<GameEndTurnMutationType>(GameEndTurnMutation);
   const gameState = data.game?.state;
+  const selection = useFragment<GameSelectionFragment$key>(GameSelectionFragment, gameState?.currentSelection);
+  const [activePhase, setActivePhase] = React.useState<Phase | undefined>();
+  const allowedPhases = selection?.phases ?? [];
+  React.useEffect(() => {
+    if (!activePhase || !allowedPhases.includes(activePhase)) setActivePhase(allowedPhases[0]);
+  }, [activePhase, allowedPhases]);
 
   React.useEffect(() => subscribe((message) => {
     if (message.name !== 'GameChange' || typeof message.data !== 'object' || message.data === null) return;
@@ -50,6 +64,12 @@ const Game = (): React.ReactNode => {
       variables: { q: { gameId } },
     });
   }, [deselectPiece, gameId]);
+  const onMove = React.useCallback((point: { i: number; j: number }) => {
+    movePiece({ variables: { q: { gameId, point } } });
+  }, [gameId, movePiece]);
+  const onEndTurn = React.useCallback(() => {
+    endTurn({ variables: { q: { gameId } } });
+  }, [endTurn, gameId]);
   const pieceColors = React.useMemo(() => {
     const colors: Record<string, string> = {};
     const fallbackColors = ['#4f46e5', '#d97706'];
@@ -61,7 +81,7 @@ const Game = (): React.ReactNode => {
 
   return (
     <Box className={styles.root}>
-      {data.game && <Panel game={data.game} pieceColors={pieceColors} />}
+      {data.game && <Panel game={data.game} pieceColors={pieceColors} activePhase={activePhase} onPhaseChange={setActivePhase} onEndTurn={onEndTurn} showPhaseSwitcher={selfPlayerId === gameState?.currentPlayerId} />}
       <Canvas
         camera={{ position: CAMERA_POS, fov: 45 }}
         style={{ background: '#f0f0f0' }}
@@ -70,7 +90,7 @@ const Game = (): React.ReactNode => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} castShadow />
         <directionalLight position={[5, 5, 5]} castShadow />
-        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} onSelect={onSelect} onDeselect={onDeselect} />}
+        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} activePhase={activePhase} onSelect={onSelect} onDeselect={onDeselect} onMove={onMove} />}
       </Canvas>
     </Box>
   );

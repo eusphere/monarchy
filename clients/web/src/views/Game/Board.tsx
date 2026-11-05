@@ -15,6 +15,8 @@ type Props = {
   pieceColors: Record<string, string>;
   onSelect: (point: { i: number; j: number }) => void;
   onDeselect: () => void;
+  onMove: (point: { i: number; j: number }) => void;
+  activePhase?: import('~/autogen/relay/GameSelectionFragment.graphql').Phase;
   selfPlayerId?: string;
 };
 
@@ -28,7 +30,7 @@ const Board = (props: Props): React.ReactNode => {
     GameSelectionFragment,
     props.state.currentSelection,
   );
-  const phase = selection?.phases[0];
+  const phase = props.activePhase ?? selection?.phases[0];
   const canSelect = selection?.phases.includes('SELECT') || selection?.phases.includes('MOVE') || false;
   const canDeselect = canSelect;
   const selectedPieceId = selection?.selection ? selection.piece : undefined;
@@ -90,6 +92,7 @@ const Board = (props: Props): React.ReactNode => {
             hasSelection={Boolean(selection?.selection)}
             onSelect={props.onSelect}
             onDeselect={props.onDeselect}
+            onMove={props.onMove}
           />
         );
       })}
