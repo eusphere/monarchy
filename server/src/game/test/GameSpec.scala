@@ -4,6 +4,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalactic.{Equality, TolerantNumerics}
 import monarchy.testutil.Ids
+import scala.util.Random
 
 class GameSpec extends AnyWordSpec with Matchers {
   import PlanarTooling.PlanarStringOps
@@ -241,6 +242,17 @@ class GameSpec extends AnyWordSpec with Matchers {
       g2 <- g1.attackSelect(PlayerId(Ids.A), Set(Vec(6, 4)))
     } yield g2
 
+    def attackWithDefender(direction: Vec, seed: Int = 77): Change[Game] = for {
+      g1 <- moveChange
+      g2 = g1.copy(
+        rand = new Random(seed),
+        board = g1.board.commitAggregation(Seq(
+          PieceUpdate(Vec(6, 4), _.copy(currentDirection = direction))
+        )),
+      )
+      g3 <- g2.attackSelect(PlayerId(Ids.A), Set(Vec(6, 4)))
+    } yield g3
+
     "accept attack selection from player ID=A with good coordinates" in {
       assert(attackChange.accepted)
     }
@@ -294,6 +306,24 @@ class GameSpec extends AnyWordSpec with Matchers {
       val Accept(nextGame) = attackChange
       val Some(PieceLocation(p, piece)) = nextGame.board.piece(Vec(6, 4))
       assert(piece.blockingAjustment === 0.8)
+    }
+
+    "give an unblocked frontal attack the base blocking modifier" in {
+      val Accept(nextGame) = attackWithDefender(Vec(0, 1), seed = 2048)
+      val Some(PieceLocation(_, piece)) = nextGame.board.piece(Vec(6, 4))
+      assert(piece.blockingAjustment === 0.8)
+    }
+
+    "give an attack from behind no blocking modifier" in {
+      val Accept(nextGame) = attackWithDefender(Vec(0, -1))
+      val Some(PieceLocation(_, piece)) = nextGame.board.piece(Vec(6, 4))
+      assert(piece.blockingAjustment === 0.0)
+    }
+
+    "give a blocked side attack the negative side modifier" in {
+      val Accept(nextGame) = attackWithDefender(Vec(-1, 0), seed = 4096)
+      val Some(PieceLocation(_, piece)) = nextGame.board.piece(Vec(6, 4))
+      assert(piece.blockingAjustment === -1.2)
     }
 
     "have applied direction change to defender correctly" in {
