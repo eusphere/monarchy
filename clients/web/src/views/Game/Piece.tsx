@@ -25,12 +25,11 @@ const Piece = (props: Props): React.ReactNode => {
   const data = useFragment<PieceFragment$key>(PieceFragment, piece);
   const Model = MAPPING[data.order] ?? Pieces.Default;
 
-  // Convert i,j direction vector to rotation angle in radians
-  // Math.atan2 gives angle from positive x-axis
-  // Since i maps to z and j maps to x, we swap the order
+  // The board maps i to world Z and j to world X. The imported models face
+  // world +Z at zero yaw, so convert the grid direction into that model axis.
   const rotation: [number, number, number] = React.useMemo(() => {
-    const angle = Math.atan2(data.currentDirection.i, data.currentDirection.j);
-    return [0, angle, 0]; // Rotate around y-axis
+    const angle = Math.PI / 2 - Math.atan2(data.currentDirection.i, data.currentDirection.j);
+    return [0, angle, 0];
   }, [data.currentDirection]);
 
   React.useLayoutEffect(() => {
