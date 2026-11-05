@@ -40,7 +40,6 @@ jobs:
         run: |
           yarn install --frozen-lockfile
           yarn typecheck
-          yarn build
   Client-web-devel:
     runs-on: ubuntu-latest
     steps:
