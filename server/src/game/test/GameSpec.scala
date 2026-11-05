@@ -260,10 +260,28 @@ class GameSpec extends AnyWordSpec with Matchers {
       assert(nextGame.attacks.isEmpty)
     }
 
+    "allow ending the turn directly after attacking" in {
+      val change = for {
+        g1 <- attackChange
+        g2 <- g1.endTurn(PlayerId(Ids.A))
+      } yield g2
+      assert(change.accepted)
+    }
+
     "have applied direction to attacker correctly" in {
       val Accept(nextGame) = attackChange
       val Some(PieceLocation(p, piece)) = nextGame.board.piece(Vec(6, 5))
       assert(piece.currentDirection == Vec(0, -1))
+    }
+
+    "turn the attacker toward the selected attack" in {
+      val change = for {
+        g1 <- moveChange
+        g2 <- g1.attackSelect(PlayerId(Ids.A), Set(Vec(6, 6)))
+      } yield g2
+      val Accept(nextGame) = change
+      val Some(PieceLocation(_, piece)) = nextGame.board.piece(Vec(6, 5))
+      assert(piece.currentDirection == Vec(0, 1))
     }
 
     "have applied damage to defender correctly" in {

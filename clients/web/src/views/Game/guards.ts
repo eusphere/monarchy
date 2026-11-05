@@ -18,6 +18,5 @@ export const canSelectPiece = ({
   canSelect
   && piecePlayerId
   && piecePlayerId === currentPlayerId
-  && piecePlayerId === selfPlayerId
   && wait === 0,
 );

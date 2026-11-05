@@ -11,6 +11,13 @@ case class Game(
 ) {
   import TurnAction._
 
+  private def attackDirection(origin: Vec, attack: Deltas, fallback: Vec): Vec = {
+    val delta = attack.foldLeft(Vec.Zero)(_ + _ - origin)
+    if (delta == Vec.Zero) fallback
+    else if (math.abs(delta.i) >= math.abs(delta.j)) Vec(delta.i.sign, 0)
+    else Vec(0, delta.j.sign)
+  }
+
   def currentTurn: Turn =
     turns.head
 
@@ -151,13 +158,13 @@ case class Game(
                         val blockingBase = pieceN.conf.blocking
                         val blocking = pieceN.currentBlocking
                         // Compute angle of vec from origin to target with way unit is facing.
-                        val attackDir = pt - tile.point
+                        val attackDir = tile.point - pt
                         val snapped = directionSnap(pieceN.currentDirection, attackDir)
                         val (anchor, blockingProb, blockingDir) = snapped match {
-                          case Clockwise90(dir) =>        (2, blocking / 2, -dir)
-                          case CounterClockwise90(dir) => (2, blocking / 2, -dir)
-                          case HalfRotation(dir) =>       (1,     blocking, -dir)
-                          case NoRotation(dir) =>         (0,          0.0, -dir)
+                          case Clockwise90(dir) =>        (2, blocking / 2, dir)
+                          case CounterClockwise90(dir) => (2, blocking / 2, dir)
+                          case HalfRotation(dir) =>       (1,     blocking, dir)
+                          case NoRotation(dir) =>         (0,          0.0, dir)
                         }
                         val blockingOutcome = rand.nextDouble <= blockingProb
                         val canApplyAdjustment = anchor > 0
@@ -228,8 +235,7 @@ case class Game(
               // The attacker turns in the snapped avg. direction of the attacks.
               val attackerUpdate = {
                 val focus = piece.conf.attackRequiresFocus
-                val attackDir = attack.foldLeft(Deltas.Origin)(_ + _ - tile.point)
-                val nextDir = directionSnap(piece.currentDirection, attackDir).result
+                val nextDir = attackDirection(tile.point, attack, piece.currentDirection)
                 PieceUpdate(tile.point, _.copy(currentDirection = nextDir, currentFocus = focus))
               }
               // Fold updates over the board-state.
