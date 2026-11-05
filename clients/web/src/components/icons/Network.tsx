@@ -1,6 +1,6 @@
 type Props = { size?: number };
 
-const NetworkIcon = ({ size = 16 }: Props) => (
+const Network = ({ size = 16 }: Props) => (
   <svg width={size} height={size} viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
     <path d='M3 12h18' />
     <path d='m8 7-5 5 5 5' />
@@ -10,4 +10,4 @@ const NetworkIcon = ({ size = 16 }: Props) => (
   </svg>
 );
 
-export default NetworkIcon;
+export default Network;

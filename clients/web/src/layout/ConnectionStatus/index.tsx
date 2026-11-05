@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Badge } from '@radix-ui/themes';
 import { send, subscribe } from '~/network/stream';
-import NetworkIcon from '~/components/icons/NetworkIcon';
+import Network from '~/components/icons/Network';
 import styles from './index.module.css';
 
 const PingPeriod = 15000;
@@ -24,7 +24,7 @@ const ConnectionStatus = (): React.ReactNode => {
 
   const color = latency == null ? 'gray' : latency < 200 ? 'green' : latency < 1000 ? 'orange' : 'red';
   return <div className={styles.root} title='Network connection latency' aria-label='Network connection latency'>
-    <Badge size='1' color={color}><NetworkIcon size={13} />{latency == null ? '—' : `${latency}ms`}</Badge>
+    <Badge size='1' color={color}><Network size={13} />{latency == null ? '—' : `${latency}ms`}</Badge>
   </div>;
 };
 

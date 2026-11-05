@@ -1,6 +1,6 @@
 type Props = { size?: number };
 
-const AttackIcon = ({ size = 18 }: Props) => (
+const Attack = ({ size = 18 }: Props) => (
   <svg width={size} height={size} viewBox='0 0 24 24' fill='currentColor' aria-hidden='true' style={{ flexShrink: 0 }}>
     <g transform='rotate(45 12 12)'>
       <path d='M12 1 13.5 5 14.5 14.5H9.5L10.5 5Z' />
@@ -11,4 +11,4 @@ const AttackIcon = ({ size = 18 }: Props) => (
   </svg>
 );
 
-export default AttackIcon;
+export default Attack;

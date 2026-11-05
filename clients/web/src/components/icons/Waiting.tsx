@@ -1,0 +1,5 @@
+import { svgProps, type IconProps } from './IconProps';
+
+const Waiting = ({ size = 18 }: IconProps) => <svg {...svgProps(size)}><path d='M7 3h10M7 21h10M8 4c0 3 2 4 4 5 2-1 4-2 4-5M8 20c0-3 2-4 4-5 2 1 4 2 4 5' /><path d='M9.5 17h5' /></svg>;
+
+export default Waiting;

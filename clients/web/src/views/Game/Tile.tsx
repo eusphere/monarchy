@@ -27,6 +27,7 @@ type Props = {
   hovered: boolean;
   onSelect: (point: { i: number; j: number }) => void;
   onDeselect: () => void;
+  onMove: (point: { i: number; j: number }) => void;
   selfPlayerId?: string;
   legalAction?: 'MOVE' | 'ATTACK' | 'EFFECT';
   selected: boolean;
@@ -52,6 +53,10 @@ const Tile = (props: Props): React.ReactNode => {
   // multiple times at this level.
   const onClick = React.useCallback((e: React.MouseEvent<Group>) => {
     e.stopPropagation();
+    if (props.legalAction === 'MOVE') {
+      props.onMove(tile.point);
+      return;
+    }
     if (props.canDeselect && (props.selected || (!piece && props.hasSelection))) {
       props.onDeselect();
       return;
@@ -66,7 +71,7 @@ const Tile = (props: Props): React.ReactNode => {
     });
     if (!allowed) return;
     props.onSelect(tile.point);
-  }, [piece, props.canDeselect, props.canSelect, props.currentPlayerId, props.hasSelection, props.onDeselect, props.onSelect, props.phase, props.selfPlayerId, props.selected, tile.point]);
+  }, [piece, props.canDeselect, props.canSelect, props.currentPlayerId, props.hasSelection, props.onDeselect, props.onMove, props.onSelect, props.phase, props.selfPlayerId, props.selected, props.legalAction, tile.point]);
 
 
   const color = React.useMemo(() => {
@@ -99,9 +104,10 @@ const Tile = (props: Props): React.ReactNode => {
           metalness={0.1}
         />
       </mesh>
-      {(props.selected || highlight) && <TileHighlight active hovered={props.hovered} />}
+      {(props.selected || highlight) && <TileHighlight key='selection-highlight' active hovered={props.hovered} />}
       {props.legalAction && (
         <TileHighlight
+          key={`legal-${props.legalAction}`}
           active
           color={overlayColor}
           hovered={props.hovered}

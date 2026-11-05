@@ -11,9 +11,9 @@ import Game from '~/layout/GameSummary';
 import styles from './index.module.css';
 import { subscribe } from '~/network/stream';
 import UserRating from '~/layout/GameSummary/UserRating';
-import CancelIcon from '~/components/icons/CancelIcon';
+import Cancel from '~/components/icons/Cancel';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
-import AttackIcon from '~/components/icons/AttackIcon';
+import Attack from '~/components/icons/Attack';
 import useRemainingSeconds from '~/util/useRemainingSeconds';
 import { formatDuration } from '~/util/duration';
 
@@ -82,7 +82,7 @@ const ChallengeTile = ({ challenge, user, isCancelling, isAccepting, onCancel, o
           {remaining === null ? 'Evergreen' : expired ? 'Expired' : `${formatDuration(remaining)} remaining`}
         </Text>
       </Flex>
-      {isOwn ? <Button size='1' variant='soft' color='gray' onClick={onCancel} disabled={isCancelling || expired}><CancelIcon />Cancel</Button> : <Button size='1' variant='soft' color='blue' onClick={onAccept} disabled={isAccepting || expired}><AttackIcon size={18} />Accept</Button>}
+      {isOwn ? <Button size='1' variant='soft' color='gray' onClick={onCancel} disabled={isCancelling || expired}><Cancel />Cancel</Button> : <Button size='1' variant='soft' color='blue' onClick={onAccept} disabled={isAccepting || expired}><Attack size={18} />Accept</Button>}
     </Flex>
   </Card>;
 };
