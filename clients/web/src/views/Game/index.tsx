@@ -10,7 +10,9 @@ import Panel from './Panel';
 import styles from './index.module.css';
 import type { GameQuery as GameQueryType } from '~/autogen/relay/GameQuery.graphql';
 import GameSelectMutation from '~/autogen/relay/GameSelectMutation.graphql';
+import GameDeselectMutation from '~/autogen/relay/GameDeselectMutation.graphql';
 import type { GameSelectMutation as GameSelectMutationType } from '~/autogen/relay/GameSelectMutation.graphql';
+import type { GameDeselectMutation as GameDeselectMutationType } from '~/autogen/relay/GameDeselectMutation.graphql';
 import { subscribe } from '~/network/stream';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
@@ -30,6 +32,7 @@ const Game = (): React.ReactNode => {
   const data = useLazyLoadQuery<GameQueryType>(GameQuery, { id: gameId }, { fetchPolicy: 'network-only', fetchKey: refreshKey });
   const selfPlayerId = data.game?.players.find((player) => player.user?.id === self.id)?.id;
   const [selectPiece] = useMutation<GameSelectMutationType>(GameSelectMutation);
+  const [deselectPiece] = useMutation<GameDeselectMutationType>(GameDeselectMutation);
   const gameState = data.game?.state;
 
   React.useEffect(() => subscribe((message) => {
@@ -38,8 +41,15 @@ const Game = (): React.ReactNode => {
   }), [gameId]);
 
   const onSelect = React.useCallback((point: { i: number; j: number }) => {
-    selectPiece({ variables: { q: { gameId, point } } });
+    selectPiece({
+      variables: { q: { gameId, point } },
+    });
   }, [gameId, selectPiece]);
+  const onDeselect = React.useCallback(() => {
+    deselectPiece({
+      variables: { q: { gameId } },
+    });
+  }, [deselectPiece, gameId]);
   const pieceColors = React.useMemo(() => {
     const colors: Record<string, string> = {};
     const fallbackColors = ['#4f46e5', '#d97706'];
@@ -60,7 +70,7 @@ const Game = (): React.ReactNode => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} castShadow />
         <directionalLight position={[5, 5, 5]} castShadow />
-        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} onSelect={onSelect} />}
+        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} onSelect={onSelect} onDeselect={onDeselect} />}
       </Canvas>
     </Box>
   );

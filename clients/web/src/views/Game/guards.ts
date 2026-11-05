@@ -3,6 +3,7 @@ type SelectionGuardInput = {
   currentPlayerId?: string;
   selfPlayerId?: string;
   phase?: string;
+  canSelect?: boolean;
   wait?: number;
 };
 
@@ -11,9 +12,10 @@ export const canSelectPiece = ({
   currentPlayerId,
   selfPlayerId,
   phase,
+  canSelect = phase === 'SELECT',
   wait,
 }: SelectionGuardInput): boolean => Boolean(
-  phase === 'SELECT'
+  canSelect
   && piecePlayerId
   && piecePlayerId === currentPlayerId
   && piecePlayerId === selfPlayerId

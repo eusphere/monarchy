@@ -14,10 +14,11 @@ type Props = {
   state: Types.GameState;
   pieceColors: Record<string, string>;
   onSelect: (point: { i: number; j: number }) => void;
+  onDeselect: () => void;
   selfPlayerId?: string;
 };
 
-type LegalAction = 'MOVE' | 'ATTACK' | 'DIR';
+type LegalAction = 'MOVE' | 'ATTACK' | 'EFFECT';
 const pointKey = (point: { i: number; j: number }) => `${point.i}-${point.j}`;
 
 // Basic board component
@@ -28,13 +29,14 @@ const Board = (props: Props): React.ReactNode => {
     props.state.currentSelection,
   );
   const phase = selection?.phases[0];
+  const canSelect = selection?.phases.includes('SELECT') || selection?.phases.includes('MOVE') || false;
+  const canDeselect = canSelect;
   const selectedPieceId = selection?.selection ? selection.piece : undefined;
   const legalTargets = React.useMemo(() => {
     const targets = new Map<string, LegalAction>();
     if (!selection) return targets;
     if (phase === 'MOVE') selection.movements.forEach((point) => targets.set(pointKey(point), 'MOVE'));
     if (phase === 'ATTACK') selection.attacks.forEach((attack) => attack.tiles.forEach((point) => targets.set(pointKey(point), 'ATTACK')));
-    if (phase === 'DIR') selection.directions.forEach((direction) => targets.set(pointKey(direction), 'DIR'));
     return targets;
   }, [phase, selection]);
   const [hoveredTile, setHoveredTile] = React.useState<string | null>(null);
@@ -78,12 +80,16 @@ const Board = (props: Props): React.ReactNode => {
             pieceColors={props.pieceColors}
             currentPlayerId={props.state.currentPlayerId}
             phase={phase}
+            canSelect={canSelect}
+            canDeselect={canDeselect}
             selectedPiece={selectedPieceId ?? undefined}
             hovered={hoveredTile === key}
             selfPlayerId={props.selfPlayerId}
             legalAction={legalTargets.get(key)}
             selected={selection?.selection ? pointKey(selection.selection) === key : false}
+            hasSelection={Boolean(selection?.selection)}
             onSelect={props.onSelect}
+            onDeselect={props.onDeselect}
           />
         );
       })}
