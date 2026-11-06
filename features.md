@@ -7,6 +7,8 @@ building them.
 
 ## Roadmap
 - Browser notifications when tab is inactive and the game state has changed
+- Rename `wait` to `cooldown`
+- Show blocking graphic for unit blocking
 
 
 ## Current implementation
