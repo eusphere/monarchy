@@ -18,6 +18,7 @@ export type GamesQuery$variables = {
 };
 export type GamesQuery$data = {
   readonly games: ReadonlyArray<{
+    readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"GameFragment">;
   }>;
 };
@@ -77,6 +78,7 @@ return {
         "name": "games",
         "plural": true,
         "selections": [
+          (v2/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
