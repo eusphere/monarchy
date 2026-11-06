@@ -70,6 +70,9 @@ Keep names consistent with the surrounding code and established conventions.
 Name files after the primary logic or object they contain, especially when
 splitting related responsibilities across multiple files.
 
+For Scala `Set` literals with more than three items, put each item on its own
+line inside the parentheses.
+
 Keep security allowlists explicit and centralized. Add environment-backed
 configuration only when deployment-specific values are actually required.
 

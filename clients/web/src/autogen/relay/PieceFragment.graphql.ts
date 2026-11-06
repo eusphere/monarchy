@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3a3c4573cf4b34340bc403fab26d7106>>
+ * @generated SignedSource<<8b73dce214613aafca2a11fc110ef4e0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,6 +9,7 @@
 // @ts-nocheck
 
 import { ReaderFragment } from 'relay-runtime';
+export type PieceOrder = "ASSASSIN" | "CLERIC" | "FROST_GOLEM" | "FURGON" | "KNIGHT" | "MUD_GOLEM" | "PYROMANCER" | "SCOUT" | "SHRUB" | "WITCH" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type PieceFragment$data = {
   readonly currentBlocking: number;
@@ -22,7 +23,7 @@ export type PieceFragment$data = {
   readonly currentWait: number;
   readonly id: string;
   readonly name: string;
-  readonly order: string;
+  readonly order: PieceOrder;
   readonly playerId: string;
   readonly stats: {
     readonly health: number;

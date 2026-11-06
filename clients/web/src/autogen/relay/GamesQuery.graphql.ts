@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a84fd86e1cf8c39c8efc93bc874b1f6f>>
+ * @generated SignedSource<<1fdbdd614eeb8731d8575be767d7d1af>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,6 +18,7 @@ export type GamesQuery$variables = {
 };
 export type GamesQuery$data = {
   readonly games: ReadonlyArray<{
+    readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"GameFragment">;
   }>;
 };
@@ -77,6 +78,7 @@ return {
         "name": "games",
         "plural": true,
         "selections": [
+          (v2/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
@@ -191,12 +193,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "81c16b9a88e4709591e626b80567ffdc",
+    "cacheID": "86b213b4770e3bb84754a04bb42652af",
     "id": null,
     "metadata": {},
     "name": "GamesQuery",
     "operationKind": "query",
-    "text": "query GamesQuery(\n  $q: GamesQuery!\n) {\n  games(q: $q) {\n    ...GameFragment\n  }\n}\n\nfragment GameFragment on Game {\n  id\n  status\n  selfStatus\n  createdAt\n  players {\n    ...PlayerFragment\n  }\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "query GamesQuery(\n  $q: GamesQuery!\n) {\n  games(q: $q) {\n    ...GameFragment\n  }\n}\n\nfragment GameFragment on Game {\n  id\n  status\n  selfStatus\n  createdAt\n  players {\n    id\n    ...PlayerFragment\n  }\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
   }
 };
 })();

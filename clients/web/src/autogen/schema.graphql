@@ -119,7 +119,7 @@ enum Phase {
 
 type Piece {
   id: String!
-  order: String!
+  order: PieceOrder!
   name: String!
   stats: PieceStats!
   currentHealth: Int!
@@ -160,6 +160,24 @@ type Profile {
   color: String!
 }
 
+type FormationEntry {
+  point: Vec!
+  piece: PieceOrder!
+}
+
+enum PieceOrder {
+  ASSASSIN
+  KNIGHT
+  SCOUT
+  WITCH
+  PYROMANCER
+  MUD_GOLEM
+  FURGON
+  CLERIC
+  FROST_GOLEM
+  SHRUB
+}
+
 type Query {
   self: User!
   user(
@@ -179,6 +197,7 @@ type Query {
     """Attack a tile"""
     q: AttackQuery!
   ): [Effect!]!
+  formation: [FormationEntry!]!
 }
 
 type Selection {

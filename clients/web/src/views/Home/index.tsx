@@ -13,7 +13,6 @@ import type { HomeQueriesChallengeAcceptMutation } from '~/autogen/relay/HomeQue
 import type { HomeQueriesChallengeCancelMutation } from '~/autogen/relay/HomeQueriesChallengeCancelMutation.graphql';
 import type { GamesQuery$data, GamesQuery$variables } from '~/autogen/relay/GamesQuery.graphql';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
-import type { GameFragment$key } from '~/autogen/relay/GameFragment.graphql';
 import type { OperationType } from 'relay-runtime';
 import Game from '~/layout/GameSummary';
 import styles from './index.module.css';
@@ -89,9 +88,9 @@ const Home = (): React.ReactNode => {
   </main>;
 };
 
-const RecentGames = ({ games, selfId }: { games: ReadonlyArray<GameFragment$key>, selfId: string }): React.ReactNode =>
+const RecentGames = ({ games, selfId }: { games: ReadonlyArray<GamesQuery$data['games'][number]>, selfId: string }): React.ReactNode =>
   <Flex direction='column' gap='3' className={styles.recentGames}>
-    {games.map((game, index) => <Game key={index} game={game} selfId={selfId} />)}
+    {games.map((game) => <Game key={game.id} game={game} selfId={selfId} />)}
   </Flex>;
 
 const ChallengeTile = ({ challenge, user, isCancelling, isAccepting, onCancel, onAccept }: {

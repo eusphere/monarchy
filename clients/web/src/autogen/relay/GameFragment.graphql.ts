@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ea7b04471177ee6b4c1d70921a48a395>>
+ * @generated SignedSource<<4ca5c7f8ff2d0cdc14c975c44ddfba7d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,6 +16,7 @@ export type GameFragment$data = {
   readonly createdAt: string;
   readonly id: string;
   readonly players: ReadonlyArray<{
+    readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"PlayerFragment">;
   }>;
   readonly selfStatus: PlayerStatus | null | undefined;
@@ -27,19 +28,21 @@ export type GameFragment$key = {
   readonly " $fragmentSpreads": FragmentRefs<"GameFragment">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "GameFragment",
   "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
-    },
+    (v0/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -69,6 +72,7 @@ const node: ReaderFragment = {
       "name": "players",
       "plural": true,
       "selections": [
+        (v0/*: any*/),
         {
           "args": null,
           "kind": "FragmentSpread",
@@ -81,7 +85,8 @@ const node: ReaderFragment = {
   "type": "Game",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "33980d62085d687d3c85573b8451c7d4";
+(node as any).hash = "d866a4eaf3a881239c2d360f23db4417";
 
 export default node;

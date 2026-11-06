@@ -7,6 +7,7 @@ export const GameFragment = graphql`
     selfStatus
     createdAt
     players {
+      id
       ...PlayerFragment
     }
   }
