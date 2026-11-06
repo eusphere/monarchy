@@ -11,7 +11,8 @@ type Props = {
 
 const AuthenticatedLayout = ({ user, children }: Props): React.ReactNode => {
   const location = useLocation();
-  const useSpace = !location.pathname.startsWith('/game/');
+  const fullScreen = location.pathname.startsWith('/game/') || location.pathname === '/formation';
+  const useSpace = !fullScreen;
 
   return (
     <>

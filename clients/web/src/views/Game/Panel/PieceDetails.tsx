@@ -4,6 +4,7 @@ import PieceFragment from '~/autogen/relay/PieceFragment.graphql';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import styles from './index.module.css';
 import { formatPercentage } from '~/util/format';
+import CanvasOverlay from '~/components/CanvasOverlay';
 
 type Props = {
   piece: PieceFragment$key;
@@ -21,7 +22,7 @@ const Stat = ({ label, value, detail }: { label: string; value: React.ReactNode;
 const PieceDetails = ({ piece: pieceRef, pieceColors }: Props): React.ReactNode => {
   const piece = useFragment<PieceFragment$key>(PieceFragment, pieceRef);
   return (
-    <div className={styles.pieceDetails} aria-label={`${piece.name} details`}>
+    <CanvasOverlay className={styles.pieceDetails}>
       <div className={styles.pieceHeading}>
         <div className={styles.ownerIndicator} style={{ backgroundColor: pieceColors[piece.playerId] ?? '#9a9a9a' }} aria-hidden='true' />
         <span className={styles.pieceName}>{piece.name}</span>
@@ -31,7 +32,7 @@ const PieceDetails = ({ piece: pieceRef, pieceColors }: Props): React.ReactNode 
         <Stat label='Blocking' value={formatPercentage(piece.currentBlocking)} detail='effective' />
         {piece.currentWait > 0 && <Stat label='Wait' value={piece.currentWait} />}
       </div>
-    </div>
+    </CanvasOverlay>
   );
 };
 

@@ -59,6 +59,34 @@ When browser verification is not possible, say why and leave the feature
 explicitly unverified; do not imply that compilation or a code review proves
 the rendered behavior.
 
+## Domain models and client/server boundaries
+
+Represent a concept once at the boundary where its rules are authoritative.
+The server should compute domain structure and defaults; clients should render
+that structure and own only transient interaction state such as hover,
+selection, dragging, and preview positions.
+
+- Prefer a domain type with a complete representation over a collection of
+  parallel fields or client-side reconstruction. If a formation is a board,
+  expose a formation with its identity and tiles rather than exposing only
+  occupied coordinates and asking each client to rebuild the board.
+- Keep geometry, legality, and default construction in a dedicated domain
+  builder. Reuse that builder wherever the same rules apply, and keep UI
+  components focused on rendering and interaction.
+- Make persistence semantics explicit in the API. A persisted object should
+  expose its stored identity; a computed default should have a stable sentinel
+  identity rather than pretending to be persisted.
+- Distinguish authoritative state from local state in both names and types.
+  User gestures may update a local preview immediately, but saving or
+  submitting must convert that preview back to the server's domain shape.
+- Return complete objects when the client needs their behavior or metadata.
+  Avoid duplicating server-side piece configuration, stats, board dimensions,
+  or legal-tile rules in the client.
+- Keep API changes synchronized across the resolver, schema, source query, and
+  generated client bindings. If generation is temporarily unavailable, do not
+  hand-edit only one layer and claim the contract is synchronized; either fix
+  the generation issue or clearly record the temporary limitation.
+
 ## Scala
 
 Wrap nullable values returned by Java APIs in `Option` immediately. Use the

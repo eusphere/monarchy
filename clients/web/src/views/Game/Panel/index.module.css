@@ -49,18 +49,7 @@
 .phaseSwitcherWaiting .phaseButtonActive { color: var(--gray-11); background: rgba(255, 255, 255, 0.48); }
 
 .pieceDetails {
-  position: fixed;
-  bottom: 64px;
-  left: 50%;
-  width: min(380px, calc(100vw - 32px));
-  margin: 0;
-  transform: translateX(-50%);
-  padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.58);
-  border-radius: 18px;
-  background: rgba(231, 239, 247, 0.84);
-  box-shadow: 0 10px 26px rgba(46, 62, 79, 0.14);
-  backdrop-filter: var(--overlay-blur);
+  /* Piece-specific overlay layout; CanvasOverlay owns the surface. */
 }
 
 

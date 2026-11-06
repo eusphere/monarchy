@@ -9,6 +9,7 @@ import { clearHoveredPiece } from './pieceHoverStore';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useFragment } from 'react-relay';
 import type { Object3D } from 'three';
+import { pointKey } from '~/views/common/board';
 
 type Props = {
   state: Types.GameState;
@@ -23,7 +24,6 @@ type Props = {
 };
 
 type LegalAction = 'MOVE' | 'ATTACK' | 'EFFECT';
-const pointKey = (point: { i: number; j: number }) => `${point.i}-${point.j}`;
 
 // Basic board component
 const Board = (props: Props): React.ReactNode => {

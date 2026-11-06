@@ -5,12 +5,12 @@ import Splash from '~/views/Splash';
 import Profile from '~/views/Profile';
 import Formation from '~/views/Formation';
 import Home from '~/views/Home';
+import Navigation from '~/layout/Navigation';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import { useFragment, useLazyLoadQuery } from 'react-relay';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Page from '~/layout/Page';
-import Navigation from '~/layout/Navigation';
 import AuthenticatedLayout from '~/layout/Authenticated';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
@@ -35,10 +35,7 @@ const ProfileView = (): React.ReactNode => (
 );
 
 const FormationView = (): React.ReactNode => (
-  <>
-    <Navigation useSpace={false} />
-    <Formation />
-  </>
+  <Formation />
 );
 
 const App = (): React.ReactNode => {

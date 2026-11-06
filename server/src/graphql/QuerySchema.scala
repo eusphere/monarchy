@@ -66,7 +66,7 @@ object QuerySchema {
       ),
       Field("lobby", LobbyType, resolve = LobbyResolver),
       Field("effects", ListType(EffectType), arguments = List(GqlArgs.Attack), resolve = EffectsResolver),
-      Field("formation", ListType(FormationEntryType), resolve = FormationResolver),
+      Field("formation", FormationType, resolve = FormationResolver),
     )
   )
 
@@ -187,11 +187,11 @@ object QuerySchema {
     )
   )
 
-  lazy val FormationEntryType = ObjectType(
-    "FormationEntry",
-    fields[GraphqlContext, FormationEntry](
-      Field("point", VecType, resolve = _.value.point),
-      Field("piece", PieceOrderType, resolve = _.value.piece),
+  lazy val FormationType = ObjectType(
+    "Formation",
+    fields[GraphqlContext, Formation](
+      Field("id", StringType, resolve = _.value.id.toString),
+      Field("tiles", ListType(TileType), resolve = _.value.board.tiles)
     )
   )
 }
