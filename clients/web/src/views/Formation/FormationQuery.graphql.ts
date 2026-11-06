@@ -8,11 +8,25 @@ export default graphql`
       }
     }
     formation {
-      point {
-        i
-        j
+      id
+      tiles {
+        point {
+          i
+          j
+        }
+        piece {
+          id
+          order
+          name
+          stats {
+            health
+            wait
+            power
+            armor
+            blocking
+          }
+        }
       }
-      piece
     }
   }
 `;

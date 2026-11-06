@@ -10,12 +10,7 @@ import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import type { Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
 import { canSelectPiece } from './guards';
 import DirectionControls from './DirectionControls';
-
-const TILE_DIM = [
-  Constants.TILE_SIZE,
-  Constants.TILE_HEIGHT,
-  Constants.TILE_SIZE,
-] as const;
+import BoardTile from '~/views/common/BoardTile';
 
 type Props = {
   tile: Types.Tile;
@@ -100,18 +95,7 @@ const Tile = (props: Props): React.ReactNode => {
         pieceRef: tile.piece,
         pieceId: piece?.id,
       }}>
-      <mesh receiveShadow userData={{
-        tileKey: `${tile.point.i}-${tile.point.j}`,
-        pieceRef: tile.piece,
-        pieceId: piece?.id,
-      }}>
-        <boxGeometry args={TILE_DIM} />
-        <meshStandardMaterial
-          color={color} 
-          roughness={0.7}
-          metalness={0.1}
-        />
-      </mesh>
+      <BoardTile color={color} hovered={props.hovered} />
       {(props.selected || highlight) && <TileHighlight key='selection-highlight' active hovered={props.hovered} />}
       {props.legalAction && (
         <TileHighlight
@@ -122,7 +106,7 @@ const Tile = (props: Props): React.ReactNode => {
           opacity={Constants.TILE_HIGHLIGHT_ACTION_OPACITY}
         />
       )}
-      {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} />}
+      {piece && tile.piece && <Piece piece={tile.piece} color={props.pieceColors[piece.playerId]} active={props.selected} />}
       {props.phase === 'DIR' && props.selected && <DirectionControls directions={props.directions} onDirection={props.onDirection} />}
     </group>
   );

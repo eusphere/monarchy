@@ -7,15 +7,16 @@ import type { Group } from 'three';
 import Arrow from '~/components/geo/Arrow';
 import Debug from '~/components/Debug';
 import HealthBar from '~/components/geo/HealthBar';
-import { PIECE_OFFSET } from './pieceConstants';
+import { activePieceColor, PIECE_OFFSET } from './pieceConstants';
 const ORIENTATION_MARKER_POSITION = [0, 0.75, 0] as const;
 type Props = {
   piece: PieceFragment$key;
   color?: string;
+  active?: boolean;
 };
 
 const Piece = (props: Props): React.ReactNode => {
-  const { piece, color } = props;
+  const { piece, color, active = false } = props;
   const modelRef = React.useRef<Group>(null);
   const data = useFragment<PieceFragment$key>(PieceFragment, piece);
   const visual = Pieces.visuals[data.order];
@@ -37,7 +38,7 @@ const Piece = (props: Props): React.ReactNode => {
 
   return (
     <group ref={modelRef} position={PIECE_OFFSET} rotation={rotation} userData={{ pieceRef: piece, pieceId: data.id }}>
-      <Model color={color} />
+      <Model color={active ? activePieceColor(color) : color} />
       <HealthBar current={data.currentHealth} maximum={data.stats.health} />
       <Debug>
         <Arrow position={ORIENTATION_MARKER_POSITION} />

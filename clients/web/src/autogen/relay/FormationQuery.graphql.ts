@@ -17,13 +17,18 @@ export type FormationQuery$data = {
       readonly color: string;
     } | null | undefined;
   };
-  readonly formation: ReadonlyArray<{
-    readonly piece: PieceOrder;
-    readonly point: {
-      readonly i: number;
-      readonly j: number;
-    };
-  }>;
+  readonly formation: {
+    readonly id: string;
+    readonly tiles: ReadonlyArray<{
+      readonly point: { readonly i: number; readonly j: number };
+      readonly piece: {
+        readonly id: string;
+        readonly order: PieceOrder;
+        readonly name: string;
+        readonly stats: { readonly health: number; readonly wait: number; readonly power: number; readonly armor: number; readonly blocking: number };
+      } | null;
+    }>;
+  };
 };
 export type FormationQuery = {
   response: FormationQuery$data;
@@ -64,41 +69,65 @@ var v0 = [
   {
     "alias": null,
     "args": null,
-    "concreteType": "FormationEntry",
+    "concreteType": "Formation",
     "kind": "LinkedField",
     "name": "formation",
-    "plural": true,
+    "plural": false,
     "selections": [
       {
         "alias": null,
         "args": null,
-        "concreteType": "Vec",
-        "kind": "LinkedField",
-        "name": "point",
-        "plural": false,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "i",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "j",
-            "storageKey": null
-          }
-        ],
+        "kind": "ScalarField",
+        "name": "id",
         "storageKey": null
       },
       {
         "alias": null,
         "args": null,
-        "kind": "ScalarField",
-        "name": "piece",
+        "concreteType": "Tile",
+        "kind": "LinkedField",
+        "name": "tiles",
+        "plural": true,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "Vec",
+            "kind": "LinkedField",
+            "name": "point",
+            "plural": false,
+            "selections": [
+              { "alias": null, "args": null, "kind": "ScalarField", "name": "i", "storageKey": null },
+              { "alias": null, "args": null, "kind": "ScalarField", "name": "j", "storageKey": null }
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "Piece",
+            "kind": "LinkedField",
+            "name": "piece",
+            "plural": false,
+            "selections": [
+          { "alias": null, "args": null, "kind": "ScalarField", "name": "id", "storageKey": null },
+          { "alias": null, "args": null, "kind": "ScalarField", "name": "order", "storageKey": null },
+          { "alias": null, "args": null, "kind": "ScalarField", "name": "name", "storageKey": null },
+          {
+            "alias": null, "args": null, "concreteType": "PieceStats", "kind": "LinkedField", "name": "stats", "plural": false,
+            "selections": [
+              { "alias": null, "args": null, "kind": "ScalarField", "name": "health", "storageKey": null },
+              { "alias": null, "args": null, "kind": "ScalarField", "name": "wait", "storageKey": null },
+              { "alias": null, "args": null, "kind": "ScalarField", "name": "power", "storageKey": null },
+              { "alias": null, "args": null, "kind": "ScalarField", "name": "armor", "storageKey": null },
+              { "alias": null, "args": null, "kind": "ScalarField", "name": "blocking", "storageKey": null }
+            ],
+            "storageKey": null
+          }
+            ],
+            "storageKey": null
+          }
+        ],
         "storageKey": null
       }
     ],
@@ -128,7 +157,7 @@ return {
     "metadata": {},
     "name": "FormationQuery",
     "operationKind": "query",
-    "text": "query FormationQuery {\n  self {\n    profile {\n      color\n    }\n  }\n  formation {\n    point {\n      i\n      j\n    }\n    piece\n  }\n}\n"
+    "text": "query FormationQuery {\n  self {\n    profile {\n      color\n    }\n  }\n  formation {\n    id\n    tiles {\n      point {\n        i\n        j\n      }\n      piece {\n        id\n        order\n        name\n        stats {\n          health\n          wait\n          power\n          armor\n          blocking\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();

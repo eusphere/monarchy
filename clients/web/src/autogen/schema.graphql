@@ -120,8 +120,6 @@ enum Phase {
 type Piece {
   id: String!
   order: PieceOrder!
-  name: String!
-  stats: PieceStats!
   currentHealth: Int!
   currentWait: Int!
   currentDirection: Vec!
@@ -160,9 +158,9 @@ type Profile {
   color: String!
 }
 
-type FormationEntry {
-  point: Vec!
-  piece: PieceOrder!
+type Formation {
+  id: String!
+  tiles: [Tile!]!
 }
 
 enum PieceOrder {
@@ -197,7 +195,7 @@ type Query {
     """Attack a tile"""
     q: AttackQuery!
   ): [Effect!]!
-  formation: [FormationEntry!]!
+  formation: Formation!
 }
 
 type Selection {
