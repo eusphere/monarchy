@@ -8,7 +8,7 @@ import java.util.UUID
 import monarchy.auth.{Auth, AuthFilter, Authenticated, NullAuth, Tooling}
 import monarchy.dal.{QueryClient, PostgresProfile, User}
 import scala.concurrent.{Future, ExecutionContext}
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 case class AuthRoute[T](filter: AuthFilter, controller: AuthController)(implicit
   ec: ExecutionContext,
@@ -51,15 +51,11 @@ object AuthRoute {
   val AuthorizationKey = "Authorization"
   val Reject = HttpResponse(StatusCodes.Unauthorized)
 
-  private def headers(hs: Seq[HttpHeader]): Option[String] =
-    extract(hs.map { h => h.name -> normalize(h.value) }.toMap)
+  private[controllers] def headers(hs: Seq[HttpHeader]): Option[String] =
+    hs.find(_.is("authorization")).map(h => h.value.stripPrefix("Bearer "))
 
-  private def cookies(cs: Seq[HttpCookiePair]): Option[String] =
-    extract(cs.map { c => c.name -> normalize(c.value) }.toMap)
-
-  private def extract(props: Map[String, String]): Option[String] =
-    props.get(AuthorizationKey).map(_.stripPrefix("Bearer "))
-
-  private def normalize(raw: String): String =
-    URLDecoder.decode(raw, "UTF-8")
+  private[controllers] def cookies(cs: Seq[HttpCookiePair]): Option[String] =
+    cs.find(_.name == AuthorizationKey)
+      .flatMap(c => Try(URLDecoder.decode(c.value, "UTF-8")).toOption)
+      .map(_.stripPrefix("Bearer "))
 }
