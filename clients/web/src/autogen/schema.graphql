@@ -162,7 +162,20 @@ type Profile {
 
 type FormationEntry {
   point: Vec!
-  piece: String!
+  piece: PieceConf!
+}
+
+enum PieceConf {
+  ASSASSIN
+  KNIGHT
+  SCOUT
+  WITCH
+  PYROMANCER
+  MUD_GOLEM
+  FURGON
+  CLERIC
+  FROST_GOLEM
+  SHRUB
 }
 
 type Query {

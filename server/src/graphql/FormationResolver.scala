@@ -1,7 +1,7 @@
 package monarchy.graphql
 
 import monarchy.dal
-import monarchy.game.Vec
+import monarchy.game.{PieceConf, Vec}
 import monarchy.marshalling.game.FormationSerialization
 import monarchy.streaming.process.ChallengeAcceptProcessor
 import scala.concurrent.Future
@@ -16,9 +16,9 @@ object FormationResolver extends Resolver[Unit, Seq[FormationEntry]] {
       formation
         .map(value => FormationSerialization.parse(value.data))
         .getOrElse(ChallengeAcceptProcessor.DefaultFormation)
-        .map { case (point, piece) => FormationEntry(point, piece.toString) }
+        .map { case (point, piece) => FormationEntry(point, piece) }
     }
   }
 }
 
-case class FormationEntry(point: Vec, piece: String)
+case class FormationEntry(point: Vec, piece: PieceConf)

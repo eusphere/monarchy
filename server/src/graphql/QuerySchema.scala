@@ -187,11 +187,17 @@ object QuerySchema {
     )
   )
 
+  lazy val PieceConfType = EnumUtil.mkEnum[game.PieceConf](
+    "PieceConf",
+    Set(game.Assassin, game.Knight, game.Scout, game.Witch, game.Pyromancer,
+      game.MudGolem, game.Furgon, game.Cleric, game.FrostGolem, game.Shrub),
+  )
+
   lazy val FormationEntryType = ObjectType(
     "FormationEntry",
     fields[GraphqlContext, FormationEntry](
       Field("point", VecType, resolve = _.value.point),
-      Field("piece", StringType, resolve = _.value.piece),
+      Field("piece", PieceConfType, resolve = _.value.piece),
     )
   )
 }
