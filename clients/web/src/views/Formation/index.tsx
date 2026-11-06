@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Canvas } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
 import type { Group, Object3D } from 'three';
-import { useLazyLoadQuery } from 'react-relay';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 import FormationQuery from '~/autogen/relay/FormationQuery.graphql';
 import type { FormationQuery as FormationQueryType } from '~/autogen/relay/FormationQuery.graphql';
 import * as Constants from '~/views/Game/constants';
@@ -14,6 +14,8 @@ import { pointKey } from '~/views/common/board';
 import PieceStats from './PieceStats';
 import useAuthenticatedUser from '~/layout/Authenticated/useAuthenticatedUser';
 import { createHoverStore } from '~/util/hoverStore';
+import FormationSaveMutation from '~/autogen/relay/FormationSaveMutation.graphql';
+import type { FormationSaveMutation as FormationSaveMutationType } from '~/autogen/relay/FormationSaveMutation.graphql';
 
 const CAMERA_DISTANCE = 6;
 const CAMERA_POSITION = [0, CAMERA_DISTANCE * 1.35, -CAMERA_DISTANCE] as const;
@@ -162,20 +164,30 @@ const FormationBoard = ({ tiles, color, onMove }: { tiles: FormationQueryType['r
 const Formation = (): React.ReactNode => {
   const user = useAuthenticatedUser();
   const data = useLazyLoadQuery<FormationQueryType>(FormationQuery, {}, { fetchPolicy: 'network-only' });
+  const [saveFormation] = useMutation<FormationSaveMutationType>(FormationSaveMutation);
   const [tiles, setTiles] = React.useState(data.formation.tiles);
   const hoveredPiece = formationHoverStore.useValue();
   const movePiece = React.useCallback((from: Point, to: Point) => {
     if (pointKey(from) === pointKey(to)) return;
-    setTiles((current) => {
-      const movingPiece = current.find((tile) => pointKey(tile.point) === pointKey(from))?.piece;
-      if (!movingPiece) return current;
-      return current.map((tile) => {
-        if (pointKey(tile.point) === pointKey(from)) return { ...tile, piece: null };
-        if (pointKey(tile.point) === pointKey(to)) return { ...tile, piece: movingPiece };
-        return tile;
-      });
+    const movingPiece = tiles.find((tile) => pointKey(tile.point) === pointKey(from))?.piece;
+    if (!movingPiece) return;
+    const next = tiles.map((tile) => {
+      if (pointKey(tile.point) === pointKey(from)) return { ...tile, piece: null };
+      if (pointKey(tile.point) === pointKey(to)) return { ...tile, piece: movingPiece };
+      return tile;
     });
-  }, []);
+    setTiles(next);
+    saveFormation({
+      variables: {
+        q: {
+          formation: next.flatMap((tile) => tile.piece ? [{
+            piece: tile.piece.order,
+            point: tile.point,
+          }] : []),
+        },
+      },
+    });
+  }, [saveFormation, tiles]);
   return (
     <div className={styles.root}>
       <Canvas camera={{ position: CAMERA_POSITION, fov: 45 }} style={{ background: '#f0f0f0' }}>
