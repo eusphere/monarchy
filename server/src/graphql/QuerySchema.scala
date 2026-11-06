@@ -60,7 +60,6 @@ object QuerySchema {
             .filter(_.userId === userId)
             .join(dal.Game.query).on(_.gameId === _.id)
             .map(_._2)
-            .distinct
             .sortBy(_.createdAt.desc)
           node.ctx.queryCli.all(query)
         }
