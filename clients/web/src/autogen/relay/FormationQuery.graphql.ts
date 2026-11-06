@@ -12,6 +12,11 @@ import { ConcreteRequest } from 'relay-runtime';
 export type PieceOrder = "ASSASSIN" | "CLERIC" | "FROST_GOLEM" | "FURGON" | "KNIGHT" | "MUD_GOLEM" | "PYROMANCER" | "SCOUT" | "SHRUB" | "WITCH" | "%future added value";
 export type FormationQuery$variables = Record<PropertyKey, never>;
 export type FormationQuery$data = {
+  readonly self: {
+    readonly profile: {
+      readonly color: string;
+    } | null | undefined;
+  };
   readonly formation: ReadonlyArray<{
     readonly piece: PieceOrder;
     readonly point: {
@@ -27,6 +32,35 @@ export type FormationQuery = {
 
 const node: ConcreteRequest = (function(){
 var v0 = [
+  {
+    "alias": null,
+    "args": null,
+    "concreteType": "User",
+    "kind": "LinkedField",
+    "name": "self",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "Profile",
+        "kind": "LinkedField",
+        "name": "profile",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "color",
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
+  },
   {
     "alias": null,
     "args": null,
@@ -94,7 +128,7 @@ return {
     "metadata": {},
     "name": "FormationQuery",
     "operationKind": "query",
-    "text": "query FormationQuery {\n  formation {\n    point {\n      i\n      j\n    }\n    piece\n  }\n}\n"
+    "text": "query FormationQuery {\n  self {\n    profile {\n      color\n    }\n  }\n  formation {\n    point {\n      i\n      j\n    }\n    piece\n  }\n}\n"
   }
 };
 })();
