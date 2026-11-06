@@ -120,6 +120,8 @@ enum Phase {
 type Piece {
   id: String!
   order: PieceOrder!
+  name: String!
+  stats: PieceStats!
   currentHealth: Int!
   currentWait: Int!
   currentDirection: Vec!

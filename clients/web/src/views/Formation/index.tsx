@@ -12,6 +12,7 @@ import styles from './index.module.css';
 import BoardTile from '~/views/common/BoardTile';
 import { pointKey } from '~/views/common/board';
 import PieceStats from './PieceStats';
+import useAuthenticatedUser from '~/layout/Authenticated/useAuthenticatedUser';
 import { createHoverStore } from '~/util/hoverStore';
 
 const CAMERA_DISTANCE = 6;
@@ -159,6 +160,7 @@ const FormationBoard = ({ tiles, color, onMove }: { tiles: FormationQueryType['r
 };
 
 const Formation = (): React.ReactNode => {
+  const user = useAuthenticatedUser();
   const data = useLazyLoadQuery<FormationQueryType>(FormationQuery, {}, { fetchPolicy: 'network-only' });
   const [tiles, setTiles] = React.useState(data.formation.tiles);
   const hoveredPiece = formationHoverStore.useValue();
@@ -182,14 +184,14 @@ const Formation = (): React.ReactNode => {
         <directionalLight position={[5, 5, 5]} castShadow />
         <FormationBoard
           tiles={tiles}
-          color={data.self?.profile?.color ?? '#4f46e5'}
+          color={user.profile?.color ?? '#4f46e5'}
           onMove={movePiece}
         />
       </Canvas>
       {hoveredPiece?.piece && (
         <PieceStats
           name={hoveredPiece.piece.name}
-          color={data.self?.profile?.color ?? '#4f46e5'}
+          color={user.profile?.color ?? '#4f46e5'}
           stats={hoveredPiece.piece.stats}
         />
       )}

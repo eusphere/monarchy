@@ -2,11 +2,6 @@ import { graphql } from 'react-relay';
 
 export default graphql`
   query FormationQuery {
-    self {
-      profile {
-        color
-      }
-    }
     formation {
       id
       tiles {
