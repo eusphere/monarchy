@@ -7,6 +7,14 @@ import HomeQuery from '~/autogen/relay/HomeQueriesQuery.graphql';
 import HomeSeekMutation from '~/autogen/relay/HomeQueriesSeekMutation.graphql';
 import HomeChallengeAcceptMutation from '~/autogen/relay/HomeQueriesChallengeAcceptMutation.graphql';
 import HomeChallengeCancelMutation from '~/autogen/relay/HomeQueriesChallengeCancelMutation.graphql';
+import type { HomeQueriesQuery$data } from '~/autogen/relay/HomeQueriesQuery.graphql';
+import type { HomeQueriesSeekMutation } from '~/autogen/relay/HomeQueriesSeekMutation.graphql';
+import type { HomeQueriesChallengeAcceptMutation } from '~/autogen/relay/HomeQueriesChallengeAcceptMutation.graphql';
+import type { HomeQueriesChallengeCancelMutation } from '~/autogen/relay/HomeQueriesChallengeCancelMutation.graphql';
+import type { GamesQuery$data, GamesQuery$variables } from '~/autogen/relay/GamesQuery.graphql';
+import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
+import type { GameFragment$key } from '~/autogen/relay/GameFragment.graphql';
+import type { OperationType } from 'relay-runtime';
 import Game from '~/layout/GameSummary';
 import styles from './index.module.css';
 import { subscribe } from '~/network/stream';
@@ -17,16 +25,29 @@ import Attack from '~/components/icons/Attack';
 import useRemainingSeconds from '~/util/useRemainingSeconds';
 import { formatDuration } from '~/util/duration';
 
+type GamesOperationType = OperationType & {
+  response: GamesQuery$data;
+  variables: GamesQuery$variables;
+};
+
+type HomeQueriesQueryType = OperationType & {
+  response: HomeQueriesQuery$data;
+  variables: Record<PropertyKey, never>;
+};
+
+type Challenge = HomeQueriesQuery$data['lobby']['challenges'][number];
+type HomeUser = HomeQueriesQuery$data['self'];
+
 const Home = (): React.ReactNode => {
   const [lobbyRefreshKey, setLobbyRefreshKey] = React.useState(0);
   const [gamesRefreshKey, setGamesRefreshKey] = React.useState(0);
   const navigate = useNavigate();
-  const data = useLazyLoadQuery<any>(HomeQuery, {}, { fetchPolicy: 'network-only', fetchKey: lobbyRefreshKey });
+  const data = useLazyLoadQuery<HomeQueriesQueryType>(HomeQuery, {}, { fetchPolicy: 'network-only', fetchKey: lobbyRefreshKey });
   const user = data.self;
-  const games = useLazyLoadQuery<any>(GamesQuery, { q: { userId: user.id } }, { fetchPolicy: 'network-only', fetchKey: gamesRefreshKey }).games;
-  const [seek, isSeeking] = useMutation<any>(HomeSeekMutation);
-  const [accept, isAccepting] = useMutation<any>(HomeChallengeAcceptMutation);
-  const [cancel, isCancelling] = useMutation<any>(HomeChallengeCancelMutation);
+  const games = useLazyLoadQuery<GamesOperationType>(GamesQuery, { q: { userId: user.id } }, { fetchPolicy: 'network-only', fetchKey: gamesRefreshKey }).games;
+  const [seek, isSeeking] = useMutation<HomeQueriesSeekMutation>(HomeSeekMutation);
+  const [accept, isAccepting] = useMutation<HomeQueriesChallengeAcceptMutation>(HomeChallengeAcceptMutation);
+  const [cancel, isCancelling] = useMutation<HomeQueriesChallengeCancelMutation>(HomeChallengeCancelMutation);
   const challenges = data.lobby.challenges;
 
   React.useEffect(() => subscribe((message) => {
@@ -45,7 +66,18 @@ const Home = (): React.ReactNode => {
           <Button onClick={() => seek({ variables: {} })} disabled={isSeeking}>Seek</Button>
         </Flex>
         {challenges.length === 0 ? <Text color='gray'>No open challenges yet. Seek one to get started.</Text> :
-          <Flex direction='column' gap='3'>{challenges.map((challenge: any) => <ChallengeTile key={challenge.host.id} challenge={challenge} user={user} isCancelling={isCancelling} isAccepting={isAccepting} onCancel={() => cancel({ variables: {} })} onAccept={() => accept({ variables: { q: { opponentId: challenge.host.id } }, onCompleted: (result: any) => { void navigate(`/game/${result.challengeAccept.id}`); } })} />)}</Flex>}
+          <Flex direction='column' gap='3'>{challenges.map((challenge) => <ChallengeTile
+            key={challenge.host.id}
+            challenge={challenge}
+            user={user}
+            isCancelling={isCancelling}
+            isAccepting={isAccepting}
+            onCancel={() => cancel({ variables: {} })}
+            onAccept={() => accept({
+              variables: { q: { opponentId: challenge.host.id } },
+              onCompleted: ({ challengeAccept }) => { void navigate(`/game/${challengeAccept.id}`); },
+            })}
+          />)}</Flex>}
       </Card>
 
       <Card className={styles.panel}>
@@ -57,13 +89,20 @@ const Home = (): React.ReactNode => {
   </main>;
 };
 
-const RecentGames = ({ games, selfId }: { games: any[], selfId: string }): React.ReactNode =>
+const RecentGames = ({ games, selfId }: { games: ReadonlyArray<GameFragment$key>, selfId: string }): React.ReactNode =>
   <Flex direction='column' gap='3' className={styles.recentGames}>
-    {games.map((game) => <Game key={game.id} game={game} selfId={selfId} />)}
+    {games.map((game, index) => <Game key={index} game={game} selfId={selfId} />)}
   </Flex>;
 
-const ChallengeTile = ({ challenge, user, isCancelling, isAccepting, onCancel, onAccept }: any): React.ReactNode => {
-  const host = useFragment<any>(UserFragment, challenge.host);
+const ChallengeTile = ({ challenge, user, isCancelling, isAccepting, onCancel, onAccept }: {
+  challenge: Challenge;
+  user: HomeUser;
+  isCancelling: boolean;
+  isAccepting: boolean;
+  onCancel: () => void;
+  onAccept: () => void;
+}): React.ReactNode => {
+  const host = useFragment<UserFragment$key>(UserFragment, challenge.host);
   const isOwn = host.id === user.id;
   const remaining = useRemainingSeconds(challenge.expireAt);
   const expired = remaining === 0;
