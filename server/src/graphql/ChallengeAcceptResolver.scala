@@ -13,18 +13,6 @@ import scala.concurrent.{ExecutionContext, Future}
 object ChallengeAcceptResolver extends Resolver[Unit, dal.Game] {
   import dal.PostgresProfile.Implicits._
 
-  private def formationsFor(userIds: Seq[UUID])(implicit
-    queryCli: dal.QueryClient,
-    ec: ExecutionContext,
-  ): Future[Map[UUID, Player.Formation]] = {
-    queryCli.all(dal.Formation.query.filter(_.userId inSet userIds)).map { formations =>
-      formations
-        .map(formation => formation.userId -> FormationSerialization.parse(formation.data))
-        .toMap
-        .withDefaultValue(ChallengeAcceptProcessor.DefaultFormation)
-    }
-  }
-
   override def apply(in: In): Out = {
     import in.ctx._
     val userId = expectUserId(in)
