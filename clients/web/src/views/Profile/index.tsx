@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
+import { useMutation } from 'react-relay';
 import {
   Card,
   Flex,
@@ -11,27 +11,21 @@ import {
   Button,
   Switch,
 } from '@radix-ui/themes';
-import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
-import UserFragment from '~/autogen/relay/UserFragment.graphql';
-import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
-import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import styles from './index.module.css';
 import ProfileUpdateMutation from '~/autogen/relay/ProfileUpdateMutation.graphql';
 import type { ProfileUpdateMutation as ProfileUpdateMutationType } from '~/autogen/relay/ProfileUpdateMutation.graphql';
 import { useDebug } from '~/hooks/useDebug';
+import useAuthenticatedUser from '~/layout/Authenticated/useAuthenticatedUser';
 
 const initials = (username: string): string =>
   username.trim().slice(0, 2).toUpperCase() || '??';
 
 const Profile = (): React.ReactNode => {
-  const selfRef = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
-  const user = useFragment<UserFragment$key>(UserFragment, selfRef.self);
+  const user = useAuthenticatedUser();
   const [commit, isCommitting] = useMutation<ProfileUpdateMutationType>(ProfileUpdateMutation);
   const [username, setUsername] = React.useState('');
   const [message, setMessage] = React.useState<string | null>(null);
   const [debugEnabled, setDebugEnabled] = useDebug();
-
-  if (!user) return null;
 
   const saveUsername = (): void => {
     setMessage(null);

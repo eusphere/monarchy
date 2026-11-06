@@ -12,7 +12,7 @@ import type { HomeQueriesSeekMutation } from '~/autogen/relay/HomeQueriesSeekMut
 import type { HomeQueriesChallengeAcceptMutation } from '~/autogen/relay/HomeQueriesChallengeAcceptMutation.graphql';
 import type { HomeQueriesChallengeCancelMutation } from '~/autogen/relay/HomeQueriesChallengeCancelMutation.graphql';
 import type { GamesQuery$data, GamesQuery$variables } from '~/autogen/relay/GamesQuery.graphql';
-import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
+import type { UserFragment$data, UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import type { OperationType } from 'relay-runtime';
 import Game from '~/layout/GameSummary';
 import styles from './index.module.css';
@@ -23,6 +23,7 @@ import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import Attack from '~/components/icons/Attack';
 import useRemainingSeconds from '~/util/useRemainingSeconds';
 import { formatDuration } from '~/util/duration';
+import useAuthenticatedUser from '~/layout/Authenticated/useAuthenticatedUser';
 
 type GamesOperationType = OperationType & {
   response: GamesQuery$data;
@@ -35,14 +36,13 @@ type HomeQueriesQueryType = OperationType & {
 };
 
 type Challenge = HomeQueriesQuery$data['lobby']['challenges'][number];
-type HomeUser = HomeQueriesQuery$data['self'];
 
 const Home = (): React.ReactNode => {
   const [lobbyRefreshKey, setLobbyRefreshKey] = React.useState(0);
   const [gamesRefreshKey, setGamesRefreshKey] = React.useState(0);
   const navigate = useNavigate();
   const data = useLazyLoadQuery<HomeQueriesQueryType>(HomeQuery, {}, { fetchPolicy: 'network-only', fetchKey: lobbyRefreshKey });
-  const user = data.self;
+  const user = useAuthenticatedUser();
   const games = useLazyLoadQuery<GamesOperationType>(GamesQuery, { q: { userId: user.id } }, { fetchPolicy: 'network-only', fetchKey: gamesRefreshKey }).games;
   const [seek, isSeeking] = useMutation<HomeQueriesSeekMutation>(HomeSeekMutation);
   const [accept, isAccepting] = useMutation<HomeQueriesChallengeAcceptMutation>(HomeChallengeAcceptMutation);
@@ -95,7 +95,7 @@ const RecentGames = ({ games, selfId }: { games: ReadonlyArray<GamesQuery$data['
 
 const ChallengeTile = ({ challenge, user, isCancelling, isAccepting, onCancel, onAccept }: {
   challenge: Challenge;
-  user: HomeUser;
+  user: Pick<UserFragment$data, 'id'>;
   isCancelling: boolean;
   isAccepting: boolean;
   onCancel: () => void;
