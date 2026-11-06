@@ -5,7 +5,6 @@ import monarchy.dal
 import monarchy.dalwrite.{GameNode, WriteQueryBuilder}
 import monarchy.game._
 import monarchy.marshalling.game.GameJson
-import monarchy.marshalling.game.FormationSerialization
 import monarchy.streaming.core._
 import redis.RedisClient
 import scala.concurrent.{Future, ExecutionContext}
@@ -25,12 +24,11 @@ class ChallengeAcceptProcessor(implicit
   import ChallengeAcceptProcessor._
   import dal.PostgresProfile.Implicits._
 
-  def create(userIds: Seq[UUID]): Future[UUID] = {
+  def create(userIds: Seq[UUID], formations: Map[UUID, Player.Formation]): Future[UUID] = {
     for {
       users <- queryCli.all(dal.User.query.filter(_.id inSet userIds))
-      formations <- queryCli.all(dal.Formation.query.filter(_.userId inSet userIds))
       game <- createGame(users)
-      liveGame <- createLiveGame(game, formations.map(f => f.userId -> FormationSerialization.parse(f.data)).toMap)
+      liveGame <- createLiveGame(game, formations)
     } yield game.data.id
   }
 

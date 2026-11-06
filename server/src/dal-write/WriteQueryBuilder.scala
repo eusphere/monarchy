@@ -14,4 +14,9 @@ object WriteQueryBuilder {
 
   def putAll[E: Queryable](entities: Seq[E])(implicit ec: ExecutionContext): DBIO[Seq[E]] =
     DBIO.sequence { entities.map(put(_)) }
+
+  def delete[E: Queryable](e: E)(implicit ec: ExecutionContext): DBIO[Int] = {
+    val schema = implicitly[Queryable[E]]
+    schema.query.filter(row => schema.repId(row) === schema.id(e)).delete
+  }
 }

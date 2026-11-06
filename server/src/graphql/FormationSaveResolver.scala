@@ -4,6 +4,7 @@ import monarchy.dal
 import monarchy.dalwrite.WriteQueryBuilder
 import monarchy.game.{PieceConf, Vec}
 import monarchy.marshalling.game.{FormationSerialization, PieceConfStringBijection}
+import monarchy.streaming.process.ChallengeAcceptProcessor
 import scala.concurrent.Future
 import scala.util.Try
 
@@ -25,10 +26,17 @@ object FormationSaveResolver extends Resolver[Unit, Boolean] {
       }).fold(
         error => Future.failed(Exceptions.BadArgs(s"Unknown piece configuration: ${error.getMessage}")),
         parsed => {
-          val formation = FormationSerialization.stringify(parsed)
           queryCli.first(dal.Formation.query.filter(_.userId === userId)).flatMap {
-            case Some(existing) => queryCli.write(WriteQueryBuilder.put(existing.copy(data = formation))).map(_ => true)
-            case None => queryCli.write(WriteQueryBuilder.put(dal.Formation(userId = userId, data = formation))).map(_ => true)
+            case Some(existing) if parsed == ChallengeAcceptProcessor.DefaultFormation =>
+              queryCli.write(WriteQueryBuilder.delete(existing)).map(_ => true)
+            case Some(existing) =>
+              queryCli.write(WriteQueryBuilder.put(existing.copy(data = FormationSerialization.stringify(parsed)))).map(_ => true)
+            case None if parsed == ChallengeAcceptProcessor.DefaultFormation => Future.successful(true)
+            case None =>
+              queryCli.write(WriteQueryBuilder.put(dal.Formation(
+                userId = userId,
+                data = FormationSerialization.stringify(parsed),
+              ))).map(_ => true)
           }
         }
       )
