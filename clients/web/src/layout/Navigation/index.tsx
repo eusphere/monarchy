@@ -5,6 +5,7 @@ import UserItem from './UserItem';
 import { Flex, Heading } from '@radix-ui/themes';
 import { Link } from 'react-router-dom';
 import ConnectionStatus from '~/layout/ConnectionStatus';
+import logoBlack from '~/assets/logo-mark-black.svg';
 
 type Props = {
   useSpace?: boolean;
@@ -21,9 +22,9 @@ const Navigation = ({ useSpace = true }: Props): React.ReactNode => {
       className={className}
     >
       <Link to="/" className={styles.logo}>
-        {/* <img width={32} height={32} src={logo} alt="logo" /> */}
+        <img src={logoBlack} alt="" aria-hidden="true" />
         <Heading size='4' weight='bold'>
-          Monarchy
+          monarchy
         </Heading>
       </Link>
       <Flex gap='4' className={styles.settings}>

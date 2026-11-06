@@ -83,12 +83,6 @@ const Profile = (): React.ReactNode => {
             <Card variant='surface' className={styles.stat}>
               <Text size='1' color='gray'>Rating</Text>
               <Heading size='6'>{user.rating}</Heading>
-              <Text size='1' color='gray'>Current ladder rating</Text>
-            </Card>
-            <Card variant='surface' className={styles.stat}>
-              <Text size='1' color='gray'>Member status</Text>
-              <Heading size='6'>Active</Heading>
-              <Text size='1' color='gray'>Ready for matchmaking</Text>
             </Card>
           </Flex>
 

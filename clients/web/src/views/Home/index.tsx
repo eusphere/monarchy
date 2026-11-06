@@ -38,13 +38,6 @@ const Home = (): React.ReactNode => {
   }), [navigate]);
 
   return <main className={styles.root}>
-    <section className={styles.hero}>
-      <div>
-        <Heading size='8' mb='1'>Welcome back, {user.username}</Heading>
-      </div>
-      <Card className={styles.rating}><Heading size='6'>{user.rating}</Heading></Card>
-    </section>
-
     <Grid columns={{ initial: '1', md: '2' }} gap='4'>
       <Card className={styles.panel}>
         <Flex justify='between' align='start' mb='4' gap='3'>

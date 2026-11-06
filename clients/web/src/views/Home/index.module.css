@@ -1,10 +1,6 @@
 .root { max-width: 1100px; margin: 0 auto; padding: 32px var(--grid-space-lg) 64px; }
-.hero { align-items: center; background: linear-gradient(120deg, #eef5ff, #f8fbff); border: 1px solid #d8e5f5; border-radius: 12px; display: flex; justify-content: space-between; margin-bottom: 24px; padding: 32px; }
 .kicker { color: #52739c; letter-spacing: .12em; }
-.rating { min-width: 120px; padding: 14px 18px; text-align: center; }
-.rating h1, .rating h2 { margin: 4px 0 0; }
 .panel { min-height: 170px; padding: 22px; }
 .challengeTile { width: 100%; }
 .online { margin-top: 24px; padding: 22px; }
 .recentGames { width: 100%; }
-@media (max-width: 600px) { .hero { align-items: flex-start; flex-direction: column; gap: 20px; padding: 24px; } .rating { min-width: 0; } }

@@ -48,12 +48,20 @@ object EndTurnQuery extends GraphqlArg[EndTurnQuery]
 case class UpdateProfileQuery(username: String)
 object UpdateProfileQuery extends GraphqlArg[UpdateProfileQuery]
 
+case class FormationEntryQuery(point: VecQuery, piece: String)
+object FormationEntryQuery extends GraphqlArg[FormationEntryQuery]
+
+case class FormationSaveQuery(formation: Seq[FormationEntryQuery])
+object FormationSaveQuery extends GraphqlArg[FormationSaveQuery]
+
 case class ChallengeAcceptQuery(opponentId: String)
 object ChallengeAcceptQuery extends GraphqlArg[ChallengeAcceptQuery]
 
 object GqlArgs {
   implicit val VecQueryMacro: InputObjectType[VecQuery] =
     deriveInput[VecQuery]()
+  implicit val FormationEntryQueryMacro: InputObjectType[FormationEntryQuery] =
+    deriveInput[FormationEntryQuery]()
 
   // Argument types
   val Id = Argument("id", StringType, description = "ID of this entity.")
@@ -67,5 +75,6 @@ object GqlArgs {
   val Direction = Argument("q", deriveInput[DirectionQuery](), description = "Orient a piece on a tile")
   val EndTurn = Argument("q", deriveInput[EndTurnQuery](), description = "End current turn")
   val ProfileUpdate = Argument("q", deriveInput[UpdateProfileQuery](), description = "Update your profile")
+  val FormationSave = Argument("q", deriveInput[FormationSaveQuery](), description = "Save the user's formation")
   val ChallengeAccept = Argument("q", deriveInput[ChallengeAcceptQuery](), description = "Accept a challenge")
 }
