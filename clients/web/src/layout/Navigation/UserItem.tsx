@@ -8,18 +8,13 @@ import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graph
 import { useLazyLoadQuery, useFragment } from 'react-relay';
 import { Link } from 'react-router-dom';
 import { DropdownMenu } from '@radix-ui/themes';
+import Dropdown from '~/components/Dropdown';
 
 const UserItemInner = (): React.ReactNode => {
   const data = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
   const user = useFragment<UserFragment$key>(UserFragment, data.self);
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        <Link to='/profile'>
-          <Profile icon user={user} />
-        </Link>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content align='end'>
+    <Dropdown trigger={<Profile icon user={user} />}>
         <DropdownMenu.Item asChild>
           <Link to='/profile'>Profile</Link>
         </DropdownMenu.Item>
@@ -27,8 +22,7 @@ const UserItemInner = (): React.ReactNode => {
           <Link to='/formation'>Formation</Link>
         </DropdownMenu.Item>
         <DropdownMenu.Item disabled>Logout</DropdownMenu.Item>
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+    </Dropdown>
   );
 }
 
