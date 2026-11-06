@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AdditiveBlending, Color, Mesh, ShaderMaterial } from 'three';
+import { AdditiveBlending, Color, Mesh } from 'three';
 import * as Constants from './constants';
 
 type Props = {
@@ -12,17 +12,21 @@ type Props = {
 
 const TileHighlight = ({ active, color = '#fff0a8', hovered = false, opacity = 1 }: Props): React.ReactNode => {
   const highlightColor = React.useMemo(() => new Color(color), [color]);
-  const material = React.useRef<ShaderMaterial>(null);
+  const hoverColor = React.useMemo(
+    () => highlightColor.clone().lerp(
+      new Color(Constants.TILE_HIGHLIGHT_HOVER_TINT),
+      Constants.TILE_HIGHLIGHT_HOVER_TINT_AMOUNT,
+    ),
+    [highlightColor],
+  );
+  const uniforms = React.useMemo(() => ({
+    color: { value: highlightColor },
+    opacity: { value: opacity },
+  }), [highlightColor, opacity]);
   const mesh = React.useRef<Mesh>(null);
   const baseHeight = Constants.TILE_HEIGHT * Constants.TILE_HIGHLIGHT_HEIGHT_RATIO;
   const targetHeight = baseHeight * (hovered ? Constants.TILE_HIGHLIGHT_HOVER_HEIGHT_RATIO : 1);
   const height = React.useRef(baseHeight);
-
-  React.useLayoutEffect(() => {
-    if (!material.current) return;
-    material.current.uniforms.color.value.copy(highlightColor);
-    material.current.uniforms.opacity.value = opacity;
-  }, [highlightColor, opacity]);
 
   useFrame((_, delta) => {
     if (!mesh.current) return;
@@ -43,15 +47,26 @@ const TileHighlight = ({ active, color = '#fff0a8', hovered = false, opacity = 1
         baseHeight,
         32,
       ]} />
-      <shaderMaterial
-        ref={material}
-        uniforms={{ color: { value: highlightColor }, opacity: { value: opacity } }}
-        vertexShader={VERTEX_SHADER}
-        fragmentShader={FRAGMENT_SHADER}
-        transparent
-        depthWrite={false}
-        blending={AdditiveBlending}
-      />
+      {hovered ? (
+        <meshBasicMaterial
+          key='hover'
+          color={hoverColor}
+          transparent
+          opacity={Constants.TILE_HIGHLIGHT_HOVER_OPACITY}
+          depthWrite={false}
+          toneMapped={false}
+        />
+      ) : (
+        <shaderMaterial
+          key='glass'
+          uniforms={uniforms}
+          vertexShader={VERTEX_SHADER}
+          fragmentShader={FRAGMENT_SHADER}
+          transparent
+          depthWrite={false}
+          blending={AdditiveBlending}
+        />
+      )}
     </mesh>
   );
 };

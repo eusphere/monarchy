@@ -30,6 +30,7 @@ type Props = {
   onDeselect: () => void;
   onMove: (point: { i: number; j: number }) => void;
   onAttack: (attack: ReadonlyArray<{ i: number; j: number }>) => void;
+  onConfirmAttack: () => void;
   selfPlayerId?: string;
   legalAction?: 'MOVE' | 'ATTACK' | 'EFFECT';
   selected: boolean;
@@ -37,6 +38,9 @@ type Props = {
   attack?: ReadonlyArray<{ i: number; j: number }>;
   directions: ReadonlyArray<{ i: number; j: number }>;
   onDirection: (direction: { i: number; j: number }) => void;
+  effectPoints: ReadonlyArray<{ i: number; j: number }>;
+  attackPreview: boolean;
+  effectHovered: boolean;
 };
 
 const Tile = (props: Props): React.ReactNode => {
@@ -66,6 +70,10 @@ const Tile = (props: Props): React.ReactNode => {
       props.onAttack(props.attack);
       return;
     }
+    if (props.legalAction === 'EFFECT' && props.attack) {
+      props.onConfirmAttack();
+      return;
+    }
     if (props.canDeselect && (props.selected || (!piece && props.hasSelection))) {
       props.onDeselect();
       return;
@@ -79,7 +87,7 @@ const Tile = (props: Props): React.ReactNode => {
     });
     if (!allowed) return;
     props.onSelect(tile.point);
-  }, [piece, props.attack, props.canDeselect, props.canSelect, props.currentPlayerId, props.hasSelection, props.legalAction, props.onAttack, props.onDeselect, props.onMove, props.onSelect, props.phase, props.selected, tile.point]);
+  }, [piece, props.attack, props.canDeselect, props.canSelect, props.currentPlayerId, props.hasSelection, props.legalAction, props.onAttack, props.onConfirmAttack, props.onDeselect, props.onMove, props.onSelect, props.phase, props.selected, tile.point]);
 
 
   const color = React.useMemo(() => {
@@ -118,7 +126,7 @@ const Tile = (props: Props): React.ReactNode => {
           key={`legal-${props.legalAction}`}
           active
           color={overlayColor}
-          hovered={props.hovered}
+          hovered={props.legalAction === 'EFFECT' ? props.effectHovered : props.hovered}
           opacity={Constants.TILE_HIGHLIGHT_ACTION_OPACITY}
         />
       )}

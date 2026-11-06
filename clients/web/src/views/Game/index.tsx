@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box } from '@radix-ui/themes';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
+import { fetchQuery, useLazyLoadQuery, useMutation, useRelayEnvironment } from 'react-relay';
 import { useParams } from 'react-router-dom';
 import GameQuery from '~/autogen/relay/GameQuery.graphql';
 import Board from './Board';
@@ -13,10 +13,12 @@ import GameSelectMutation from '~/autogen/relay/GameSelectMutation.graphql';
 import GameDeselectMutation from '~/autogen/relay/GameDeselectMutation.graphql';
 import GameMoveMutation from '~/autogen/relay/GameMoveMutation.graphql';
 import GameAttackMutation from '~/autogen/relay/GameAttackMutation.graphql';
+import GameEffectsQuery from '~/autogen/relay/GameEffectsQuery.graphql';
 import type { GameSelectMutation as GameSelectMutationType } from '~/autogen/relay/GameSelectMutation.graphql';
 import type { GameDeselectMutation as GameDeselectMutationType } from '~/autogen/relay/GameDeselectMutation.graphql';
 import type { GameMoveMutation as GameMoveMutationType } from '~/autogen/relay/GameMoveMutation.graphql';
 import type { GameAttackMutation as GameAttackMutationType } from '~/autogen/relay/GameAttackMutation.graphql';
+import type { GameEffectsQuery as GameEffectsQueryType } from '~/autogen/relay/GameEffectsQuery.graphql';
 import { subscribe } from '~/network/stream';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
@@ -37,6 +39,7 @@ const Game = (): React.ReactNode => {
   const { gameId: _gameId } = useParams();
   const gameId = _gameId as string;
   const [refreshKey, setRefreshKey] = React.useState(0);
+  const relayEnvironment = useRelayEnvironment();
   const selfData = useLazyLoadQuery<SelfQueryType>(SelfQuery, {}, { fetchPolicy: 'store-or-network' });
   const self = useFragment<UserFragment$key>(UserFragment, selfData.self);
   const data = useLazyLoadQuery<GameQueryType>(GameQuery, { id: gameId }, { fetchPolicy: 'network-only', fetchKey: refreshKey });
@@ -47,6 +50,8 @@ const Game = (): React.ReactNode => {
   const [attackPiece] = useMutation<GameAttackMutationType>(GameAttackMutation);
   const [endTurn, isEndingTurn] = useMutation<GameEndTurnMutationType>(GameEndTurnMutation);
   const [directionPiece] = useMutation<GameDirectionMutationType>(GameDirectionMutation);
+  const [pendingAttack, setPendingAttack] = React.useState<ReadonlyArray<{ i: number; j: number }> | null>(null);
+  const [effectPoints, setEffectPoints] = React.useState<ReadonlyArray<{ i: number; j: number }>>([]);
   const gameState = data.game?.state;
   const selection = useFragment<GameSelectionFragment$key>(GameSelectionFragment, gameState?.currentSelection);
   const [activePhase, setActivePhase] = React.useState<Phase | undefined>();
@@ -74,6 +79,8 @@ const Game = (): React.ReactNode => {
   }), [gameId]);
 
   const refreshGame = React.useCallback(() => {
+    setPendingAttack(null);
+    setEffectPoints([]);
     setActivePhase(undefined);
     setRefreshKey((key) => key + 1);
   }, []);
@@ -115,11 +122,24 @@ const Game = (): React.ReactNode => {
     directionPiece({ variables: { q: { gameId, direction } }, onCompleted: refreshGame });
   }, [directionPiece, gameId, refreshGame]);
   const onAttack = React.useCallback((attack: ReadonlyArray<{ i: number; j: number }>) => {
+    setPendingAttack(attack);
+    fetchQuery<GameEffectsQueryType>(relayEnvironment, GameEffectsQuery, {
+      q: { gameId, attack },
+    }).subscribe({
+      next: (result) => setEffectPoints(result.effects.map(({ point }) => point)),
+      error: () => {
+        setPendingAttack(null);
+        setEffectPoints([]);
+      },
+    });
+  }, [gameId, relayEnvironment]);
+  const onConfirmAttack = React.useCallback(() => {
+    if (!pendingAttack) return;
     attackPiece({
-      variables: { q: { gameId, attack } },
+      variables: { q: { gameId, attack: pendingAttack } },
       onCompleted: refreshGame,
     });
-  }, [attackPiece, gameId, refreshGame]);
+  }, [attackPiece, gameId, pendingAttack, refreshGame]);
   const pieceColors = React.useMemo(() => {
     const colors: Record<string, string> = {};
     const fallbackColors = ['#4f46e5', '#d97706'];
@@ -131,7 +151,7 @@ const Game = (): React.ReactNode => {
 
   return (
     <Box className={styles.root}>
-      {data.game && <Panel game={data.game} pieceColors={pieceColors} activePhase={activePhase} onPhaseChange={setActivePhase} onEndTurn={onEndTurn} />}
+        {data.game && <Panel game={data.game} pieceColors={pieceColors} activePhase={activePhase} onPhaseChange={setActivePhase} onEndTurn={onEndTurn} />}
       <Canvas
         camera={{ position: CAMERA_POS, fov: 45 }}
         style={{ background: '#f0f0f0' }}
@@ -140,7 +160,7 @@ const Game = (): React.ReactNode => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} castShadow />
         <directionalLight position={[5, 5, 5]} castShadow />
-        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} activePhase={activePhase} onSelect={onSelect} onDeselect={onDeselect} onMove={onMove} onAttack={onAttack} onDirection={onDirection} />}
+        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} activePhase={activePhase} effectPoints={effectPoints} pendingAttack={pendingAttack} attackPreview={Boolean(pendingAttack)} onSelect={onSelect} onDeselect={onDeselect} onMove={onMove} onAttack={onAttack} onConfirmAttack={onConfirmAttack} onDirection={onDirection} />}
       </Canvas>
     </Box>
   );
