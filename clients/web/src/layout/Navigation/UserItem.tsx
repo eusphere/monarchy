@@ -1,17 +1,15 @@
 import * as React from 'react';
 import ErrorBoundary from '~/layout/ErrorBoundary';
 import Profile from '../Profile';
-import UserFragment from '~/autogen/relay/UserFragment.graphql';
-import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
-import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
-import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
-import { useLazyLoadQuery, useFragment } from 'react-relay';
+import type { UserFragment$data } from '~/autogen/relay/UserFragment.graphql';
 import { Button } from '@radix-ui/themes';
 import { Link } from 'react-router-dom';
 
-const UserItemInner = (): React.ReactNode => {
-  const data = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
-  const user = useFragment<UserFragment$key>(UserFragment, data.self);
+type Props = {
+  user: UserFragment$data;
+};
+
+const UserItemInner = ({ user }: Props): React.ReactNode => {
   return (
     <Button variant='ghost' size='2' asChild>
       <Link to='/profile'>
@@ -21,10 +19,10 @@ const UserItemInner = (): React.ReactNode => {
   );
 }
 
-const UserItem = (): React.ReactNode => {
+const UserItem = (props: Props): React.ReactNode => {
   return (
     <ErrorBoundary>
-      <UserItemInner />
+      <UserItemInner {...props} />
     </ErrorBoundary>
   );
 };
