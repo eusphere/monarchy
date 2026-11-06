@@ -10,6 +10,11 @@ object Phase {
   case object End extends Phase
 
   def values: Set[Phase] =
-    Set(Select, Move, Attack, Dir, End)
+    Set(
+      Select,
+      Move,
+      Attack,
+      Dir,
+      End,
+    )
 }
-  

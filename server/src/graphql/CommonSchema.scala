@@ -36,8 +36,18 @@ object CommonSchema {
 
   lazy val PieceOrderType = EnumUtil.mkEnum[game.PieceConf](
     "PieceOrder",
-    Set(game.Assassin, game.Knight, game.Scout, game.Witch, game.Pyromancer,
-      game.MudGolem, game.Furgon, game.Cleric, game.FrostGolem, game.Shrub),
+    Set(
+      game.Assassin,
+      game.Knight,
+      game.Scout,
+      game.Witch,
+      game.Pyromancer,
+      game.MudGolem,
+      game.Furgon,
+      game.Cleric,
+      game.FrostGolem,
+      game.Shrub,
+    ),
   )
 
   lazy val PieceType = ObjectType(
