@@ -16,6 +16,7 @@ object MutationSchema {
       Field("endTurn", SelectionType, arguments = List(GqlArgs.EndTurn), resolve = EndTurnResolver),
       Field("challengeSeek", QuerySchema.ChallengeType, resolve = ChallengeSeekResolver),
       Field("profileUpdate", QuerySchema.UserType, arguments = List(GqlArgs.ProfileUpdate), resolve = UpdateProfileResolver),
+      Field("formationSave", BooleanType, arguments = List(GqlArgs.FormationSave), resolve = FormationSaveResolver),
       Field("challengeAccept", QuerySchema.GameType, arguments = List(GqlArgs.ChallengeAccept), resolve = ChallengeAcceptResolver),
       Field("challengeSeekCancel", BooleanType, resolve = ChallengeSeekCancelResolver),
     )

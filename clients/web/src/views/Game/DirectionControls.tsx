@@ -4,30 +4,37 @@ import type { Group } from 'three';
 
 type Point = { i: number; j: number };
 type Props = { directions: ReadonlyArray<Point>; onDirection: (direction: Point) => void };
-const OPTIONS: ReadonlyArray<{
-  label: string;
-  direction: Point;
-  position: readonly [number, number, number];
-  rotation: readonly [number, number, number];
-}> = [
-  { label: '↑', direction: { i: -1, j: 0 }, position: [0, 0.08, -0.48], rotation: [-Math.PI / 2, 0, 0] },
-  { label: '→', direction: { i: 0, j: 1 }, position: [0.48, 0.08, 0], rotation: [0, 0, -Math.PI / 2] },
-  { label: '↓', direction: { i: 1, j: 0 }, position: [0, 0.08, 0.48], rotation: [Math.PI / 2, 0, 0] },
-  { label: '←', direction: { i: 0, j: -1 }, position: [-0.48, 0.08, 0], rotation: [0, 0, Math.PI / 2] },
+const OPTIONS: ReadonlyArray<{ label: string; direction: Point }> = [
+  { label: '↑', direction: { i: -1, j: 0 } },
+  { label: '→', direction: { i: 0, j: 1 } },
+  { label: '↓', direction: { i: 1, j: 0 } },
+  { label: '←', direction: { i: 0, j: -1 } },
 ];
+
+const PYRAMID_POSITION: Record<string, readonly [number, number, number]> = {
+  '↑': [0, 0.08, -0.48],
+  '→': [0.48, 0.08, 0],
+  '↓': [0, 0.08, 0.48],
+  '←': [-0.48, 0.08, 0],
+};
+
+const PYRAMID_ROTATION: Record<string, readonly [number, number, number]> = {
+  '↑': [-Math.PI / 2, 0, 0],
+  '→': [0, 0, -Math.PI / 2],
+  '↓': [Math.PI / 2, 0, 0],
+  '←': [0, 0, Math.PI / 2],
+};
 
 type ConeProps = {
   label: string;
   direction: Point;
-  position: readonly [number, number, number];
-  rotation: readonly [number, number, number];
   enabled: boolean;
   hovered: boolean;
   onHover: (label: string | null) => void;
   onDirection: (direction: Point) => void;
 };
 
-const DirectionCone = ({ label, direction, position, rotation, enabled, hovered, onHover, onDirection }: ConeProps): React.ReactNode => {
+const DirectionCone = ({ label, direction, enabled, hovered, onHover, onDirection }: ConeProps): React.ReactNode => {
   const ref = React.useRef<Group>(null);
 
   useFrame((_, delta) => {
@@ -42,27 +49,20 @@ const DirectionCone = ({ label, direction, position, rotation, enabled, hovered,
   return (
     <group
       ref={ref}
-      position={position}
-      rotation={rotation}>
-      <mesh
-        onPointerOver={(event) => {
-          event.stopPropagation();
-          if (enabled) onHover(label);
-        }}
-        onPointerOut={(event) => {
-          event.stopPropagation();
-          onHover(null);
-        }}
-        onPointerDown={(event) => {
-          event.stopPropagation();
-          if (enabled) onDirection(direction);
-        }}
-        onClick={(event) => {
-          event.stopPropagation();
-        }}>
-        <boxGeometry args={[0.38, 0.42, 0.38]} />
-        <meshBasicMaterial transparent opacity={0.001} depthTest={false} depthWrite={false} />
-      </mesh>
+      position={PYRAMID_POSITION[label]}
+      rotation={PYRAMID_ROTATION[label]}
+      onPointerOver={(event) => {
+        event.stopPropagation();
+        if (enabled) onHover(label);
+      }}
+      onPointerOut={(event) => {
+        event.stopPropagation();
+        onHover(null);
+      }}
+      onClick={(event) => {
+        event.stopPropagation();
+        if (enabled) onDirection(direction);
+      }}>
       <mesh>
         <coneGeometry args={[0.15, 0.3, 16]} />
         <meshBasicMaterial
@@ -81,22 +81,20 @@ const DirectionControls = ({ directions, onDirection }: Props): React.ReactNode 
 
   return (
     <group position={[0, 1.35, 0]} userData={{ directionControls: true }}>
-      {OPTIONS.map(({ label, direction, position, rotation }) => {
-        const enabled = directions.some((candidate) => candidate.i === direction.i && candidate.j === direction.j);
-        const isHovered = enabled && hovered === label;
-        return (
-          <DirectionCone
-            key={label}
-            label={label}
-            direction={direction}
-            position={position}
-            rotation={rotation}
-            enabled={enabled}
-            hovered={isHovered}
-            onHover={setHovered}
-            onDirection={onDirection}
-          />
-        );
+      {OPTIONS.map(({ label, direction }) => {
+      const enabled = directions.some((candidate) => candidate.i === direction.i && candidate.j === direction.j);
+      const isHovered = enabled && hovered === label;
+      return (
+        <DirectionCone
+          key={label}
+          label={label}
+          direction={direction}
+          enabled={enabled}
+          hovered={isHovered}
+          onHover={setHovered}
+          onDirection={onDirection}
+        />
+      );
       })}
     </group>
   );

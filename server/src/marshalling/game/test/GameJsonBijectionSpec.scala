@@ -39,4 +39,15 @@ class GameJsonBijectionSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  "FormationSerialization" should {
+    "round-trip coordinates and piece configurations" in {
+      val formation: Player.Formation = Seq(
+        Vec(5, 4) -> Knight,
+        Vec(4, 3) -> Witch,
+      )
+
+      assert(FormationSerialization.parse(FormationSerialization.stringify(formation)) == formation)
+    }
+  }
+
 }

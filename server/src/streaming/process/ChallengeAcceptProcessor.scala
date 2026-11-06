@@ -24,21 +24,21 @@ class ChallengeAcceptProcessor(implicit
   import ChallengeAcceptProcessor._
   import dal.PostgresProfile.Implicits._
 
-  def create(userIds: Seq[UUID]): Future[UUID] = {
+  def create(userIds: Seq[UUID], formations: Map[UUID, Player.Formation]): Future[UUID] = {
     for {
       users <- queryCli.all(dal.User.query.filter(_.id inSet userIds))
       game <- createGame(users)
-      liveGame <- createLiveGame(game)
+      liveGame <- createLiveGame(game, formations)
     } yield game.data.id
   }
 
-  def createLiveGame(game: GameNode): Future[Boolean] = {
+  def createLiveGame(game: GameNode, formations: Map[UUID, Player.Formation] = Map.empty): Future[Boolean] = {
     val liveGame = GameBuilder(
       seed = game.data.seed,
       players = game.players.map { player =>
         Player(
           id = PlayerId(player.id),
-          formation = DefaultFormation
+          formation = formations.getOrElse(player.userId, DefaultFormation)
         )
       }
     )
