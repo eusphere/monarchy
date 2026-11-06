@@ -20,6 +20,10 @@ type Props = {
   activePhase?: import('~/autogen/relay/GameSelectionFragment.graphql').Phase;
   selfPlayerId?: string;
   onDirection: (direction: { i: number; j: number }) => void;
+  effectPoints: ReadonlyArray<{ i: number; j: number }>;
+  pendingAttack: ReadonlyArray<{ i: number; j: number }> | null;
+  attackPreview: boolean;
+  onConfirmAttack: () => void;
 };
 
 type LegalAction = 'MOVE' | 'ATTACK' | 'EFFECT';
@@ -41,13 +45,20 @@ const Board = (props: Props): React.ReactNode => {
     const attacks = new Map<string, ReadonlyArray<{ i: number; j: number }>>();
     if (!selection) return { targets, attacks };
     if (phase === 'MOVE') selection.movements.forEach((point) => targets.set(pointKey(point), 'MOVE'));
-    if (phase === 'ATTACK') selection.attacks.forEach((attack) => attack.tiles.forEach((point) => {
+    if (phase === 'ATTACK' && !props.attackPreview) selection.attacks.forEach((attack) => attack.tiles.forEach((point) => {
       targets.set(pointKey(point), 'ATTACK');
       attacks.set(pointKey(point), attack.tiles);
     }));
+    if (props.attackPreview && props.pendingAttack) props.effectPoints.forEach((point) => {
+      targets.set(pointKey(point), 'EFFECT');
+      attacks.set(pointKey(point), props.pendingAttack!);
+    });
     return { targets, attacks };
-  }, [phase, selection]);
+  }, [phase, props.attackPreview, props.effectPoints, props.pendingAttack, selection]);
   const [hoveredTile, setHoveredTile] = React.useState<string | null>(null);
+  const hoveredEffect = Boolean(
+    props.attackPreview && hoveredTile && props.effectPoints.some((point) => pointKey(point) === hoveredTile),
+  );
   const offset: [number, number, number] = React.useMemo(() => {
     const minI = Math.min(...tiles.map((_) => _.point.i));
     const minJ = Math.min(...tiles.map((_) => _.point.j));
@@ -101,8 +112,12 @@ const Board = (props: Props): React.ReactNode => {
             onDeselect={props.onDeselect}
             onMove={props.onMove}
             onAttack={props.onAttack}
+            onConfirmAttack={props.onConfirmAttack}
             onDirection={props.onDirection}
             directions={selection?.directions ?? []}
+            effectPoints={props.effectPoints}
+            attackPreview={props.attackPreview}
+            effectHovered={hoveredEffect}
           />
         );
       })}

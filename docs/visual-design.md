@@ -1,5 +1,16 @@
 # Visual design
 
+## Board highlights
+
+`TileHighlight` uses additive glass at rest and a standard unlit material on
+hover, with 95% opacity and the semantic base color mixed 40% toward white.
+Hover opacity and tint values live in `constants.ts`.
+Move, attack, and effect colors remain defined in the game constants. The
+cylinder height animates independently of the material switch. Board-level
+pointer state drives hover; all tiles in an effect preview share that state.
+Verify resting and hovered colors, height transitions, and synchronized effect
+hover in the browser; type checking alone does not verify these appearances.
+
 This is the living visual-design guide for the newer client in [`clients/web`](../clients/web/). Add a rule here when it represents a repeatable product decision rather than a one-off component detail.
 
 ## Page gutters
