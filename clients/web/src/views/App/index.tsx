@@ -3,6 +3,7 @@ import Game from '~/views/Game';
 import Games from '~/views/Games';
 import Splash from '~/views/Splash';
 import Profile from '~/views/Profile';
+import Formation from '~/views/Formation';
 import Home from '~/views/Home';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
@@ -33,6 +34,13 @@ const ProfileView = (): React.ReactNode => (
   <Page><Profile /></Page>
 );
 
+const FormationView = (): React.ReactNode => (
+  <>
+    <Navigation useSpace={false} />
+    <Formation />
+  </>
+);
+
 const App = (): React.ReactNode => {
   const data = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
   const user = useFragment<UserFragment$key>(UserFragment, data.self);
@@ -44,6 +52,7 @@ const App = (): React.ReactNode => {
       <Routes>
         <Route path="/game/:gameId" element={<GameView />} />
         <Route path="/profile" element={<ProfileView />} />
+        <Route path="/formation" element={<FormationView />} />
         <Route path="/matches" element={<MatchesView />} />
         <Route path="/" element={<HomeView />} />
         <Route path="*" element={<Navigate to="/" replace />} />

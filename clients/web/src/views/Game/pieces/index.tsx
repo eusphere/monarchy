@@ -84,8 +84,8 @@ export const Pyromancer = (props: { color?: string }) => (
 );
 
 export const visuals: Record<string, PieceVisual> = {
-  Scout: { component: Archer, rotationOffset: 0 },
-  Knight: { component: Knight, rotationOffset: 0 },
-  Cleric: { component: Priestess, rotationOffset: 0 },
-  Pyromancer: { component: Pyromancer, rotationOffset: 0 },
+  SCOUT: { component: Archer, rotationOffset: 0 },
+  KNIGHT: { component: Knight, rotationOffset: 0 },
+  CLERIC: { component: Priestess, rotationOffset: 0 },
+  PYROMANCER: { component: Pyromancer, rotationOffset: 0 },
 };

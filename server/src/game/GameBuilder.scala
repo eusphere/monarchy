@@ -10,7 +10,12 @@ object GameBuilder {
    * tactics (at least a little bit).
    */
   val InitialWaitPieces: Set[PieceConf] =
-    Set(Witch, Pyromancer, Scout, MudGolem)
+    Set(
+      Witch,
+      Pyromancer,
+      Scout,
+      MudGolem,
+    )
 
   def initialWait(conf: PieceConf, index: Int): Int = {
     if (index == 0 && InitialWaitPieces(conf)) 1 else 0

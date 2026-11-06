@@ -23,8 +23,8 @@ const Game = (props: Props): React.ReactNode => {
   return (
     <SummaryTile to={`/game/${game.id}`} status={game.selfStatus && <PlayerStatus status={game.selfStatus} />}>
       <Box className={styles.players}>
-        {game.players.map((player, index) => (
-          <Player key={index} player={player} selfId={props.selfId} />
+        {game.players.map((player) => (
+          <Player key={player.id} player={player} selfId={props.selfId} />
         ))}
       </Box>
       <Note text={gameAtFormatted} />
