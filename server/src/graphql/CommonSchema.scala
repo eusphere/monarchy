@@ -34,11 +34,17 @@ object CommonSchema {
     )
   )
 
+  lazy val PieceOrderType = EnumUtil.mkEnum[game.PieceConf](
+    "PieceOrder",
+    Set(game.Assassin, game.Knight, game.Scout, game.Witch, game.Pyromancer,
+      game.MudGolem, game.Furgon, game.Cleric, game.FrostGolem, game.Shrub),
+  )
+
   lazy val PieceType = ObjectType(
     "Piece",
     fields[GraphqlContext, game.Piece](
       Field("id", StringType, resolve = _.value.id.id.toString),
-      Field("order", StringType, resolve = _.value.conf.toString),
+      Field("order", PieceOrderType, resolve = _.value.conf),
       Field("name", StringType, resolve = _.value.conf.name),
       Field("stats", PieceStatsType, resolve = _.value.conf),
       Field("currentHealth", IntType, resolve = _.value.currentHealth),

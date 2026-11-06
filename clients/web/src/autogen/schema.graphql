@@ -119,7 +119,7 @@ enum Phase {
 
 type Piece {
   id: String!
-  order: String!
+  order: PieceOrder!
   name: String!
   stats: PieceStats!
   currentHealth: Int!
@@ -162,10 +162,10 @@ type Profile {
 
 type FormationEntry {
   point: Vec!
-  piece: PieceConf!
+  piece: PieceOrder!
 }
 
-enum PieceConf {
+enum PieceOrder {
   ASSASSIN
   KNIGHT
   SCOUT

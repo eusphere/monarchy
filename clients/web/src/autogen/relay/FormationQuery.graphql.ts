@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<46336e14ee2c626958c0e5949a3dab55>>
+ * @generated SignedSource<<7ff9b9c56af8f6410047b2d738e509f2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,11 +9,11 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from 'relay-runtime';
-export type PieceConf = "ASSASSIN" | "CLERIC" | "FROST_GOLEM" | "FURGON" | "KNIGHT" | "MUD_GOLEM" | "PYROMANCER" | "SCOUT" | "SHRUB" | "WITCH" | "%future added value";
+export type PieceOrder = "ASSASSIN" | "CLERIC" | "FROST_GOLEM" | "FURGON" | "KNIGHT" | "MUD_GOLEM" | "PYROMANCER" | "SCOUT" | "SHRUB" | "WITCH" | "%future added value";
 export type FormationQuery$variables = Record<PropertyKey, never>;
 export type FormationQuery$data = {
   readonly formation: ReadonlyArray<{
-    readonly piece: PieceConf;
+    readonly piece: PieceOrder;
     readonly point: {
       readonly i: number;
       readonly j: number;
