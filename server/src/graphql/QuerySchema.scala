@@ -66,6 +66,7 @@ object QuerySchema {
       ),
       Field("lobby", LobbyType, resolve = LobbyResolver),
       Field("effects", ListType(EffectType), arguments = List(GqlArgs.Attack), resolve = EffectsResolver),
+      Field("formation", ListType(FormationEntryType), resolve = FormationResolver),
     )
   )
 
@@ -183,6 +184,14 @@ object QuerySchema {
     "Effect",
     fields[GraphqlContext, game.EffectLocation](
       Field("point", VecType, resolve = _.value.point),
+    )
+  )
+
+  lazy val FormationEntryType = ObjectType(
+    "FormationEntry",
+    fields[GraphqlContext, FormationEntry](
+      Field("point", VecType, resolve = _.value.point),
+      Field("piece", StringType, resolve = _.value.piece),
     )
   )
 }

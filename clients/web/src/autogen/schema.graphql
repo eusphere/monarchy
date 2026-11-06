@@ -160,6 +160,11 @@ type Profile {
   color: String!
 }
 
+type FormationEntry {
+  point: Vec!
+  piece: String!
+}
+
 type Query {
   self: User!
   user(
@@ -179,6 +184,7 @@ type Query {
     """Attack a tile"""
     q: AttackQuery!
   ): [Effect!]!
+  formation: [FormationEntry!]!
 }
 
 type Selection {
