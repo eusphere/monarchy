@@ -9,8 +9,10 @@ type Props = {
 
 const Dropdown = (props: Props): React.ReactNode => (
   <DropdownMenu.Root>
-    <DropdownMenu.Trigger className={styles.trigger}>
-      {props.trigger}
+    <DropdownMenu.Trigger>
+      <button type='button' className={styles.trigger}>
+        {props.trigger}
+      </button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content align='end'>
       {props.children}
