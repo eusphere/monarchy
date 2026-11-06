@@ -6,12 +6,14 @@ import { Flex, Heading } from '@radix-ui/themes';
 import { Link } from 'react-router-dom';
 import ConnectionStatus from '~/layout/ConnectionStatus';
 import logoBlack from '~/assets/logo-mark-black.svg';
+import type { UserFragment$data } from '~/autogen/relay/UserFragment.graphql';
 
 type Props = {
+  user?: UserFragment$data;
   useSpace?: boolean;
 };
 
-const Navigation = ({ useSpace = true }: Props): React.ReactNode => {
+const Navigation = ({ user, useSpace = true }: Props): React.ReactNode => {
   const className = classnames(styles.root, !useSpace && styles.float);
   return (
     <Flex 
@@ -29,7 +31,7 @@ const Navigation = ({ useSpace = true }: Props): React.ReactNode => {
       </Link>
       <Flex gap='4' className={styles.settings}>
         <ConnectionStatus />
-        <UserItem />
+        {user && <UserItem user={user} />}
       </Flex>
     </Flex>
   );

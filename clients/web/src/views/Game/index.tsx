@@ -18,10 +18,6 @@ import type { GameDeselectMutation as GameDeselectMutationType } from '~/autogen
 import type { GameMoveMutation as GameMoveMutationType } from '~/autogen/relay/GameMoveMutation.graphql';
 import type { GameAttackMutation as GameAttackMutationType } from '~/autogen/relay/GameAttackMutation.graphql';
 import { subscribe } from '~/network/stream';
-import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
-import UserFragment from '~/autogen/relay/UserFragment.graphql';
-import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
-import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import GameSelectionFragment from '~/autogen/relay/GameSelectionFragment.graphql';
 import type { GameSelectionFragment$key, Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
 import GameEndTurnMutation from '~/autogen/relay/GameEndTurnMutation.graphql';
@@ -29,6 +25,7 @@ import GameDirectionMutation from '~/autogen/relay/GameDirectionMutation.graphql
 import type { GameDirectionMutation as GameDirectionMutationType } from '~/autogen/relay/GameDirectionMutation.graphql';
 import type { GameEndTurnMutation as GameEndTurnMutationType } from '~/autogen/relay/GameEndTurnMutation.graphql';
 import { useFragment } from 'react-relay';
+import useAuthenticatedUser from '~/layout/Authenticated/useAuthenticatedUser';
 
 const CAMERA_DIST = 9;
 const CAMERA_POS = [0, 1.4 * CAMERA_DIST, CAMERA_DIST] as const;
@@ -37,8 +34,7 @@ const Game = (): React.ReactNode => {
   const { gameId: _gameId } = useParams();
   const gameId = _gameId as string;
   const [refreshKey, setRefreshKey] = React.useState(0);
-  const selfData = useLazyLoadQuery<SelfQueryType>(SelfQuery, {}, { fetchPolicy: 'store-or-network' });
-  const self = useFragment<UserFragment$key>(UserFragment, selfData.self);
+  const self = useAuthenticatedUser();
   const data = useLazyLoadQuery<GameQueryType>(GameQuery, { id: gameId }, { fetchPolicy: 'network-only', fetchKey: refreshKey });
   const selfPlayerId = data.game?.players.find((player) => player.user?.id === self.id)?.id;
   const [selectPiece] = useMutation<GameSelectMutationType>(GameSelectMutation);

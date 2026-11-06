@@ -1,16 +1,19 @@
 import * as React from 'react';
 import Game from '~/views/Game';
 import Games from '~/views/Games';
-import Navigation from '~/layout/Navigation';
 import Splash from '~/views/Splash';
 import Profile from '~/views/Profile';
 import Formation from '~/views/Formation';
 import Home from '~/views/Home';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
-import { fetchQuery, useRelayEnvironment } from 'react-relay';
+import UserFragment from '~/autogen/relay/UserFragment.graphql';
+import { useFragment, useLazyLoadQuery } from 'react-relay';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 import Page from '~/layout/Page';
+import Navigation from '~/layout/Navigation';
+import AuthenticatedLayout from '~/layout/Authenticated';
+import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
+import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 
 const LoggedOut = (): React.ReactNode => (
   <>
@@ -19,32 +22,16 @@ const LoggedOut = (): React.ReactNode => (
   </>
 );
 
-const GameView = (): React.ReactNode => (
-  <>
-    <Navigation useSpace={false} />
-    <Game />
-  </>
-);
+const GameView = (): React.ReactNode => <Game />;
 
-const HomeView = (): React.ReactNode => (
-  <>
-    <Navigation />
-    <Home />
-  </>
-);
+const HomeView = (): React.ReactNode => <Home />;
 
 const MatchesView = (): React.ReactNode => (
-  <>
-    <Navigation />
-    <Page><Games /></Page>
-  </>
+  <Page><Games /></Page>
 );
 
 const ProfileView = (): React.ReactNode => (
-  <>
-    <Navigation />
-    <Page><Profile /></Page>
-  </>
+  <Page><Profile /></Page>
 );
 
 const FormationView = (): React.ReactNode => (
@@ -55,20 +42,13 @@ const FormationView = (): React.ReactNode => (
 );
 
 const App = (): React.ReactNode => {
-  const [loggedIn, setLoggedIn] = React.useState<boolean>(false);
-  const environment = useRelayEnvironment();
+  const data = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
+  const user = useFragment<UserFragment$key>(UserFragment, data.self);
 
-  React.useEffect(() => {
-    fetchQuery<SelfQueryType>(environment, SelfQuery, {})
-      .toPromise()
-      .then((data) => setLoggedIn(data?.self !== null))
-      .catch(() => setLoggedIn(false));
-  }, [environment]);
-
-  if (!loggedIn) return <LoggedOut />;
+  if (!user) return <LoggedOut />;
 
   return (
-    <>
+    <AuthenticatedLayout user={user}>
       <Routes>
         <Route path="/game/:gameId" element={<GameView />} />
         <Route path="/profile" element={<ProfileView />} />
@@ -77,7 +57,7 @@ const App = (): React.ReactNode => {
         <Route path="/" element={<HomeView />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </>
+    </AuthenticatedLayout>
   );
 };
 
