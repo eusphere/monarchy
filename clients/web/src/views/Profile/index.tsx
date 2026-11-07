@@ -81,12 +81,12 @@ const Profile = (): React.ReactNode => {
 
             <Flex direction='column' gap='1'>
               <Text weight='bold'>Email</Text>
-              <TextField.Root value={user.email} readOnly aria-label='Email' />
+              <Text>{user.email}</Text>
             </Flex>
 
             <Flex direction='column' gap='1'>
-              <Text weight='bold'>Discord username</Text>
-              <TextField.Root value={user.profile?.discordId ? 'Connected' : 'Not connected'} readOnly aria-label='Discord username' />
+              <Text weight='bold'>Discord handle</Text>
+              <Text>{user.profile?.discordId ?? 'Not connected'}</Text>
             </Flex>
           </Flex>
 
