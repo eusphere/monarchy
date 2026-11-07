@@ -171,6 +171,7 @@ enum PlayerStatus {
 type Profile {
   avatar: String!
   color: String!
+  discordId: String
 }
 
 type Formation {
@@ -235,6 +236,7 @@ type Tile {
 type User {
   id: String!
   username: String!
+  email: String!
   rating: Int!
   profile: Profile
 }

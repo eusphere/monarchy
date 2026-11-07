@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<742d32c288d6c6bf5c155a95b3c1891b>>
+ * @generated SignedSource<<bb954cd1a53bf332f45fb3a61f927dfd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,10 +11,12 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type UserFragment$data = {
+  readonly email: string;
   readonly id: string;
   readonly profile: {
     readonly avatar: string;
     readonly color: string;
+    readonly discordId: string | null | undefined;
   } | null | undefined;
   readonly rating: number;
   readonly username: string;
@@ -49,6 +51,13 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
+      "name": "email",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "rating",
       "storageKey": null
     },
@@ -73,6 +82,13 @@ const node: ReaderFragment = {
           "kind": "ScalarField",
           "name": "color",
           "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "discordId",
+          "storageKey": null
         }
       ],
       "storageKey": null
@@ -82,6 +98,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "a7b6a15faebcb393e5971da78e2b920f";
+(node as any).hash = "4d2846376f06022a79798a11c3d1b50c";
 
 export default node;

@@ -75,6 +75,7 @@ object QuerySchema {
     fields[GraphqlContext, dal.Profile](
       Field("avatar", StringType, resolve = _.value.avatar),
       Field("color", StringType, resolve = _.value.color),
+      Field("discordId", OptionType(StringType), resolve = _.value.discordId),
     )
   )
 
@@ -84,6 +85,7 @@ object QuerySchema {
       Field("id", StringType, resolve = _.value.id.toString),
       Field("username", StringType, resolve = _.value.username),
       Field("rating", IntType, resolve = _.value.rating),
+      Field("email", StringType, resolve = _.value.email),
       Field("profile", OptionType(ProfileType), resolve = { node =>
         import dal.PostgresProfile.Implicits._
         val userId = node.value.id

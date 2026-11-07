@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<01a29cc488b31cafebba3fed7070e948>>
+ * @generated SignedSource<<e7c8bf494f3a9b7e1e33e6ebcf7f816f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -81,6 +81,13 @@ v5 = [
   {
     "alias": null,
     "args": null,
+    "kind": "ScalarField",
+    "name": "email",
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": null,
     "concreteType": "Profile",
     "kind": "LinkedField",
     "name": "profile",
@@ -98,6 +105,13 @@ v5 = [
         "args": null,
         "kind": "ScalarField",
         "name": "color",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "discordId",
         "storageKey": null
       }
     ],
@@ -210,12 +224,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "bdd0f2e3b253e6d51057bb31951491d3",
+    "cacheID": "f95b4eec7c052c0526d54b677dfea588",
     "id": null,
     "metadata": {},
     "name": "HomeQueriesQuery",
     "operationKind": "query",
-    "text": "query HomeQueriesQuery {\n  self {\n    id\n    username\n    rating\n    ...UserFragment\n  }\n  lobby {\n    challenges {\n      expireAt\n      host {\n        id\n        username\n        rating\n        ...UserFragment\n      }\n    }\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "query HomeQueriesQuery {\n  self {\n    id\n    username\n    rating\n    ...UserFragment\n  }\n  lobby {\n    challenges {\n      expireAt\n      host {\n        id\n        username\n        rating\n        ...UserFragment\n      }\n    }\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  email\n  rating\n  profile {\n    avatar\n    color\n    discordId\n  }\n}\n"
   }
 };
 })();
