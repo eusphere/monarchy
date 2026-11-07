@@ -1,0 +1,7 @@
+.positive {
+  color: var(--design-positive);
+}
+
+.negative {
+  color: var(--design-negative);
+}

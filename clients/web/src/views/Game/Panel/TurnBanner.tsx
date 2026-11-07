@@ -7,6 +7,8 @@ import type { PlayerFragment$key } from '~/autogen/relay/PlayerFragment.graphql'
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import styles from './index.module.css';
 import Caption from '~/components/typography/Caption';
+import Victory from '~/components/icons/Victory';
+import RatingDelta from '~/components/RatingDelta';
 
 const fallbackColors = ['#78a9dc', '#e8a27d'];
 
@@ -37,11 +39,14 @@ const TurnSide = ({ player: playerRef, active, side, index, phase }: SideProps) 
     >
       <div className={styles.colorSquare} style={{ backgroundColor: color }} aria-hidden='true' />
       <div className={styles.playerDetails}>
-        <Text size='4' weight='bold' truncate>{name}</Text>
+        <div className={styles.playerName}>
+          {player.status === 'WON' && <Victory size={18} />}
+          <Text size='4' weight='bold' truncate>{name}</Text>
+        </div>
         <Caption className={styles.phaseLabel}>
           <span>{player.rating}</span>
           {player.ratingDelta != null && player.ratingDelta !== 0 && (
-            <span>{player.ratingDelta > 0 ? '+' : ''}{player.ratingDelta}</span>
+            <RatingDelta value={player.ratingDelta} />
           )}
         </Caption>
       </div>

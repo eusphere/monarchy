@@ -10,6 +10,8 @@
   --design-border: #e0e6ed;
   --design-text-muted: #66788b;
   --design-accent: #52739c;
+  --design-positive: var(--green-11, #218358);
+  --design-negative: var(--red-11, #ce2c31);
 }
 
 html, body {
