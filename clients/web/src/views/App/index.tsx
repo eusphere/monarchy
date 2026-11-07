@@ -6,14 +6,11 @@ import Profile from '~/views/Profile';
 import Formation from '~/views/Formation';
 import Home from '~/views/Home';
 import Navigation from '~/layout/Navigation';
-import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
-import UserFragment from '~/autogen/relay/UserFragment.graphql';
-import { useFragment, useLazyLoadQuery } from 'react-relay';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Page from '~/layout/Page';
 import AuthenticatedLayout from '~/layout/Authenticated';
-import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
-import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
+import ErrorBoundary from '~/layout/ErrorBoundary';
+import { hasLoginHint } from '~/network/auth';
 
 const LoggedOut = (): React.ReactNode => (
   <>
@@ -39,22 +36,21 @@ const FormationView = (): React.ReactNode => (
 );
 
 const App = (): React.ReactNode => {
-  const data = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
-  const user = useFragment<UserFragment$key>(UserFragment, data.self);
-
-  if (!user) return <LoggedOut />;
+  if (!hasLoginHint()) return <LoggedOut />;
 
   return (
-    <AuthenticatedLayout user={user}>
-      <Routes>
-        <Route path="/game/:gameId" element={<GameView />} />
-        <Route path="/profile" element={<ProfileView />} />
-        <Route path="/formation" element={<FormationView />} />
-        <Route path="/matches" element={<MatchesView />} />
-        <Route path="/" element={<HomeView />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </AuthenticatedLayout>
+    <ErrorBoundary fallback={<LoggedOut />}>
+      <AuthenticatedLayout fallback={<LoggedOut />}>
+        <Routes>
+          <Route path="/game/:gameId" element={<GameView />} />
+          <Route path="/profile" element={<ProfileView />} />
+          <Route path="/formation" element={<FormationView />} />
+          <Route path="/matches" element={<MatchesView />} />
+          <Route path="/" element={<HomeView />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthenticatedLayout>
+    </ErrorBoundary>
   );
 };
 
