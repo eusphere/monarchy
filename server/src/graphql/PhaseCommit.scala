@@ -77,8 +77,9 @@ case class PhaseCommit(
       Rating.compute(players)
     }
     val dbio = for {
-      gc <- dal.Game.query.filter(_.id === ctx.gameId).map(_.status).update(status)
-      pc <- DBIO.sequence {
+      // Claim completion inside the transaction so retries cannot award twice.
+      gc <- dal.Game.query.filter(g => g.id === ctx.gameId && g.status === (dal.GameStatus.Started: dal.GameStatus)).map(_.status).update(status)
+      pc <- if (gc == 0) DBIO.successful(Seq.empty[Int]) else DBIO.sequence {
         ctx.game.players.map { p =>
           val playerStatus = getPlayerStatus(p.status)
           val ratingDelta = ratings.get(p.id).map(_.delta)
@@ -88,13 +89,14 @@ case class PhaseCommit(
             .update((playerStatus, ratingDelta))
         }
       }
-      uc <- DBIO.sequence {
-        ctx.players.map { p =>
-          val rating = ratings.get(PlayerId(p.id)).map(_.next).getOrElse(p.rating)
-          dal.User.query.filter(_.id === p.userId).map(_.rating).update(rating)
+      uc <- if (gc == 0) DBIO.successful(Seq.empty[Int]) else DBIO.sequence {
+        // Stable lock order also avoids deadlocks between overlapping games.
+        ctx.players.sortBy(_.userId.toString).map { p =>
+          val delta = ratings.get(PlayerId(p.id)).map(_.delta).getOrElse(0)
+          sqlu"update users set rating = rating + $delta where id = cast(${p.userId.toString} as uuid)"
         }
       }
-    } yield pc.sum + gc + uc.sum + uc.sum
+    } yield pc.sum + gc + uc.sum
     // Just ensure the returned number of rows is non-zero for now.
     queryCli.write(dbio).map(_ > 0)
   }
