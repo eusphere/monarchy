@@ -32,7 +32,7 @@ class ChallengeAcceptProcessor(implicit
     } yield game.data.id
   }
 
-  def createLiveGame(game: GameNode, formations: Map[UUID, Player.Formation] = Map.empty): Future[Boolean] = {
+  private def createLiveGame(game: GameNode, formations: Map[UUID, Player.Formation]): Future[Boolean] = {
     val liveGame = GameBuilder(
       seed = game.data.seed,
       players = game.players.map { player =>
@@ -46,7 +46,7 @@ class ChallengeAcceptProcessor(implicit
     redisCli.set(StreamingKey.Game(game.data.id), liveGameRep)
   }
 
-  def createGame(users: Seq[dal.User]): Future[GameNode] = {
+  private def createGame(users: Seq[dal.User]): Future[GameNode] = {
     val seed = System.currentTimeMillis.toInt
     val game = dal.Game(seed = seed, status = dal.GameStatus.Started)
     val query = for {
@@ -71,6 +71,7 @@ object ChallengeAcceptProcessor {
   val DefaultFormation: Player.Formation = {
     Seq(
       Vec(5, 4) -> Knight,
+      Vec(6, 4) -> Knight,
       Vec(4, 3) -> Pyromancer,
       Vec(6, 3) -> Scout,
       Vec(5, 2) -> Cleric

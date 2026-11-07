@@ -25,6 +25,15 @@ input EndTurnQuery {
   gameId: String!
 }
 
+input FormationEntryQuery {
+  point: VecQuery!
+  piece: String!
+}
+
+input FormationSaveQuery {
+  formation: [FormationEntryQuery!]!
+}
+
 input UpdateProfileQuery {
   username: String!
 }
@@ -101,6 +110,10 @@ type Mutation {
     """Update your profile"""
     q: UpdateProfileQuery!
   ): User!
+  formationSave(
+    """Save the user's formation"""
+    q: FormationSaveQuery!
+  ): Boolean!
   challengeSeek: Challenge!
   challengeAccept(
     """Accept a challenge"""
