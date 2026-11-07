@@ -36,4 +36,5 @@ class JsonObjectMapper(
 
   // Write dates as milliseconds
   configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
+  configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
 }
