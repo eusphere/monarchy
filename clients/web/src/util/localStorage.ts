@@ -14,3 +14,11 @@ export const writeLocalStorage = <T>(key: string, value: T): void => {
     // Local storage may be unavailable in privacy-restricted browser contexts.
   }
 };
+
+export const removeLocalStorage = (key: string): void => {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // Local storage may be unavailable in privacy-restricted browser contexts.
+  }
+};
