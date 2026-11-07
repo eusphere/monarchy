@@ -10,6 +10,7 @@ import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import { fetchQuery, useFragment, useRelayEnvironment } from 'react-relay';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Flex, Spinner } from '@radix-ui/themes';
 import Page from '~/layout/Page';
 import AuthenticatedLayout from '~/layout/Authenticated';
 import ErrorBoundary from '~/layout/ErrorBoundary';
@@ -22,6 +23,14 @@ const LoggedOut = (): React.ReactNode => (
     <Navigation />
     <Page><Splash /></Page>
   </>
+);
+
+const AuthLoading = (): React.ReactNode => (
+  <Page>
+    <Flex align='center' justify='center' minHeight='50vh'>
+      <Spinner aria-label='Loading' />
+    </Flex>
+  </Page>
 );
 
 const GameView = (): React.ReactNode => <Game />;
@@ -79,7 +88,8 @@ const App = (): React.ReactNode => {
     return () => { active = false; };
   }, [environment]);
 
-  if (authState.status !== 'loggedIn') return <LoggedOut />;
+  if (authState.status === 'loading') return <AuthLoading />;
+  if (authState.status === 'loggedOut') return <LoggedOut />;
 
   return (
     <ErrorBoundary fallback={<LoggedOut />}>
