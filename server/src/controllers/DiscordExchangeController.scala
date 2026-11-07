@@ -78,8 +78,7 @@ class DiscordExchangeController(implicit
       case Some((creds, url)) =>
         val location = headers.Location(url)
         val auth = mkAuthHeader(creds.bearer, creds.ttl.toSeconds)
-        val hint = mkLoginHintHeader(creds.user.id.toString, creds.user.username, creds.ttl.toSeconds)
-        HttpResponse(StatusCodes.TemporaryRedirect, headers = List(location, auth, hint))
+        HttpResponse(StatusCodes.TemporaryRedirect, headers = List(location, auth))
     }
   }
 }
@@ -110,15 +109,4 @@ object DiscordExchangeController {
     ))
   }
 
-  private def mkLoginHintHeader(userId: String, username: String, ttl: Long): HttpHeader = {
-    headers.`Set-Cookie`(headers.HttpCookie(
-      name = "m1-user-hint",
-      value = URLEncoder.encode(Json.stringify(LoginHint(userId, username)), "UTF-8"),
-      maxAge = Some(ttl.toInt),
-      path = Some("/"),
-      secure = !isLocal,
-    ))
-  }
-
-  private case class LoginHint(userId: String, username: String)
 }
