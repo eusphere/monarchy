@@ -5,6 +5,7 @@ import com.typesafe.scalalogging.StrictLogging
 import java.net.{URI, URLEncoder}
 import monarchy.auth.oauth2.{ExchangeClient, Oauth2}
 import monarchy.util.Json
+import monarchy.util.http.UrlBuilder
 import monarchy.users.{DiscordFlow, Flow}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -76,7 +77,7 @@ class DiscordExchangeController(implicit
         HttpResponse(StatusCodes.OK, entity = entity)
       // For non-embedded clients, redirect to the referrer URL with a cookie.
       case Some((creds, url)) =>
-        val location = headers.Location(url)
+        val location = headers.Location(withLoginSuccess(url))
         val auth = mkAuthHeader(creds.bearer, creds.ttl.toSeconds)
         HttpResponse(StatusCodes.TemporaryRedirect, headers = List(location, auth))
     }
@@ -108,5 +109,8 @@ object DiscordExchangeController {
       httpOnly = true,
     ))
   }
+
+  private def withLoginSuccess(url: String): String =
+    UrlBuilder.from(url).query("login", "success").build
 
 }

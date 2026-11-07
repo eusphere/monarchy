@@ -14,6 +14,9 @@ import AuthenticatedLayout from '~/layout/Authenticated';
 import ErrorBoundary from '~/layout/ErrorBoundary';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 import type { SelfQuery$data } from '~/autogen/relay/SelfQuery.graphql';
+import { removeLocalStorage, writeLocalStorage } from '~/util/localStorage';
+
+const LOGIN_HINT_KEY = 'm1-login-hint';
 
 const LoggedOut = (): React.ReactNode => (
   <>
@@ -45,15 +48,31 @@ const App = (): React.ReactNode => {
   >({ status: 'loading' });
 
   React.useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('login') !== 'success') return;
+    writeLocalStorage(LOGIN_HINT_KEY, true);
+    url.searchParams.delete('login');
+    window.history.replaceState(window.history.state, document.title, `${url.pathname}${url.search}${url.hash}`);
+  }, []);
+
+  React.useEffect(() => {
     let active = true;
     fetchQuery<SelfQueryType>(environment, SelfQuery, {})
       .toPromise()
       .then((data) => {
         if (!active) return;
-        setAuthState(data?.self ? { status: 'loggedIn', data } : { status: 'loggedOut' });
+        if (data?.self) {
+          writeLocalStorage(LOGIN_HINT_KEY, true);
+          setAuthState({ status: 'loggedIn', data });
+        } else {
+          removeLocalStorage(LOGIN_HINT_KEY);
+          setAuthState({ status: 'loggedOut' });
+        }
       })
       .catch(() => {
-        if (active) setAuthState({ status: 'loggedOut' });
+        if (!active) return;
+        removeLocalStorage(LOGIN_HINT_KEY);
+        setAuthState({ status: 'loggedOut' });
       });
     return () => { active = false; };
   }, [environment]);
