@@ -5,6 +5,7 @@ import com.typesafe.scalalogging.StrictLogging
 import java.net.{URI, URLEncoder}
 import monarchy.auth.oauth2.{ExchangeClient, Oauth2}
 import monarchy.util.Json
+import monarchy.util.http.UrlBuilder
 import monarchy.users.{DiscordFlow, Flow}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -109,13 +110,7 @@ object DiscordExchangeController {
     ))
   }
 
-  private def withLoginSuccess(url: String): String = {
-    val fragmentIndex = url.indexOf('#')
-    val (base, fragment) = if (fragmentIndex < 0) (url, "") else (url.take(fragmentIndex), url.drop(fragmentIndex))
-    val separator = if (base.contains('?')) '&' else '?'
-    s"$base$separator$LoginSuccessParam$fragment"
-  }
-
-  private val LoginSuccessParam = "login=success"
+  private def withLoginSuccess(url: String): String =
+    UrlBuilder.from(url).query("login", "success").build
 
 }
