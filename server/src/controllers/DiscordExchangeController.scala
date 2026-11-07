@@ -76,7 +76,7 @@ class DiscordExchangeController(implicit
         HttpResponse(StatusCodes.OK, entity = entity)
       // For non-embedded clients, redirect to the referrer URL with a cookie.
       case Some((creds, url)) =>
-        val location = headers.Location(url)
+        val location = headers.Location(withLoginSuccess(url))
         val auth = mkAuthHeader(creds.bearer, creds.ttl.toSeconds)
         HttpResponse(StatusCodes.TemporaryRedirect, headers = List(location, auth))
     }
@@ -108,5 +108,14 @@ object DiscordExchangeController {
       httpOnly = true,
     ))
   }
+
+  private def withLoginSuccess(url: String): String = {
+    val fragmentIndex = url.indexOf('#')
+    val (base, fragment) = if (fragmentIndex < 0) (url, "") else (url.take(fragmentIndex), url.drop(fragmentIndex))
+    val separator = if (base.contains('?')) '&' else '?'
+    s"$base$separator$LoginSuccessParam$fragment"
+  }
+
+  private val LoginSuccessParam = "login=success"
 
 }

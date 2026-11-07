@@ -45,6 +45,13 @@ const App = (): React.ReactNode => {
   >({ status: 'loading' });
 
   React.useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('login') !== 'success') return;
+    url.searchParams.delete('login');
+    window.history.replaceState(window.history.state, document.title, `${url.pathname}${url.search}${url.hash}`);
+  }, []);
+
+  React.useEffect(() => {
     let active = true;
     fetchQuery<SelfQueryType>(environment, SelfQuery, {})
       .toPromise()
