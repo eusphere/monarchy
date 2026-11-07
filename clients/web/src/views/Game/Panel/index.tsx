@@ -11,6 +11,7 @@ import { useHoveredPiece } from '../pieceHoverStore';
 import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import type { Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
 import PhaseSwitcher from './PhaseSwitcher';
+import VictoryBanner from './VictoryBanner/index';
 
 type Props = {
   game: Types.Game;
@@ -43,6 +44,7 @@ const Panel = (props: Props): React.ReactNode => {
           />
         ) : undefined}
       />
+      <VictoryBanner players={game.players} ended={game.status !== 'STARTED'} />
       {(hoveredPiece ?? selection?.piece) && (
         <PieceDetails
           piece={(hoveredPiece ?? selection?.piece) as PieceFragment$key}

@@ -118,6 +118,7 @@
 
 .banner {
   position: relative;
+  z-index: 1;
   display: flex;
   width: min(760px, 100%);
   min-height: 112px;
@@ -129,6 +130,7 @@
   box-shadow: 0 12px 32px rgba(46, 62, 79, 0.14);
   backdrop-filter: var(--overlay-blur);
 }
+
 
 .phaseCenter {
   position: absolute;
@@ -183,6 +185,21 @@
 
 .playerDetails {
   min-width: 0;
+}
+
+.playerName {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.playerName svg {
+  flex-shrink: 0;
+}
+
+.right .playerName {
+  justify-content: flex-end;
 }
 
 /* Status is intentionally quiet text for now; iconography will replace it later. */

@@ -1,0 +1,59 @@
+.victoryBanner {
+  position: relative;
+  z-index: 0;
+  width: 112px;
+  height: 194px;
+  margin: -1px auto 0;
+  filter: drop-shadow(0 10px 8px rgba(46, 62, 79, 0.24));
+  pointer-events: none;
+}
+
+.victoryBanner::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 0;
+  /* Low-contrast crossed threads and soft folds give the stripes a matte finish. */
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 2px,
+    rgba(46, 62, 79, 0.035) 2px 3px
+  ), repeating-linear-gradient(
+    90deg,
+    transparent 0 2px,
+    rgba(46, 62, 79, 0.025) 2px 3px
+  ), linear-gradient(
+    90deg,
+    rgba(46, 62, 79, 0.07) 0%,
+    transparent 18%,
+    rgba(46, 62, 79, 0.045) 38%,
+    transparent 54%,
+    rgba(46, 62, 79, 0.055) 76%,
+    transparent 90%,
+    rgba(46, 62, 79, 0.07) 100%
+  ), repeating-linear-gradient(
+    90deg,
+    var(--banner-color) 0 20%,
+    #fff 20% 40%
+  );
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 72%,
+    50% 100%,
+    0 72%
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .victoryBanner {
+    transform-origin: 50% 0;
+    animation: victoryUnfurl 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes victoryUnfurl {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
