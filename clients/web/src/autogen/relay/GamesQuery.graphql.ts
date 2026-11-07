@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1fdbdd614eeb8731d8575be767d7d1af>>
+ * @generated SignedSource<<8c67ba9717ec0aad64d3db0c3b289633>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -193,16 +193,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "86b213b4770e3bb84754a04bb42652af",
+    "cacheID": "548905bf0675de92918312b866d3f67c",
     "id": null,
     "metadata": {},
     "name": "GamesQuery",
     "operationKind": "query",
-    "text": "query GamesQuery(\n  $q: GamesQuery!\n) {\n  games(q: $q) {\n    ...GameFragment\n  }\n}\n\nfragment GameFragment on Game {\n  id\n  status\n  selfStatus\n  createdAt\n  players {\n    id\n    ...PlayerFragment\n  }\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "query GamesQuery(\n  $q: GamesQuery!\n) {\n  games(q: $q) {\n    id\n    ...GameFragment\n  }\n}\n\nfragment GameFragment on Game {\n  id\n  status\n  selfStatus\n  createdAt\n  players {\n    id\n    ...PlayerFragment\n  }\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "69e5b9180c8ea0154fc476ad8a5c7d95";
+(node as any).hash = "20853d829737a4c58b1a21fd704fbb42";
 
 export default node;

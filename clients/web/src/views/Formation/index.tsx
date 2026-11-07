@@ -193,6 +193,7 @@ const Formation = (): React.ReactNode => {
   const [saveFormation] = useMutation<FormationSaveMutationType>(FormationSaveMutation);
   const [tiles, setTiles] = React.useState(data.formation.tiles);
   const hoveredPiece = formationHoverStore.useValue();
+  const hoverRetention = formationHoverStore.useRetention();
   const selectedPiece = formationSelectionStore.useValue();
   const movePiece = React.useCallback((from: Point, to: Point) => {
     if (pointKey(from) === pointKey(to)) return;
@@ -232,6 +233,7 @@ const Formation = (): React.ReactNode => {
       <FormationIntro />
       {(hoveredPiece ?? selectedPiece)?.piece && (
         <PieceStats
+          {...hoverRetention}
           name={(hoveredPiece ?? selectedPiece)!.piece.name}
           color={user.profile?.color ?? '#4f46e5'}
           stats={(hoveredPiece ?? selectedPiece)!.piece.stats}

@@ -8,6 +8,8 @@ export const PieceFragment = graphql`
     playerId
     stats {
       health
+      armor
+      power
     }
     currentWait
     currentHealth
