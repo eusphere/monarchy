@@ -94,6 +94,9 @@ resulting `Option` rather than comparing directly with `null`.
 Keep imports at the top of the file instead of using fully qualified class
 names inside method bodies.
 
+Use Scala's `assert` for test assertions rather than ScalaTest matcher syntax
+such as `shouldBe`.
+
 Keep names consistent with the surrounding code and established conventions.
 Name files after the primary logic or object they contain, especially when
 splitting related responsibilities across multiple files.
