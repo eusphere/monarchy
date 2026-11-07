@@ -12,6 +12,8 @@ import { useFragment, useLazyLoadQuery } from 'react-relay';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Page from '~/layout/Page';
 import AuthenticatedLayout from '~/layout/Authenticated';
+import ErrorBoundary from '~/layout/ErrorBoundary';
+import { poll } from '~/network/auth';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 
@@ -38,7 +40,7 @@ const FormationView = (): React.ReactNode => (
   <Formation />
 );
 
-const App = (): React.ReactNode => {
+const AuthenticatedApp = (): React.ReactNode => {
   const data = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
   const user = useFragment<UserFragment$key>(UserFragment, data.self);
 
@@ -55,6 +57,16 @@ const App = (): React.ReactNode => {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthenticatedLayout>
+  );
+};
+
+const App = (): React.ReactNode => {
+  if (!poll().loggedIn) return <LoggedOut />;
+
+  return (
+    <ErrorBoundary fallback={<LoggedOut />}>
+      <AuthenticatedApp />
+    </ErrorBoundary>
   );
 };
 
