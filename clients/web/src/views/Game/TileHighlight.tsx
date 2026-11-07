@@ -11,6 +11,14 @@ type Props = {
 };
 
 const TileHighlight = ({ active, color = '#fff0a8', hovered = false, opacity = 1 }: Props): React.ReactNode => {
+  if (!active) {
+    return null;
+  }
+
+  return <ActiveTileHighlight color={color} hovered={hovered} opacity={opacity} />;
+};
+
+const ActiveTileHighlight = ({ color, hovered, opacity }: Omit<Props, 'active'>): React.ReactNode => {
   const highlightColor = React.useMemo(() => new Color(color), [color]);
   const hoverColor = React.useMemo(
     () => highlightColor.clone().lerp(
@@ -35,10 +43,6 @@ const TileHighlight = ({ active, color = '#fff0a8', hovered = false, opacity = 1
     mesh.current.scale.y = height.current / baseHeight;
     mesh.current.position.y = Constants.TILE_HEIGHT / 2 + height.current / 2;
   });
-  if (!active) {
-    return null;
-  }
-
   return (
     <mesh ref={mesh} position={[0, Constants.TILE_HEIGHT / 2 + baseHeight / 2, 0]}>
       <cylinderGeometry args={[
