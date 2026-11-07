@@ -112,7 +112,7 @@ object DiscordExchangeController {
 
   private def mkLoginHintHeader(userId: String, username: String, ttl: Long): HttpHeader = {
     headers.`Set-Cookie`(headers.HttpCookie(
-      name = "X-M1-Login-Hint",
+      name = "m1-user-hint",
       value = URLEncoder.encode(Json.stringify(LoginHint(userId, username)), "UTF-8"),
       maxAge = Some(ttl.toInt),
       path = Some("/"),

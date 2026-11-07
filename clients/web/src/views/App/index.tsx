@@ -10,27 +10,19 @@ import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
 import { fetchQuery, useFragment, useRelayEnvironment } from 'react-relay';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Flex, Spinner } from '@radix-ui/themes';
 import Page from '~/layout/Page';
 import AuthenticatedLayout from '~/layout/Authenticated';
 import ErrorBoundary from '~/layout/ErrorBoundary';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
 import type { SelfQuery$data } from '~/autogen/relay/SelfQuery.graphql';
+import { hasLoginHint } from '~/network/auth';
 
 const LoggedOut = (): React.ReactNode => (
   <>
     <Navigation />
     <Page><Splash /></Page>
   </>
-);
-
-const AuthLoading = (): React.ReactNode => (
-  <Page>
-    <Flex align='center' justify='center' minHeight='50vh'>
-      <Spinner aria-label='Loading' />
-    </Flex>
-  </Page>
 );
 
 const GameView = (): React.ReactNode => <Game />;
@@ -88,7 +80,7 @@ const AuthenticatedProbe = (): React.ReactNode => {
     return () => { active = false; };
   }, [environment]);
 
-  if (authState.status === 'loading') return <AuthLoading />;
+  if (authState.status === 'loading') return null;
   if (authState.status === 'loggedOut') return <LoggedOut />;
 
   return (
@@ -98,6 +90,6 @@ const AuthenticatedProbe = (): React.ReactNode => {
   );
 };
 
-const App = (): React.ReactNode => <AuthenticatedProbe />;
+const App = (): React.ReactNode => hasLoginHint() ? <AuthenticatedProbe /> : <LoggedOut />;
 
 export default App;
