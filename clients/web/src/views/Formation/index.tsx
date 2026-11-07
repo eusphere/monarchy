@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
 import type { Group, Object3D } from 'three';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
@@ -12,18 +13,35 @@ import styles from './index.module.css';
 import BoardTile from '~/views/common/BoardTile';
 import { pointKey } from '~/views/common/board';
 import PieceStats from './PieceStats';
+import FormationIntro from './FormationIntro';
 import useAuthenticatedUser from '~/layout/Authenticated/useAuthenticatedUser';
 import { createHoverStore } from '~/util/hoverStore';
+import TileHighlight from '~/views/Game/TileHighlight';
 import FormationSaveMutation from '~/autogen/relay/FormationSaveMutation.graphql';
 import type { FormationSaveMutation as FormationSaveMutationType } from '~/autogen/relay/FormationSaveMutation.graphql';
 
-const CAMERA_DISTANCE = 6;
+const CAMERA_DISTANCE = 7;
 const CAMERA_POSITION = [0, CAMERA_DISTANCE * 1.35, -CAMERA_DISTANCE] as const;
 const HALF_BOARD_WIDTH = 5;
 const HALF_BOARD_DEPTH = 11;
 const BOARD_TILE_COLOR = '#d0d0d0';
+const CAMERA_REFERENCE_ASPECT = 1.25;
 
 type Point = { i: number, j: number };
+
+const FormationCamera = (): null => {
+  const { camera, size } = useThree();
+
+  React.useLayoutEffect(() => {
+    const aspect = size.width / size.height;
+    const distance = CAMERA_DISTANCE * Math.max(1, CAMERA_REFERENCE_ASPECT / aspect);
+    camera.position.set(0, distance * 1.35, -distance);
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+  }, [camera, size.width, size.height]);
+
+  return null;
+};
 
 const FormationPiece = ({ piece, color, active, position }: { piece: string, color: string, active: boolean, position?: [number, number, number] }): React.ReactNode => {
   const visual = Pieces.visuals[piece];
@@ -39,9 +57,11 @@ const FormationPiece = ({ piece, color, active, position }: { piece: string, col
 type FormationTile = FormationQueryType['response']['formation']['tiles'][number];
 type FormationEntry = FormationTile & { piece: NonNullable<FormationTile['piece']> };
 const formationHoverStore = createHoverStore<FormationEntry>();
+const formationSelectionStore = createHoverStore<FormationEntry>(0);
 
 const FormationBoard = ({ tiles, color, onMove }: { tiles: FormationQueryType['response']['formation']['tiles'], color: string, onMove: (from: Point, to: Point) => void }): React.ReactNode => {
   const [hovered, setHovered] = React.useState<string | null>(null);
+  const selectedPiece = formationSelectionStore.useValue();
   const [dragging, setDragging] = React.useState<Point | null>(null);
   const [dragPosition, setDragPosition] = React.useState<[number, number, number] | null>(null);
   const boardRef = React.useRef<Group>(null);
@@ -86,7 +106,7 @@ const FormationBoard = ({ tiles, color, onMove }: { tiles: FormationQueryType['r
   const draggedPiece = dragging ? tiles.find((entry) => entry.piece && pointKey(entry.point) === pointKey(dragging)) : undefined;
 
   return (
-    <group rotation={[0, Math.PI / 2, 0]}>
+    <group rotation={[0, Math.PI / 2 + Math.PI / 4, 0]}>
       <group ref={boardRef} position={offset}>
         <group
           onPointerMove={(event) => {
@@ -131,25 +151,31 @@ const FormationBoard = ({ tiles, color, onMove }: { tiles: FormationQueryType['r
           );
           if (isMissingCorner) return null;
           const isHovered = hovered === key;
+          const isSelected = Boolean(selectedPiece?.piece && piece?.piece?.id === selectedPiece.piece.id);
           return (
             <group
               key={key}
               position={[tile.point.j * Constants.TILE_SIZE, 0, tile.point.i * Constants.TILE_SIZE]}
               userData={{ tileKey: key }}
               onPointerDown={(event) => {
-                if (!piece) return;
+                if (!displayPiece) return;
                 event.stopPropagation();
-                setDragState(piece.point);
+                formationSelectionStore.set(displayPiece, displayPiece.piece.id);
+                setDragState(displayPiece.point);
                 updateDragPosition(event);
               }}
               onPointerUp={(event) => {
-                if (!dragging) return;
                 event.stopPropagation();
+                if (!dragging) {
+                  formationSelectionStore.set(displayPiece ?? null, displayPiece?.piece.id ?? null);
+                  return;
+                }
                 onMove(dragging, tile.point);
                 setDragState(null);
               }}
             >
               <BoardTile color={(tile.point.i + tile.point.j) % 2 === 0 ? BOARD_TILE_COLOR : '#dddddd'} hovered={isHovered} userData={{ tileKey: key }} />
+              <TileHighlight active={isSelected} hovered={isHovered} />
               {displayPiece && <FormationPiece piece={displayPiece.piece.order} color={color} active={false} />}
             </group>
           );
@@ -167,6 +193,7 @@ const Formation = (): React.ReactNode => {
   const [saveFormation] = useMutation<FormationSaveMutationType>(FormationSaveMutation);
   const [tiles, setTiles] = React.useState(data.formation.tiles);
   const hoveredPiece = formationHoverStore.useValue();
+  const selectedPiece = formationSelectionStore.useValue();
   const movePiece = React.useCallback((from: Point, to: Point) => {
     if (pointKey(from) === pointKey(to)) return;
     const movingPiece = tiles.find((tile) => pointKey(tile.point) === pointKey(from))?.piece;
@@ -191,6 +218,8 @@ const Formation = (): React.ReactNode => {
   return (
     <div className={styles.root}>
       <Canvas camera={{ position: CAMERA_POSITION, fov: 45 }} style={{ background: '#f0f0f0' }}>
+        <FormationCamera />
+        <OrbitControls enablePan={false} enableRotate={false} minDistance={2} maxDistance={24} />
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} castShadow />
         <directionalLight position={[5, 5, 5]} castShadow />
@@ -200,11 +229,12 @@ const Formation = (): React.ReactNode => {
           onMove={movePiece}
         />
       </Canvas>
-      {hoveredPiece?.piece && (
+      <FormationIntro />
+      {(hoveredPiece ?? selectedPiece)?.piece && (
         <PieceStats
-          name={hoveredPiece.piece.name}
+          name={(hoveredPiece ?? selectedPiece)!.piece.name}
           color={user.profile?.color ?? '#4f46e5'}
-          stats={hoveredPiece.piece.stats}
+          stats={(hoveredPiece ?? selectedPiece)!.piece.stats}
         />
       )}
     </div>

@@ -17,6 +17,9 @@ const UserItemInner = ({ user }: Props): React.ReactNode => {
           <Link to='/profile'>Profile</Link>
         </DropdownMenu.Item>
         <DropdownMenu.Item asChild>
+          <Link to='/matches'>Matches</Link>
+        </DropdownMenu.Item>
+        <DropdownMenu.Item asChild>
           <Link to='/formation'>Formation</Link>
         </DropdownMenu.Item>
         <DropdownMenu.Item disabled>Logout</DropdownMenu.Item>

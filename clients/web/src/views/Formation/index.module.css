@@ -2,3 +2,22 @@
   width: 100vw;
   height: 100vh;
 }
+
+.intro {
+  top: 64px;
+  bottom: auto;
+  width: min(540px, calc(100vw - 32px));
+}
+
+.introHeading {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.introText {
+  margin: 8px 0 0;
+  color: var(--gray-11);
+  font-size: 14px;
+  line-height: 1.45;
+}
