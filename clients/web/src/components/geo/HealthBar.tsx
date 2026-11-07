@@ -26,14 +26,12 @@ const HealthBar = ({ current, maximum, position = [0, 1.45, 0] }: Props): React.
   const fillColor = new Color(colorForRatio(ratio));
   return (
     <Billboard position={position} scale={0.7} follow renderOrder={100} userData={{ healthBar: true }}>
-      <group>
         <RoundedBox args={[width, height, 0.01]} radius={0.025} smoothness={3} position={[0, 0, 0]} renderOrder={0} raycast={() => null}>
           <meshBasicMaterial color='#e5e7eb' depthTest={false} depthWrite={false} side={DoubleSide} />
         </RoundedBox>
         <RoundedBox args={[fillWidth, height, 0.012]} radius={fillRadius} smoothness={3} position={[-(width - fillWidth) / 2, 0, 0.008]} renderOrder={1} raycast={() => null}>
           <meshBasicMaterial color={fillColor} toneMapped={false} depthTest={false} depthWrite={false} side={DoubleSide} />
         </RoundedBox>
-      </group>
     </Billboard>
   );
 };
