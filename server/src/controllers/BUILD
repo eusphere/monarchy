@@ -19,6 +19,6 @@ scala_library(
     '//server/src/graphql',
     '//server/src/users',
     '//server/src/util',
+    '//server/src/util/http',
   ]
 )
-
