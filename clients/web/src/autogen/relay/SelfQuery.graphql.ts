@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7e088d802c39629a19ec15a6d1b42177>>
+ * @generated SignedSource<<cb3c3c6098061d497bd1374dd3920bc6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -80,6 +80,13 @@ const node: ConcreteRequest = {
             "alias": null,
             "args": null,
             "kind": "ScalarField",
+            "name": "email",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "rating",
             "storageKey": null
           },
@@ -104,6 +111,13 @@ const node: ConcreteRequest = {
                 "kind": "ScalarField",
                 "name": "color",
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "discordId",
+                "storageKey": null
               }
             ],
             "storageKey": null
@@ -114,12 +128,12 @@ const node: ConcreteRequest = {
     ]
   },
   "params": {
-    "cacheID": "8221b53be622790fc36b576993a46b61",
+    "cacheID": "dae296e80353703571c4074844e99cf8",
     "id": null,
     "metadata": {},
     "name": "SelfQuery",
     "operationKind": "query",
-    "text": "query SelfQuery {\n  self {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "query SelfQuery {\n  self {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  email\n  rating\n  profile {\n    avatar\n    color\n    discordId\n  }\n}\n"
   }
 };
 

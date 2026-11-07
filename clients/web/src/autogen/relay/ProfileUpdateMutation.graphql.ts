@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9f9524e25d792c415b7e713bd7c19658>>
+ * @generated SignedSource<<f92035515e604e2490ef0ea63fad3c5d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -100,6 +100,13 @@ return {
             "alias": null,
             "args": null,
             "kind": "ScalarField",
+            "name": "email",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "rating",
             "storageKey": null
           },
@@ -124,6 +131,13 @@ return {
                 "kind": "ScalarField",
                 "name": "color",
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "discordId",
+                "storageKey": null
               }
             ],
             "storageKey": null
@@ -134,12 +148,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "eac02298cc96a16b45c1098a3b6b0c24",
+    "cacheID": "eb900bf2cee56881e7b85cc01f8a90c9",
     "id": null,
     "metadata": {},
     "name": "ProfileUpdateMutation",
     "operationKind": "mutation",
-    "text": "mutation ProfileUpdateMutation(\n  $q: UpdateProfileQuery!\n) {\n  profileUpdate(q: $q) {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "mutation ProfileUpdateMutation(\n  $q: UpdateProfileQuery!\n) {\n  profileUpdate(q: $q) {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  email\n  rating\n  profile {\n    avatar\n    color\n    discordId\n  }\n}\n"
   }
 };
 })();

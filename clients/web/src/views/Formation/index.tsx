@@ -199,8 +199,9 @@ const Formation = (): React.ReactNode => {
     if (pointKey(from) === pointKey(to)) return;
     const movingPiece = tiles.find((tile) => pointKey(tile.point) === pointKey(from))?.piece;
     if (!movingPiece) return;
+    const targetPiece = tiles.find((tile) => pointKey(tile.point) === pointKey(to))?.piece;
     const next = tiles.map((tile) => {
-      if (pointKey(tile.point) === pointKey(from)) return { ...tile, piece: null };
+      if (pointKey(tile.point) === pointKey(from)) return { ...tile, piece: targetPiece ?? null };
       if (pointKey(tile.point) === pointKey(to)) return { ...tile, piece: movingPiece };
       return tile;
     });

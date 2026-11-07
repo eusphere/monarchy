@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8c67ba9717ec0aad64d3db0c3b289633>>
+ * @generated SignedSource<<6a256d24631763ff3e403bee51668117>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -155,6 +155,13 @@ return {
                     "name": "username",
                     "storageKey": null
                   },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "email",
+                    "storageKey": null
+                  },
                   (v4/*: any*/),
                   {
                     "alias": null,
@@ -177,6 +184,13 @@ return {
                         "kind": "ScalarField",
                         "name": "color",
                         "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "discordId",
+                        "storageKey": null
                       }
                     ],
                     "storageKey": null
@@ -193,12 +207,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "548905bf0675de92918312b866d3f67c",
+    "cacheID": "8953b5ec3080b7f36734f84a4486ceab",
     "id": null,
     "metadata": {},
     "name": "GamesQuery",
     "operationKind": "query",
-    "text": "query GamesQuery(\n  $q: GamesQuery!\n) {\n  games(q: $q) {\n    id\n    ...GameFragment\n  }\n}\n\nfragment GameFragment on Game {\n  id\n  status\n  selfStatus\n  createdAt\n  players {\n    id\n    ...PlayerFragment\n  }\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  rating\n  profile {\n    avatar\n    color\n  }\n}\n"
+    "text": "query GamesQuery(\n  $q: GamesQuery!\n) {\n  games(q: $q) {\n    id\n    ...GameFragment\n  }\n}\n\nfragment GameFragment on Game {\n  id\n  status\n  selfStatus\n  createdAt\n  players {\n    id\n    ...PlayerFragment\n  }\n}\n\nfragment PlayerFragment on Player {\n  id\n  status\n  rating\n  ratingDelta\n  user {\n    ...UserFragment\n  }\n}\n\nfragment UserFragment on User {\n  id\n  username\n  email\n  rating\n  profile {\n    avatar\n    color\n    discordId\n  }\n}\n"
   }
 };
 })();

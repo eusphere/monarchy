@@ -56,15 +56,43 @@ const Profile = (): React.ReactNode => {
             </Flex>
             <Flex direction='column' gap='1'>
               <Heading size='8' className={styles.username}>{user.username}</Heading>
+              <Text size='3' color='gray'>{user.rating}</Text>
             </Flex>
           </Flex>
 
           <Separator size='4' />
 
+          <Flex direction='column' gap='4'>
+            <Flex direction='column' gap='2'>
+              <Text weight='bold'>Username</Text>
+              <Flex gap='2' align='end' wrap='wrap'>
+                <TextField.Root
+                  value={username}
+                  placeholder={user.username}
+                  onChange={(event) => setUsername(event.target.value)}
+                  aria-label='Username'
+                />
+                <Button onClick={saveUsername} disabled={isCommitting || username.trim().length === 0}>
+                  Save
+                </Button>
+              </Flex>
+              {message && <Text size='2' color={message === 'Username updated' ? 'green' : 'red'}>{message}</Text>}
+            </Flex>
+
+            <Flex direction='column' gap='1'>
+              <Text weight='bold'>Email</Text>
+              <Text>{user.email}</Text>
+            </Flex>
+
+            <Flex direction='column' gap='1'>
+              <Text weight='bold'>Discord handle</Text>
+              <Text>{user.profile?.discordId ?? 'Not connected'}</Text>
+            </Flex>
+          </Flex>
+
           <Flex align='center' justify='between' gap='4'>
             <Flex direction='column' gap='1'>
               <Text weight='bold'>Debug mode</Text>
-              <Text size='2' color='gray'>Show temporary development diagnostics in this browser.</Text>
             </Flex>
             <Switch
               checked={debugEnabled}
@@ -73,31 +101,6 @@ const Profile = (): React.ReactNode => {
             />
           </Flex>
 
-          <Flex gap='3' wrap='wrap'>
-            <Card variant='surface' className={styles.stat}>
-              <Text size='1' color='gray'>Rating</Text>
-              <Heading size='6'>{user.rating}</Heading>
-            </Card>
-          </Flex>
-
-          <Flex direction='column' gap='2'>
-            <Text weight='bold'>Make it yours</Text>
-            <Flex gap='2' align='end' wrap='wrap'>
-              <TextField.Root
-                value={username}
-                placeholder={user.username}
-                onChange={(event) => setUsername(event.target.value)}
-                aria-label='Username'
-              />
-              <Button onClick={saveUsername} disabled={isCommitting || username.trim().length === 0}>
-                Save username
-              </Button>
-            </Flex>
-            {message && <Text size='2' color={message === 'Username updated' ? 'green' : 'red'}>{message}</Text>}
-            <Text size='2' color='gray'>
-              Avatar, banner, and player tagline customization are coming next.
-            </Text>
-          </Flex>
         </Flex>
       </Card>
     </Section>
