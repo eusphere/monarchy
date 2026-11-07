@@ -49,7 +49,7 @@
 .phaseSwitcherWaiting .phaseButtonActive { color: var(--gray-11); background: rgba(255, 255, 255, 0.48); }
 
 .pieceDetails {
-  /* Piece-specific overlay layout; CanvasOverlay owns the surface. */
+  /* CanvasOverlay owns the surface; hover retention keeps this panel interactive. */
 }
 
 
@@ -82,6 +82,14 @@
   gap: 10px;
   margin-top: 10px;
   align-items: start;
+}
+
+.blockingStat {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
 }
 
 .pieceStat {

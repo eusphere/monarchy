@@ -2,6 +2,7 @@ import type { PieceFragment$key } from '~/autogen/relay/PieceFragment.graphql';
 import { createHoverStore } from '~/util/hoverStore';
 
 const store = createHoverStore<PieceFragment$key>();
+export const usePieceHoverRetention = store.useRetention;
 
 export const setHoveredPiece = (piece: PieceFragment$key | null, pieceId: string | null = null): void => {
   store.set(piece, pieceId);

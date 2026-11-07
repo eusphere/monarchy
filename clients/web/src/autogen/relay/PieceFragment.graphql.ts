@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8b73dce214613aafca2a11fc110ef4e0>>
+ * @generated SignedSource<<4104ea7def47ec328de190274d3577de>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -26,7 +26,9 @@ export type PieceFragment$data = {
   readonly order: PieceOrder;
   readonly playerId: string;
   readonly stats: {
+    readonly armor: number;
     readonly health: number;
+    readonly power: number;
   };
   readonly " $fragmentType": "PieceFragment";
 };
@@ -82,6 +84,20 @@ const node: ReaderFragment = {
           "args": null,
           "kind": "ScalarField",
           "name": "health",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "armor",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "power",
           "storageKey": null
         }
       ],
@@ -152,6 +168,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "627e12f6393f4c11bfd73c3b30c910fb";
+(node as any).hash = "55f336b51cd97a5806e68de6e8f7c70e";
 
 export default node;
