@@ -8,14 +8,14 @@ import Home from '~/views/Home';
 import Navigation from '~/layout/Navigation';
 import SelfQuery from '~/autogen/relay/SelfQuery.graphql';
 import UserFragment from '~/autogen/relay/UserFragment.graphql';
-import { useFragment, useLazyLoadQuery } from 'react-relay';
+import { fetchQuery, useFragment, useRelayEnvironment } from 'react-relay';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Page from '~/layout/Page';
 import AuthenticatedLayout from '~/layout/Authenticated';
 import ErrorBoundary from '~/layout/ErrorBoundary';
-import { poll } from '~/network/auth';
 import type { UserFragment$key } from '~/autogen/relay/UserFragment.graphql';
 import type { SelfQuery as SelfQueryType } from '~/autogen/relay/SelfQuery.graphql';
+import type { SelfQuery$data } from '~/autogen/relay/SelfQuery.graphql';
 
 const LoggedOut = (): React.ReactNode => (
   <>
@@ -40,8 +40,7 @@ const FormationView = (): React.ReactNode => (
   <Formation />
 );
 
-const AuthenticatedApp = (): React.ReactNode => {
-  const data = useLazyLoadQuery<SelfQueryType>(SelfQuery, {});
+const AuthenticatedApp = ({ data }: { data: SelfQuery$data }): React.ReactNode => {
   const user = useFragment<UserFragment$key>(UserFragment, data.self);
 
   if (!user) return <LoggedOut />;
@@ -61,11 +60,30 @@ const AuthenticatedApp = (): React.ReactNode => {
 };
 
 const App = (): React.ReactNode => {
-  if (!poll().loggedIn) return <LoggedOut />;
+  const environment = useRelayEnvironment();
+  const [authState, setAuthState] = React.useState<
+    { status: 'loading' } | { status: 'loggedOut' } | { status: 'loggedIn'; data: SelfQuery$data }
+  >({ status: 'loading' });
+
+  React.useEffect(() => {
+    let active = true;
+    fetchQuery<SelfQueryType>(environment, SelfQuery, {})
+      .toPromise()
+      .then((data) => {
+        if (!active) return;
+        setAuthState(data?.self ? { status: 'loggedIn', data } : { status: 'loggedOut' });
+      })
+      .catch(() => {
+        if (active) setAuthState({ status: 'loggedOut' });
+      });
+    return () => { active = false; };
+  }, [environment]);
+
+  if (authState.status !== 'loggedIn') return <LoggedOut />;
 
   return (
     <ErrorBoundary fallback={<LoggedOut />}>
-      <AuthenticatedApp />
+      <AuthenticatedApp data={authState.data} />
     </ErrorBoundary>
   );
 };
