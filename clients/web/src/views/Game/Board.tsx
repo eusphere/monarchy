@@ -54,6 +54,7 @@ const Board = (props: Props): React.ReactNode => {
     return { targets, attacks };
   }, [phase, props.effectTiles, selection]);
   const [hoveredTile, setHoveredTile] = React.useState<string | null>(null);
+  const effectHovered = hoveredTile !== null && legalTargets.targets.get(hoveredTile) === 'EFFECT';
   const offset: [number, number, number] = React.useMemo(() => {
     const minI = Math.min(...tiles.map((_) => _.point.i));
     const minJ = Math.min(...tiles.map((_) => _.point.j));
@@ -97,7 +98,7 @@ const Board = (props: Props): React.ReactNode => {
             canSelect={canSelect}
             canDeselect={canDeselect}
             selectedPiece={selectedPieceId ?? undefined}
-            hovered={hoveredTile === key}
+            hovered={hoveredTile === key || (effectHovered && legalTargets.targets.get(key) === 'EFFECT')}
             selfPlayerId={props.selfPlayerId}
             legalAction={legalTargets.targets.get(key)}
             attack={legalTargets.attacks.get(key)}
