@@ -36,9 +36,19 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .victoryBanner::before {
-    animation: victoryDrape 10s ease-in-out infinite;
+  .victoryBanner {
+    transform-origin: 50% 0;
+    animation: victoryUnfurl 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+
+  .victoryBanner::before {
+    animation: victoryDrape 10s ease-in-out 1.2s infinite backwards;
+  }
+}
+
+@keyframes victoryUnfurl {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
 }
 
 @keyframes victoryDrape {
