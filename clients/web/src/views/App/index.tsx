@@ -68,7 +68,7 @@ const AuthenticatedApp = ({ data }: { data: SelfQuery$data }): React.ReactNode =
   );
 };
 
-const App = (): React.ReactNode => {
+const AuthenticatedProbe = (): React.ReactNode => {
   const environment = useRelayEnvironment();
   const [authState, setAuthState] = React.useState<
     { status: 'loading' } | { status: 'loggedOut' } | { status: 'loggedIn'; data: SelfQuery$data }
@@ -97,5 +97,7 @@ const App = (): React.ReactNode => {
     </ErrorBoundary>
   );
 };
+
+const App = (): React.ReactNode => <AuthenticatedProbe />;
 
 export default App;

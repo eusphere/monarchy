@@ -7,6 +7,9 @@ export type Auth = {
 };
 
 const UserDataKey = 'm1-user-data';
+const LoginHintKey = 'X-M1-Login-Hint';
+
+export const hasLoginHint = (): boolean => Cookies.get(LoginHintKey) != null;
 
 export const poll = (): Auth => {
   const user = JSON.parse(Cookies.get(UserDataKey) || 'null');
