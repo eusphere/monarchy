@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box } from '@radix-ui/themes';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
+import { fetchQuery, useLazyLoadQuery, useMutation, useRelayEnvironment } from 'react-relay';
 import { useParams } from 'react-router-dom';
 import GameQuery from '~/autogen/relay/GameQuery.graphql';
 import Board from './Board';
@@ -22,6 +22,8 @@ import GameSelectionFragment from '~/autogen/relay/GameSelectionFragment.graphql
 import type { GameSelectionFragment$key, Phase } from '~/autogen/relay/GameSelectionFragment.graphql';
 import GameEndTurnMutation from '~/autogen/relay/GameEndTurnMutation.graphql';
 import GameDirectionMutation from '~/autogen/relay/GameDirectionMutation.graphql';
+import GameEffectsQuery from '~/autogen/relay/GameEffectsQuery.graphql';
+import type { GameEffectsQuery as GameEffectsQueryType } from '~/autogen/relay/GameEffectsQuery.graphql';
 import type { GameDirectionMutation as GameDirectionMutationType } from '~/autogen/relay/GameDirectionMutation.graphql';
 import type { GameEndTurnMutation as GameEndTurnMutationType } from '~/autogen/relay/GameEndTurnMutation.graphql';
 import { useFragment } from 'react-relay';
@@ -33,6 +35,7 @@ const CAMERA_POS = [0, 1.4 * CAMERA_DIST, CAMERA_DIST] as const;
 const Game = (): React.ReactNode => {
   const { gameId: _gameId } = useParams();
   const gameId = _gameId as string;
+  const environment = useRelayEnvironment();
   const [refreshKey, setRefreshKey] = React.useState(0);
   const self = useAuthenticatedUser();
   const data = useLazyLoadQuery<GameQueryType>(GameQuery, { id: gameId }, { fetchPolicy: 'network-only', fetchKey: refreshKey });
@@ -43,6 +46,9 @@ const Game = (): React.ReactNode => {
   const [attackPiece] = useMutation<GameAttackMutationType>(GameAttackMutation);
   const [endTurn, isEndingTurn] = useMutation<GameEndTurnMutationType>(GameEndTurnMutation);
   const [directionPiece] = useMutation<GameDirectionMutationType>(GameDirectionMutation);
+  const [pendingAttack, setPendingAttack] = React.useState<ReadonlyArray<{ i: number; j: number }> | null>(null);
+  const [effectTiles, setEffectTiles] = React.useState<ReadonlyArray<{ i: number; j: number }> | null>(null);
+  const attackRequest = React.useRef(0);
   const gameState = data.game?.state;
   const selection = useFragment<GameSelectionFragment$key>(GameSelectionFragment, gameState?.currentSelection);
   const [activePhase, setActivePhase] = React.useState<Phase | undefined>();
@@ -69,10 +75,17 @@ const Game = (): React.ReactNode => {
     if ('gameId' in message.data && message.data.gameId === gameId) setRefreshKey((key) => key + 1);
   }), [gameId]);
 
+  const clearAttackPreview = React.useCallback(() => {
+    attackRequest.current += 1;
+    setPendingAttack(null);
+    setEffectTiles(null);
+  }, []);
+
   const refreshGame = React.useCallback(() => {
+    clearAttackPreview();
     setActivePhase(undefined);
     setRefreshKey((key) => key + 1);
-  }, []);
+  }, [clearAttackPreview]);
 
   React.useEffect(() => {
     const onlyEndTurnRemains = allowedPhases.length > 0 && allowedPhases.every((phase) => phase === 'END');
@@ -111,11 +124,26 @@ const Game = (): React.ReactNode => {
     directionPiece({ variables: { q: { gameId, direction } }, onCompleted: refreshGame });
   }, [directionPiece, gameId, refreshGame]);
   const onAttack = React.useCallback((attack: ReadonlyArray<{ i: number; j: number }>) => {
+    const request = attackRequest.current + 1;
+    attackRequest.current = request;
+    setPendingAttack(attack);
+    setEffectTiles([]);
+    fetchQuery<GameEffectsQueryType>(environment, GameEffectsQuery, {
+      q: { gameId, attack },
+    }).toPromise().then((data) => {
+      if (attackRequest.current !== request) return;
+      if (data) setEffectTiles(data.effects.map((effect) => effect.point));
+    }).catch(() => {
+      if (attackRequest.current === request) clearAttackPreview();
+    });
+  }, [clearAttackPreview, environment, gameId]);
+  const onConfirmAttack = React.useCallback(() => {
+    if (!pendingAttack) return;
     attackPiece({
-      variables: { q: { gameId, attack } },
+      variables: { q: { gameId, attack: pendingAttack } },
       onCompleted: refreshGame,
     });
-  }, [attackPiece, gameId, refreshGame]);
+  }, [attackPiece, gameId, pendingAttack, refreshGame]);
   const pieceColors = React.useMemo(() => {
     const colors: Record<string, string> = {};
     const fallbackColors = ['#4f46e5', '#d97706'];
@@ -136,7 +164,7 @@ const Game = (): React.ReactNode => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} castShadow />
         <directionalLight position={[5, 5, 5]} castShadow />
-        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} activePhase={activePhase} onSelect={onSelect} onDeselect={onDeselect} onMove={onMove} onAttack={onAttack} onDirection={onDirection} />}
+        {gameState && <Board state={gameState} pieceColors={pieceColors} selfPlayerId={selfPlayerId} activePhase={activePhase} effectTiles={effectTiles} onSelect={onSelect} onDeselect={onDeselect} onMove={onMove} onAttack={onAttack} onConfirmAttack={onConfirmAttack} onDirection={onDirection} />}
       </Canvas>
     </Box>
   );

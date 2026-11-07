@@ -18,6 +18,8 @@ type Props = {
   onDeselect: () => void;
   onMove: (point: { i: number; j: number }) => void;
   onAttack: (attack: ReadonlyArray<{ i: number; j: number }>) => void;
+  onConfirmAttack: () => void;
+  effectTiles: ReadonlyArray<{ i: number; j: number }> | null;
   activePhase?: import('~/autogen/relay/GameSelectionFragment.graphql').Phase;
   selfPlayerId?: string;
   onDirection: (direction: { i: number; j: number }) => void;
@@ -40,13 +42,17 @@ const Board = (props: Props): React.ReactNode => {
     const targets = new Map<string, LegalAction>();
     const attacks = new Map<string, ReadonlyArray<{ i: number; j: number }>>();
     if (!selection) return { targets, attacks };
+    if (props.effectTiles !== null) {
+      props.effectTiles.forEach((point) => targets.set(pointKey(point), 'EFFECT'));
+      return { targets, attacks };
+    }
     if (phase === 'MOVE') selection.movements.forEach((point) => targets.set(pointKey(point), 'MOVE'));
     if (phase === 'ATTACK') selection.attacks.forEach((attack) => attack.tiles.forEach((point) => {
       targets.set(pointKey(point), 'ATTACK');
       attacks.set(pointKey(point), attack.tiles);
     }));
     return { targets, attacks };
-  }, [phase, selection]);
+  }, [phase, props.effectTiles, selection]);
   const [hoveredTile, setHoveredTile] = React.useState<string | null>(null);
   const offset: [number, number, number] = React.useMemo(() => {
     const minI = Math.min(...tiles.map((_) => _.point.i));
@@ -101,6 +107,7 @@ const Board = (props: Props): React.ReactNode => {
             onDeselect={props.onDeselect}
             onMove={props.onMove}
             onAttack={props.onAttack}
+            onConfirmAttack={props.onConfirmAttack}
             onDirection={props.onDirection}
             directions={selection?.directions ?? []}
           />
