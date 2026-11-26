@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f92035515e604e2490ef0ea63fad3c5d>>
+ * @generated SignedSource<<22cb6b3ac8aa3fa8e518be43217096a5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,8 @@
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type UpdateProfileQuery = {
-  username: string;
+  color?: string | null | undefined;
+  username?: string | null | undefined;
 };
 export type ProfileUpdateMutation$variables = {
   q: UpdateProfileQuery;

@@ -1,0 +1,98 @@
+@property --picker-family { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --picker-shade { syntax: '<number>'; inherits: true; initial-value: 3; }
+@property --picker-color { syntax: '<color>'; inherits: true; initial-value: #7658a5; }
+
+.root {
+  max-width: 520px;
+  padding: 5px;
+  --gap: 10px;
+  --radius: 12px;
+  transition: --picker-family 420ms cubic-bezier(.22, 1, .36, 1), --picker-shade 420ms cubic-bezier(.22, 1, .36, 1), --picker-color 360ms ease;
+}
+.row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: var(--gap); }
+.swatch {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 20px;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.25), inset 0 -1px 1px rgba(0,0,0,.06), 0 2px 5px rgba(0,0,0,.04);
+  transition: background-color 360ms cubic-bezier(.22, 1, .36, 1), color 360ms ease, transform 280ms cubic-bezier(.22, 1, .36, 1), box-shadow 280ms ease;
+}
+.swatch::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(155deg, rgba(255,255,255,.09), transparent 55%);
+  pointer-events: none;
+}
+.swatch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px var(--color-panel-solid), 0 0 0 4px var(--picker-color);
+  opacity: 0;
+  transform: scale(.96);
+  pointer-events: none;
+  transition: opacity 240ms ease, transform 360ms cubic-bezier(.22, 1, .36, 1), box-shadow 360ms ease;
+}
+.swatch[aria-checked='true']::after { opacity: 1; transform: scale(1); }
+.swatch:hover:not(:disabled) { transform: scale(1.035); box-shadow: inset 0 1px 2px rgba(255,255,255,.3), 0 4px 10px rgba(0,0,0,.1); }
+.swatch:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.7), 0 2px 5px rgba(0,0,0,.04);
+}
+.swatch:focus-visible::after { opacity: 1; transform: scale(1); }
+.swatch:disabled { cursor: default; }
+.check { display: inline-block; opacity: 0; transform: scale(.65); transition: opacity 200ms ease, transform 320ms cubic-bezier(.22, 1, .36, 1); }
+.swatch[aria-checked='true'] .check { opacity: 1; transform: scale(1); }
+.connection {
+  position: relative;
+  height: 24px;
+  --from: calc((100% - 7 * var(--gap)) / 16 + var(--picker-family) * ((100% - 7 * var(--gap)) / 8 + var(--gap)));
+  --to: calc((100% - 7 * var(--gap)) / 16 + var(--picker-shade) * ((100% - 7 * var(--gap)) / 8 + var(--gap)));
+  --mid: calc((var(--from) + var(--to)) / 2);
+  color: var(--picker-color);
+  opacity: .65;
+  transition: opacity 240ms ease;
+}
+.connection[data-visible='false'] { opacity: 0; }
+.connection span { position: absolute; box-sizing: border-box; border-color: currentColor; border-style: solid; border-width: 0; }
+.connection .sourceCurve {
+  left: min(var(--from), var(--mid));
+  width: calc(max(var(--from), var(--mid)) - min(var(--from), var(--mid)) + 2px);
+  top: 3px;
+  height: 10px;
+  border-bottom-width: 2px;
+}
+.connection .targetCurve {
+  left: min(var(--mid), var(--to));
+  width: calc(max(var(--mid), var(--to)) - min(var(--mid), var(--to)) + 2px);
+  top: 11px;
+  height: 10px;
+  border-top-width: 2px;
+}
+.connection[data-forward='true'] .sourceCurve { border-left-width: 2px; border-bottom-left-radius: 10px; }
+.connection[data-forward='true'] .targetCurve { border-right-width: 2px; border-top-right-radius: 10px; }
+.connection[data-forward='false'] .sourceCurve { border-right-width: 2px; border-bottom-right-radius: 10px; }
+.connection[data-forward='false'] .targetCurve { border-left-width: 2px; border-top-left-radius: 10px; }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 480px) {
+  .root { --gap: 7px; --radius: 9px; }
+  .swatch { font-size: 16px; }
+}
+@media (max-width: 359px) {
+  .root { --gap: 5px; --radius: 7px; }
+  .swatch { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .root, .swatch, .swatch::after, .check, .connection { transition: none; }
+  .swatch:hover:not(:disabled) { transform: none; }
+}

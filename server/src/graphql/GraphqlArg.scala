@@ -45,7 +45,7 @@ object DirectionQuery extends GraphqlArg[DirectionQuery]
 case class EndTurnQuery(gameId: String)
 object EndTurnQuery extends GraphqlArg[EndTurnQuery]
 
-case class UpdateProfileQuery(username: String)
+case class UpdateProfileQuery(username: Option[String], color: Option[String])
 object UpdateProfileQuery extends GraphqlArg[UpdateProfileQuery]
 
 case class FormationEntryQuery(point: VecQuery, piece: String)
