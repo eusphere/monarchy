@@ -1,12 +1,12 @@
-package monarchy.shared
+package monarchy.lib
 
 import java.util.UUID
 
-object PlayerColors {
+object Colors {
   val representativeIndex: Int = 3
 
   // Enamel-tone proposal: eight perceptual families with eight distinct shades each.
-  // Keep this source and the generated TypeScript in git; see shared/README.md.
+  // Keep this source and the generated TypeScript in git; see lib/README.md.
   val families: Vector[Vector[String]] = Vector(
     Vector("#c65379", "#d65877", "#e65e72", "#ee6c71", "#f47b74", "#fa897a", "#fd9883", "#fba48b"),
     Vector("#e68b42", "#eca046", "#edb23b", "#e8c33f", "#e5ce4d", "#ded85d", "#d5dc70", "#cddd85"),

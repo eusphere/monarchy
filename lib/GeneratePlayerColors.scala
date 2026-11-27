@@ -1,4 +1,4 @@
-package monarchy.shared
+package monarchy.lib
 
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Files, Paths}
@@ -16,7 +16,7 @@ object GeneratePlayerColors {
     val content = PlayerColorTypescript.render
     if (check) {
       require(Files.exists(output) && Files.readString(output, UTF_8) == content,
-        s"$output is out of date. Run bazel run //shared:generate-player-colors")
+        s"$output is out of date. Run bazel run //lib:generate-player-colors")
       println(s"Up to date: $output")
     } else {
       Files.createDirectories(output.getParent)

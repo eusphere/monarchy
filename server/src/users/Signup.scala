@@ -6,7 +6,7 @@ import monarchy.auth.Tooling
 import monarchy.dal
 import monarchy.dalwrite.WriteQueryBuilder
 import monarchy.util.Async
-import monarchy.shared.PlayerColors
+import monarchy.lib.Colors
 
 class Signup(implicit
     ec: ExecutionContext,
@@ -57,7 +57,7 @@ object Signup {
     username.matches(dal.User.UsernamePattern)
 
   private def mkProfile(userId: UUID, discordId: Option[String]): dal.Profile = {
-    val color = PlayerColors.forUser(userId)
+    val color = Colors.forUser(userId)
     dal.Profile(userId = userId, avatar = "Knight", color = color, discordId = discordId)
   }
 

@@ -5,7 +5,7 @@ scala_library(
   srcs=glob(['*.scala']),
   visibility=['//visibility:public'],
   deps=[
-    '//shared:player-colors',
+    '//lib:player-colors',
     '//server/src/auth',
     '//server/src/dal',
     '//server/src/dal-write',
