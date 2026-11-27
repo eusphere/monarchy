@@ -1,0 +1,14 @@
+// Static, curated sRGB colors. Every family representative is its fourth leaf.
+// Families vary in warmth and intensity as well as lightness.
+const shades = [
+  ['#763638', '#8b3b3a', '#a04038', '#a44c3f', '#b95440', '#c0674f', '#c5785d', '#c88a70'],
+  ['#703f0e', '#804903', '#8b5506', '#9c5709', '#a16a07', '#ac781a', '#b1883d', '#b4975c'],
+  ['#4c520a', '#535f01', '#586d07', '#62740d', '#60861e', '#699240', '#739e5b', '#80a875'],
+  ['#295a2c', '#226832', '#05773b', '#2b7d43', '#0a8e59', '#2c996b', '#46a37f', '#62ad92'],
+  ['#045959', '#076567', '#017178', '#007c91', '#088795', '#1193a6', '#299fb7', '#58a8bf'],
+  ['#19517b', '#185b92', '#1e65aa', '#0272a8', '#4177c6', '#5982cb', '#708ed0', '#8699d1'],
+  ['#4d437a', '#5b4a8f', '#6c50a3', '#7658a5', '#8861b8', '#956fbc', '#a37dbf', '#af8cc1'],
+  ['#6a3860', '#7e3d6d', '#934078', '#a04968', '#af5285', '#b8638c', '#c17392', '#c7859a'],
+] as const;
+
+export const playerColorFamilies = shades.map(colors => ({ color: colors[3], colors }));

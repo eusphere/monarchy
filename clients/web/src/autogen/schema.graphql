@@ -194,7 +194,6 @@ enum PieceOrder {
 }
 
 type Query {
-  playerColorFamilies: [PlayerColorFamily!]!
   self: User!
   user(
     """ID of this entity."""
@@ -251,15 +250,4 @@ type Vec {
 input VecQuery {
   i: Int!
   j: Int!
-}
-
-type PlayerColor {
-  name: String!
-  color: String!
-}
-
-type PlayerColorFamily {
-  name: String!
-  color: String!
-  colors: [PlayerColor!]!
 }
