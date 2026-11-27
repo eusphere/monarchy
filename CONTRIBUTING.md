@@ -92,7 +92,10 @@ alone as the grouping rule. Check colors in their actual rendered context.
 When the same choices drive initial assignment, editing, and validation, keep
 one shared source of truth. Static shared data can be bundled into both client
 and server; sharing a palette does not require a runtime palette API. Avoid
-maintaining parallel lists or inventing names that do not help the user.
+maintaining independently edited parallel lists or inventing names that do not
+help the user. For cross-language constants, keep one authored source and use a
+small, reproducible generator for checked-in outputs. Document the manual
+generation command and regenerate those outputs whenever the source changes.
 
 ## Verification and pull requests
 

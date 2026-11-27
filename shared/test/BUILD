@@ -7,5 +7,6 @@ scala_test(
   deps=[
     '@maven//:org_scalatest_scalatest_2_13',
     '//shared:player-colors',
+    '//shared:player-colors-typescript',
   ],
 )

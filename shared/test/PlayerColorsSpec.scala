@@ -12,6 +12,20 @@ class PlayerColorsSpec extends AnyWordSpec {
       assert(PlayerColors.values.forall(_.matches("#[0-9a-f]{6}")))
     }
 
+    "keep each representative as a valid leaf of its family" in {
+      PlayerColors.families.foreach { colors =>
+        assert(colors.count(_ == colors(PlayerColors.representativeIndex)) == 1)
+      }
+    }
+
+    "generate TypeScript with all leaf colors in their Scala order" in {
+      val generated = PlayerColorTypescript.render
+      val colors = "#[0-9a-f]{6}".r.findAllIn(generated).toVector
+      assert(colors == PlayerColors.values)
+      assert(generated.contains(s"colors[${PlayerColors.representativeIndex}]"))
+      assert(generated.endsWith("\n"))
+    }
+
     "assign signup colors deterministically from the same leaf palette" in {
       val users = Vector(new UUID(0, 0), new UUID(0, 1), new UUID(0, 0x80000000L), new UUID(-1, -1))
       assert(PlayerColors.forUser(new UUID(0, 0)) == PlayerColors.values(0))
