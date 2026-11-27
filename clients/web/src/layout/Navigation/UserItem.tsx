@@ -1,6 +1,8 @@
 import * as React from 'react';
 import ErrorBoundary from '~/layout/ErrorBoundary';
-import Profile from '../Profile';
+import PlayerAvatar from '~/components/PlayerAvatar';
+import { PlayerColorPreviewContext } from '~/layout/Authenticated/PlayerColorPreviewContext';
+import { Flex, Text } from '@radix-ui/themes';
 import type { UserFragment$data } from '~/autogen/relay/UserFragment.graphql';
 import { Link } from 'react-router-dom';
 import { DropdownMenu } from '@radix-ui/themes';
@@ -11,8 +13,12 @@ type Props = {
 };
 
 const UserItemInner = ({ user }: Props): React.ReactNode => {
+  const preview = React.useContext(PlayerColorPreviewContext);
   return (
-    <Dropdown trigger={<Profile icon user={user} />}>
+    <Dropdown trigger={<Flex align='center' gap='2'>
+      <Text>{user.username}</Text>
+      <PlayerAvatar username={user.username} color={preview.color ?? user.profile?.color ?? '#5065b0'} />
+    </Flex>}>
         <DropdownMenu.Item asChild>
           <Link to='/profile'>Profile</Link>
         </DropdownMenu.Item>

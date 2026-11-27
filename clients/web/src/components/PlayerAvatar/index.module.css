@@ -1,0 +1,13 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  letter-spacing: .04em;
+  box-shadow: 0 6px 18px color-mix(in srgb, currentColor 8%, transparent);
+}
+.small { width: 36px; height: 36px; border-radius: 11px; font-size: 12px; }
+.large { width: 88px; height: 88px; border-radius: 24px; font-size: 28px; }
+.avatar { transition: background-color 360ms ease, color 360ms ease; }
+@media (prefers-reduced-motion: reduce) { .avatar { transition: none; } }

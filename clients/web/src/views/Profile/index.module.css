@@ -12,18 +12,6 @@
     var(--color-panel-solid);
 }
 
-.avatar {
-  width: 88px;
-  height: 88px;
-  flex: 0 0 auto;
-  border-radius: 24px;
-  color: white;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--accent-9) 24%, transparent);
-}
-
 .username {
   letter-spacing: -0.04em;
 }
@@ -35,4 +23,17 @@
 .stat {
   min-width: 180px;
   flex: 1 1 180px;
+}
+
+.card { max-width: 820px; margin-inline: auto; }
+.colorDot { width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0; }
+.colorEditor { margin-top: 20px; }
+
+.title { gap: clamp(8px, 2vw, 16px); }
+.identity { gap: clamp(8px, 2vw, 16px); min-width: 0; }
+.identity > div { min-width: 0; }
+.username { overflow-wrap: anywhere; }
+.piecePreview { width: clamp(72px, 18vw, 128px); height: 112px; flex-shrink: 0; pointer-events: none; }
+@media (max-width: 359px) {
+  .username { font-size: 24px; }
 }

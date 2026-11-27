@@ -12,17 +12,19 @@ import {
   Switch,
 } from '@radix-ui/themes';
 import styles from './index.module.css';
+import PlayerColorSection from './PlayerColorSection';
+import PiecePreview from './PiecePreview';
+import PlayerAvatar from '~/components/PlayerAvatar';
+import { PlayerColorPreviewContext } from '~/layout/Authenticated/PlayerColorPreviewContext';
 import ProfileUpdateMutation from '~/autogen/relay/ProfileUpdateMutation.graphql';
 import type { ProfileUpdateMutation as ProfileUpdateMutationType } from '~/autogen/relay/ProfileUpdateMutation.graphql';
 import { useDebug } from '~/hooks/useDebug';
 import useAuthenticatedUser from '~/layout/Authenticated/useAuthenticatedUser';
 
-const initials = (username: string): string =>
-  username.trim().slice(0, 2).toUpperCase() || '??';
-
 const Profile = (): React.ReactNode => {
   const user = useAuthenticatedUser();
   const [commit, isCommitting] = useMutation<ProfileUpdateMutationType>(ProfileUpdateMutation);
+  const preview = React.useContext(PlayerColorPreviewContext);
   const [username, setUsername] = React.useState('');
   const [message, setMessage] = React.useState<string | null>(null);
   const [debugEnabled, setDebugEnabled] = useDebug();
@@ -38,26 +40,21 @@ const Profile = (): React.ReactNode => {
     });
   };
 
-  const profileColor = user.profile?.color || 'var(--accent-9)';
+  const profileColor = preview.color ?? user.profile?.color ?? '#5065b0';
 
   return (
     <Section size='2' className={styles.root}>
       <Card size='4' className={styles.card}>
         <Flex direction='column' gap='6'>
-          <Flex align='center' gap='4'>
-            <Flex
-              align='center'
-              justify='center'
-              className={styles.avatar}
-              style={{ backgroundColor: profileColor }}
-              aria-hidden='true'
-            >
-              {initials(user.username)}
+          <Flex align='start' justify='between' className={styles.title}>
+            <Flex align='center' className={styles.identity}>
+              <PlayerAvatar username={user.username} color={profileColor} size='large' />
+              <Flex direction='column' gap='1'>
+                <Heading size='8' className={styles.username}>{user.username}</Heading>
+                <Text size='3' color='gray'>{user.rating}</Text>
+              </Flex>
             </Flex>
-            <Flex direction='column' gap='1'>
-              <Heading size='8' className={styles.username}>{user.username}</Heading>
-              <Text size='3' color='gray'>{user.rating}</Text>
-            </Flex>
+            <PiecePreview color={profileColor} />
           </Flex>
 
           <Separator size='4' />
@@ -78,6 +75,10 @@ const Profile = (): React.ReactNode => {
               </Flex>
               {message && <Text size='2' color={message === 'Username updated' ? 'green' : 'red'}>{message}</Text>}
             </Flex>
+
+            <Separator size='4' />
+            <PlayerColorSection savedColor={user.profile?.color ?? '#5065b0'} />
+            <Separator size='4' />
 
             <Flex direction='column' gap='1'>
               <Text weight='bold'>Email</Text>

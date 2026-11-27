@@ -25,6 +25,7 @@ object QuerySchema {
   lazy val Def = ObjectType(
     "Query",
     fields[GraphqlContext, Unit](
+      Field("playerColorFamilies", ListType(PlayerColorFamilyType), resolve = _ => PlayerColors.families),
       Field("self", UserType,
         resolve = { node =>
           node.ctx.auth match {
@@ -67,6 +68,23 @@ object QuerySchema {
       Field("lobby", LobbyType, resolve = LobbyResolver),
       Field("effects", ListType(EffectType), arguments = List(GqlArgs.Attack), resolve = EffectsResolver),
       Field("formation", FormationType, resolve = FormationResolver),
+    )
+  )
+
+  lazy val PlayerColorFamilyType = ObjectType(
+    "PlayerColorFamily",
+    fields[GraphqlContext, PlayerColorFamily](
+      Field("name", StringType, resolve = _.value.name),
+      Field("color", StringType, resolve = _.value.color),
+      Field("colors", ListType(PlayerColorType), resolve = _.value.colors),
+    )
+  )
+
+  lazy val PlayerColorType = ObjectType(
+    "PlayerColor",
+    fields[GraphqlContext, PlayerColor](
+      Field("name", StringType, resolve = _.value.name),
+      Field("color", StringType, resolve = _.value.color),
     )
   )
 
