@@ -7,6 +7,7 @@ scala_library(
     '@maven//:com_github_etaty_rediscala_2_13',
     '@maven//:org_sangria_graphql_sangria_2_13',
     '@maven//:org_sangria_graphql_sangria_marshalling_api_2_13',
+    '//shared:player-colors',
     '//server/src/auth',
     '//server/src/dal',
     '//server/src/dal-write',
