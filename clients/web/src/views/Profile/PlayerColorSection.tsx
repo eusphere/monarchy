@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { Text } from '@radix-ui/themes';
 import { useMutation } from 'react-relay';
 import { PlayerColorPreviewContext } from '~/layout/Authenticated/PlayerColorPreviewContext';
 import Mutation from '~/autogen/relay/ProfileUpdateMutation.graphql';
 import type { ProfileUpdateMutation } from '~/autogen/relay/ProfileUpdateMutation.graphql';
 import PlayerColorPicker from './PlayerColorPicker';
-import ErrorBoundary from '~/layout/ErrorBoundary';
 import EditableField from '~/components/EditableField';
 import styles from './index.module.css';
 
@@ -54,11 +52,7 @@ const PlayerColorSection = ({ savedColor }: { savedColor: string }) => {
     adornment={<span className={styles.colorDot} style={{ backgroundColor: color ?? savedColor }} aria-hidden='true' />}
     editing={editing} onEdit={() => setEditing(true)} onClose={() => setEditing(false)}
     error={error}>
-    <ErrorBoundary fallback={<Text as='p' role='alert' color='red' size='2' mt='3'>Could not load colors. Please close and try again.</Text>}>
-      <React.Suspense fallback={null}>
-        <PlayerColorPicker color={color ?? savedColor} onChange={chooseColor} onClose={() => setEditing(false)} />
-      </React.Suspense>
-    </ErrorBoundary>
+    <PlayerColorPicker color={color ?? savedColor} onChange={chooseColor} onClose={() => setEditing(false)} />
   </EditableField>;
 };
 export default PlayerColorSection;

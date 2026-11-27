@@ -35,9 +35,9 @@ const EditableField = ({ label, caption, adornment, editing, onEdit, onClose, ch
         {caption && <Text size='1' color='gray'>{caption}</Text>}
       </Flex>
       <Button ref={trigger} variant='ghost' size='2' style={{ flexShrink: 0, marginTop: 0, height: 24, boxSizing: 'border-box' }}
-        aria-label={`${editing ? 'Cancel editing' : 'Edit'} ${label.toLowerCase()}`} aria-expanded={editing} aria-controls={`${id}-editor`}
+        aria-label={`${editing ? 'Close' : 'Edit'} ${label.toLowerCase()}`} aria-expanded={editing} aria-controls={`${id}-editor`}
         onClick={editing ? onClose : onEdit}>
-        {editing ? <><Cross1Icon aria-hidden='true' /> Cancel</> : <><Pencil1Icon aria-hidden='true' /> Edit</>}
+        {editing ? <><Cross1Icon aria-hidden='true' /> Close</> : <><Pencil1Icon aria-hidden='true' /> Edit</>}
       </Button>
     </Flex>
     <div id={`${id}-editor`} hidden={!editing}>{editing && children}</div>

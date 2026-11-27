@@ -1,0 +1,26 @@
+package monarchy.shared
+
+import java.util.UUID
+
+object PlayerColors {
+  val representativeIndex: Int = 3
+
+  // Enamel-tone proposal: eight perceptual families with eight distinct shades each.
+  // Keep this source and the generated TypeScript in git; see shared/README.md.
+  val families: Vector[Vector[String]] = Vector(
+    Vector("#c65379", "#d65877", "#e65e72", "#ee6c71", "#f47b74", "#fa897a", "#fd9883", "#fba48b"),
+    Vector("#e68b42", "#eca046", "#edb23b", "#e8c33f", "#e5ce4d", "#ded85d", "#d5dc70", "#cddd85"),
+    Vector("#5d9222", "#5a9e26", "#53aa2d", "#55b545", "#5ebe5f", "#69c676", "#75cb86", "#81d094"),
+    Vector("#0d8e54", "#079861", "#05a26f", "#03ac7d", "#03b68b", "#27c39c", "#4acaad", "#65d1ba"),
+    Vector("#088989", "#0d9296", "#079ca4", "#10a5b2", "#0bafc2", "#22b8d1", "#4cbfdc", "#68c6e6"),
+    Vector("#2673a8", "#2c7db7", "#3e85c4", "#4790d8", "#629be1", "#74a3e6", "#86acea", "#97b4ee"),
+    Vector("#6c6bc1", "#7a70d2", "#8a74e2", "#9b7aeb", "#ae84f2", "#be8df3", "#cb98f1", "#d8a3f0"),
+    Vector("#aa59ab", "#bb5db2", "#cc61b8", "#da69bb", "#e475bc", "#ee81bd", "#f58fbf", "#fb9dc2")
+  )
+
+  val values: Vector[String] = families.flatten
+  val allowed: Set[String] = values.toSet
+
+  def forUser(userId: UUID): String =
+    values(Math.floorMod(userId.hashCode, values.size))
+}

@@ -6,6 +6,7 @@ import monarchy.auth.Tooling
 import monarchy.dal
 import monarchy.dalwrite.WriteQueryBuilder
 import monarchy.util.Async
+import monarchy.shared.PlayerColors
 
 class Signup(implicit
     ec: ExecutionContext,
@@ -56,18 +57,8 @@ object Signup {
     username.matches(dal.User.UsernamePattern)
 
   private def mkProfile(userId: UUID, discordId: Option[String]): dal.Profile = {
-    val colorIndex = math.abs(userId.hashCode) % Colors.length
-    val color = Colors(colorIndex)
+    val color = PlayerColors.forUser(userId)
     dal.Profile(userId = userId, avatar = "Knight", color = color, discordId = discordId)
   }
 
-  // Expand these as necessary. Took inspiration from:
-  // https://www.color-hex.com/color-palette/1053990
-  private val Colors = Array(
-    "#440001",
-    "#6d1313",
-    "#233651",
-    "#ecb84a",
-    "#d9d2c5"
-  )
 }
